@@ -1,0 +1,42 @@
+local oo = require "loop.simple"
+local CContainer = (require "rigids.container").CContainer
+
+local hlp = require "helpers"
+
+---@class CContainerStash : CContainer
+local CContainerStash = oo.class({}, CContainer)
+
+function CContainerStash:OnCreate()
+   CContainer.OnCreate(self)
+   self.gStash = hlp.CGParam("playerStash")
+end
+
+function CContainerStash:activate(obj)
+   self:getInventory().items = {}
+   self:getInventory():deserialize(self.gStash:get() or {})
+   return CContainer.activate(self, obj)
+end
+
+function CContainerStash:deactivate(obj)
+   self.gStash:set(self:getInventory():serialize() or {})
+   return CContainer.deactivate(self, obj)
+end
+
+function CContainerStash:getLabel()
+   local stash = self.gStash:get()
+   if stash and #stash > 0 then
+      return "Stash"
+   else
+      return "Stash (empty)"
+   end
+end
+
+-- force overwrite parent save routines
+function CContainerStash:OnSaveState(state)
+end
+
+function CContainerStash:OnLoadState(state)
+   self:updateLockMeshes() --Simply hides the 'Locked' submesh
+end
+
+return {CContainerStash=CContainerStash}

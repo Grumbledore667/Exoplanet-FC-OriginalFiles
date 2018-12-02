@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout version="4" >
+    <Window type="TaharezLook/StaticImage" name="Game" >
+        <Property name="Area" value="{{0.02,0},{0.05,0},{0.98,0},{0.92,0}}" />
+        <Property name="Alpha" value="0.75" />
+        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+        <Property name="FrameEnabled" value="false" />
+        <Property name="BackgroundEnabled" value="true" />
+        <Property name="MouseInputPropagationEnabled" value="true" />
+        <Window type="DefaultWindow" name="Options" >
+            <Property name="Area" value="{{0,0},{0.1,0},{0.45,0},{0.7,0}}" />
+            <Property name="MaxSize" value="{{1,0},{1,0}}" />
+            <Window type="TaharezLook/StaticText" name="Header" >
+                <Property name="Area" value="{{0,0},{0,0},{1,0},{0.1,0}}" />
+                <Property name="Font" value="decor-12" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Property name="FrameEnabled" value="false" />
+                <Property name="HorzFormatting" value="CentreAligned" />
+                <Property name="BackgroundEnabled" value="false" />
+                <Property name="HorzScrollPageSize" value="829" />
+                <Property name="VertScrollPageSize" value="56" />
+                <Property name="HorizontalAlignment" value="Centre" />
+                <AutoWindow namePath="__auto_hscrollbar__" >
+                    <AutoWindow namePath="__auto_thumb__" >
+                        <Property name="MouseInputPropagationEnabled" value="true" />
+                    </AutoWindow>
+                </AutoWindow>
+                <AutoWindow namePath="__auto_vscrollbar__" >
+                    <Property name="VerticalScrollbar" value="true" />
+                    <AutoWindow namePath="__auto_thumb__" >
+                        <Property name="MouseInputPropagationEnabled" value="true" />
+                    </AutoWindow>
+                </AutoWindow>
+            </Window>
+            <Window type="DefaultWindow" name="immersiveUI" >
+                <Property name="Area" value="{{0,0},{0.1,0},{1,0},{0.2,0}}" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Window type="TaharezLook/StaticText" name="Label" >
+                    <Property name="Area" value="{{0.07,0},{0,0},{0.37,0},{1,0}}" />
+                    <Property name="Font" value="dialog-16" />
+                    <Property name="Text" value="Immersive UI" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="FrameEnabled" value="false" />
+                    <Property name="BackgroundEnabled" value="false" />
+                    <Property name="HorzScrollPageSize" value="249" />
+                    <Property name="VertScrollPageSize" value="56" />
+                    <Property name="HorzScrollDocumentSize" value="160" />
+                    <Property name="VertScrollDocumentSize" value="37.7281" />
+                    <AutoWindow namePath="__auto_hscrollbar__" >
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_vscrollbar__" >
+                        <Property name="VerticalScrollbar" value="true" />
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                </Window>
+                <Window type="TaharezLook/Checkbox" name="Checkbox" >
+                    <Property name="Area" value="{{0.5,0},{0,0},{0.5,40},{1,0}}" />
+                    <Property name="Selected" value="true" />
+                </Window>
+            </Window>
+			<Window type="TaharezLook/StaticText" name="Mod" >
+                <Property name="Area" value="{{0,0},{0.55,0},{1,0},{0.65,0}}" />
+                <Property name="Font" value="decor-12" />
+                <Property name="Text" value="Grumbledores Hit Mod" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Property name="FrameEnabled" value="false" />
+                <Property name="HorzFormatting" value="CentreAligned" />
+                <Property name="BackgroundEnabled" value="false" />
+                <Property name="HorzScrollPageSize" value="491" />
+                <Property name="VertScrollPageSize" value="44" />
+                <Property name="HorizontalAlignment" value="Centre" />
+                <Property name="HorzScrollDocumentSize" value="67" />
+                <Property name="VertScrollDocumentSize" value="19.2" />
+            </Window>
+			<Window type="DefaultWindow" name="hitmodenabled" >
+                <Property name="Area" value="{{0,0},{0.6,0},{1,0},{0.7,0}}" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Window type="TaharezLook/StaticText" name="Label" >
+                    <Property name="Area" value="{{0.07,0},{0,0},{0.37,0},{1,0}}" />
+                    <Property name="Font" value="dialog-16" />
+                    <Property name="Text" value="Use Mod" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="FrameEnabled" value="false" />
+                    <Property name="BackgroundEnabled" value="false" />
+                    <Property name="HorzScrollPageSize" value="249" />
+                    <Property name="VertScrollPageSize" value="56" />
+                    <Property name="HorzScrollDocumentSize" value="160" />
+                    <Property name="VertScrollDocumentSize" value="37.7281" />
+                    <AutoWindow namePath="__auto_hscrollbar__" >
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_vscrollbar__" >
+                        <Property name="VerticalScrollbar" value="true" />
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                </Window>
+                <Window type="TaharezLook/Checkbox" name="Checkbox" >
+                    <Property name="Area" value="{{0.5,0},{0,0},{0.5,40},{1,0}}" />
+                    <Property name="Selected" value="true" />
+                </Window>
+            </Window>
+			<Window type="DefaultWindow" name="criticalHIT" >
+                <Property name="Area" value="{{0,0},{0.7,0},{1,0},{0.8,0}}" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Window type="TaharezLook/StaticText" name="Label" >
+                    <Property name="Area" value="{{0.07,0},{0,0},{0.37,0},{1,0}}" />
+                    <Property name="Font" value="dialog-16" />
+                    <Property name="Text" value="Use Critical Hit" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="FrameEnabled" value="false" />
+                    <Property name="BackgroundEnabled" value="false" />
+                    <Property name="HorzScrollPageSize" value="249" />
+                    <Property name="VertScrollPageSize" value="56" />
+                    <Property name="HorzScrollDocumentSize" value="160" />
+                    <Property name="VertScrollDocumentSize" value="37.7281" />
+                    <AutoWindow namePath="__auto_hscrollbar__" >
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_vscrollbar__" >
+                        <Property name="VerticalScrollbar" value="true" />
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                </Window>
+                <Window type="TaharezLook/Checkbox" name="Checkbox" >
+                    <Property name="Area" value="{{0.5,0},{0,0},{0.5,40},{1,0}}" />
+                    <Property name="Selected" value="true" />
+                </Window>
+            </Window>
+			<Window type="DefaultWindow" name="partialHIT" >
+                <Property name="Area" value="{{0,0},{0.8,0},{1,0},{0.9,0}}" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Window type="TaharezLook/StaticText" name="Label" >
+                    <Property name="Area" value="{{0.07,0},{0,0},{0.37,0},{1,0}}" />
+                    <Property name="Font" value="dialog-16" />
+                    <Property name="Text" value="Use Partial Hit" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="FrameEnabled" value="false" />
+                    <Property name="BackgroundEnabled" value="false" />
+                    <Property name="HorzScrollPageSize" value="249" />
+                    <Property name="VertScrollPageSize" value="56" />
+                    <Property name="HorzScrollDocumentSize" value="160" />
+                    <Property name="VertScrollDocumentSize" value="37.7281" />
+                    <AutoWindow namePath="__auto_hscrollbar__" >
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_vscrollbar__" >
+                        <Property name="VerticalScrollbar" value="true" />
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                </Window>
+                <Window type="TaharezLook/Checkbox" name="Checkbox" >
+                    <Property name="Area" value="{{0.5,0},{0,0},{0.5,40},{1,0}}" />
+                    <Property name="Selected" value="true" />
+                </Window>
+            </Window>
+			<Window type="DefaultWindow" name="floatingDMG" >
+                <Property name="Area" value="{{0,0},{0.9,0},{1,0},{1.0,0}}" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Window type="TaharezLook/StaticText" name="Label" >
+                    <Property name="Area" value="{{0.07,0},{0,0},{0.37,0},{1,0}}" />
+                    <Property name="Font" value="dialog-16" />
+                    <Property name="Text" value="Floating Numbers" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="FrameEnabled" value="false" />
+                    <Property name="BackgroundEnabled" value="false" />
+                    <Property name="HorzScrollPageSize" value="249" />
+                    <Property name="VertScrollPageSize" value="56" />
+                    <Property name="HorzScrollDocumentSize" value="160" />
+                    <Property name="VertScrollDocumentSize" value="37.7281" />
+                    <AutoWindow namePath="__auto_hscrollbar__" >
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_vscrollbar__" >
+                        <Property name="VerticalScrollbar" value="true" />
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                </Window>
+                <Window type="TaharezLook/Checkbox" name="Checkbox" >
+                    <Property name="Area" value="{{0.5,0},{0,0},{0.5,40},{1,0}}" />
+                    <Property name="Selected" value="true" />
+                </Window>
+            </Window>
+            <Window type="DefaultWindow" name="tutorial" >
+                <Property name="Area" value="{{0,0},{0.2,0},{1,0},{0.3,0}}" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Window type="TaharezLook/StaticText" name="Label" >
+                    <Property name="Area" value="{{0.07,0},{0,0},{0.37,0},{1,0}}" />
+                    <Property name="Font" value="dialog-16" />
+                    <Property name="Text" value="Tutorial" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="FrameEnabled" value="false" />
+                    <Property name="BackgroundEnabled" value="false" />
+                    <Property name="HorzScrollPageSize" value="249" />
+                    <Property name="VertScrollPageSize" value="56" />
+                    <Property name="HorzScrollDocumentSize" value="96" />
+                    <Property name="VertScrollDocumentSize" value="37.7281" />
+                    <AutoWindow namePath="__auto_hscrollbar__" >
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_vscrollbar__" >
+                        <Property name="VerticalScrollbar" value="true" />
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                </Window>
+                <Window type="TaharezLook/Checkbox" name="Checkbox" >
+                    <Property name="Area" value="{{0.5,0},{0,0},{0.5,40},{1,0}}" />
+                    <Property name="Selected" value="true" />
+                </Window>
+            </Window>
+            <Window type="DefaultWindow" name="autoReload" >
+                <Property name="Area" value="{{0,0},{0.3,0},{1,0},{0.4,0}}" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Window type="TaharezLook/StaticText" name="Label" >
+                    <Property name="Area" value="{{0.07,0},{0,0},{0.37,0},{1,0}}" />
+                    <Property name="Font" value="dialog-16" />
+                    <Property name="Text" value="Auto Reload" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="FrameEnabled" value="false" />
+                    <Property name="BackgroundEnabled" value="false" />
+                    <Property name="HorzScrollPageSize" value="249" />
+                    <Property name="VertScrollPageSize" value="56" />
+                    <Property name="HorzScrollDocumentSize" value="96" />
+                    <Property name="VertScrollDocumentSize" value="37.7281" />
+                    <AutoWindow namePath="__auto_hscrollbar__" >
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_vscrollbar__" >
+                        <Property name="VerticalScrollbar" value="true" />
+                        <AutoWindow namePath="__auto_thumb__" >
+                            <Property name="MouseInputPropagationEnabled" value="true" />
+                        </AutoWindow>
+                    </AutoWindow>
+                </Window>
+                <Window type="TaharezLook/Checkbox" name="Checkbox" >
+                    <Property name="Area" value="{{0.5,0},{0,0},{0.5,40},{1,0}}" />
+                    <Property name="Selected" value="true" />
+                </Window>
+            </Window>
+        </Window>
+    </Window>
+</GUILayout>
