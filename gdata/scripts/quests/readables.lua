@@ -13,20 +13,20 @@ local obj1 = {
 			["event"] = "read";
 			["posX"] = 450;
 			["posY"] = 30;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    if obj then\
       local name = obj:getItemName()\
       if name and not self:getParam(name) then\
          if name == \"miner_journal.itm\" then\
-            local sm = getPlayer().skillsManager\
-            if sm:get( \"mining\" ) < 20 then\
-               sm:set( \"mining\", 20 )\
+            local sm = getMC().skillsManager\
+            if sm:get(\"mining\") < 20 then\
+               sm:set(\"mining\", 20)\
             else\
-               sm:inc( \"mining\", 5 )\
+               sm:inc(\"mining\", 5)\
             end\
-            getPlayer():addExp(getGlobalParam(\"expReading\") + 100)\
+            getMC():addExp(getGlobalParam(\"expReading\") + 100)\
          else\
-            getPlayer():addExp(getGlobalParam(\"expReading\"))\
+            getMC():addExp(getGlobalParam(\"expReading\"))\
          end\
          self:setParam(name, true)\
       end\
@@ -62,7 +62,7 @@ end\
 		};
 	};
 	["script"] = "function Quest:onCreate()\
-   runTimer(0, nil, function() self:start() end, false)\
+   self:start()\
 end\
 \
 function Quest:onStart()\

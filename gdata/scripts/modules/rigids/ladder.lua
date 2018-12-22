@@ -1,74 +1,71 @@
-local oo = require "loop.simple"
+local oo = require "loop.multiple"
+local _rootRigid = (require "roots")._rootRigid
+local CDestroyable = require "mixins.destroyable"
+local CInteractable = require "mixins.interactable"
 
-local CLadder = oo.class({})
+---@class CLadder : shRigidEntity
+local CLadder = oo.class({}, _rootRigid, CDestroyable, CInteractable)
 
 function CLadder:OnCreate()
-   self.steps = 5
-   local name = self:getPrefabName()
-   if name == "ladder_test.sbg" or name == "ladder_clean.sbg" or name == "ladder_old.sbg" or name == "ladder_wood.sbg" then
-      self.steps = 5
-   elseif name == "ladder_clean_3m.sbg" then
-      self.steps = 7
-   elseif name == "ladder_test_2.sbg" or name == "ladder_clean_2.sbg" or name == "ladder_old_2.sbg" or name == "ladder_wood_2.sbg" then
-      self.steps = 11
-   elseif name == "ladder_test_3.sbg" or name == "ladder_clean_3.sbg" or name == "ladder_old_3.sbg" or name == "ladder_wood_3.sbg" then
-      self.steps = 16
-   elseif name == "ladder_test_4.sbg" or name == "ladder_clean_4.sbg" or name == "ladder_old_4.sbg" or name == "ladder_wood_4.sbg" then
-      self.steps = 22
-   end
-   self.interactor_bottom = self:createAspect( "interactor" )
-   self.interactor_bottom:setObject( self )
-   self.interactor_bottom:setRaycastRadius( 150.0 )
-   self.interactor_bottom:getPose():setParent( self:getPose() )
-   self.interactor_bottom:getPose():resetLocalPose()
-   self.interactor_bottom:setRaycastActive( true )
+   CDestroyable.OnCreate(self)
+   CInteractable.OnCreate(self)
 
-   self.interactor_top = self:createAspect( "interactor" )
-   self.interactor_top:setObject( self )
-   self.interactor_top:setRaycastRadius( 150.0 )
-   self.interactor_top:getPose():setParent( self:getPose() )
-   self.interactor_top:getPose():resetLocalPose()
-   self.interactor_top:getPose():setLocalPos( {x=0,y=50*self.steps,z=0} )
-   self.interactor_top:setRaycastActive( true )
+   self:initAnchors()
 
-   if ( self.isMaterialHelper and not self:isMaterialHelper() ) then
-      self:addMaterial( "highlight" )
-      self:setMaterialVisible( "highlight", false )
+   local anchorBot = self:getAnchorByName("anchor_bot")
+   local anchorTopF = self:getAnchorByName("anchor_top_f")
+   if anchorBot and anchorTopF then
+      local height = getDistance(anchorBot:getPose():getPos(), anchorTopF:getPose():getPos())
+      self.interactor_top = self:createAspect("interactor")
+      self.interactor_top:setObject(self)
+      self.interactor_top:setRaycastRadius(150)
+      self.interactor_top:getPose():setParent(self:getPose())
+      self.interactor_top:getPose():resetLocalPose()
+      self.interactor_top:getPose():setLocalPos({x=0,y=height,z=0})
+      self.interactor_top:setRaycastActive(true)
    end
 end
 
-function CLadder:OnFocusBegin( obj )
-   if ( self.setMaterialVisible ) then
-      self:setMaterialVisible( "highlight", true )
+function CLadder:initAnchors()
+   self.anchors = {}
+   for _, name in ipairs{"anchor_bot", "anchor_mid",  "anchor_top_f", "anchor_top_b"} do
+     local anchor = self:getMeshByName(name)
+     if anchor then
+       self.anchors[name] = anchor
+     else
+       log(string.format("ERROR: CLadder '%s' has no anchor '%s' ...", self:getName(), name))
+     end
    end
 end
 
-function CLadder:OnFocusEnd( obj )
-   if ( self.setMaterialVisible ) then
-      self:setMaterialVisible( "highlight", false )
-   end
+function CLadder:getAnchorByName(name)
+   return self.anchors and self.anchors[name]
+end
+
+function CLadder:OnDestroy()
+   CDestroyable.OnDestroy(self)
+   self.anchors = nil
 end
 
 function CLadder:bottom()
-   local p = getPlayer()
-   local dist_to_bottom = getDistance(p:getPose():getPos(), self.interactor_bottom:getPose():getPos())
-   local dist_to_top = getDistance(p:getPose():getPos(), self.interactor_top:getPose():getPos())
-
-   return dist_to_bottom < dist_to_top
-end
-
-function CLadder:activate( obj )
-   local p = getPlayer()
-
-   if self:bottom() then
-      p:climbLadder(self)
+   local playerPos = getPlayer():getPose():getPos()
+   local dist_to_bottom = getDistance(playerPos, self.interactor:getPose():getPos())
+   if self.interactor_top then
+      local dist_to_top = getDistance(playerPos, self.interactor_top:getPose():getPos())
+      return dist_to_bottom < dist_to_top
    else
-      p:climbLadderDown(self)
+      return true
    end
-   return true
 end
 
-function CLadder:deactivate( obj )
+function CLadder:activate(obj)
+   if self.interactor_top then
+      obj:climbLadder(self)
+      return true
+   end
+end
+
+function CLadder:deactivate(obj)
    return true
 end
 
@@ -83,7 +80,7 @@ end
 function CLadder:getLabelPos()
    local pos
    if self:bottom() then
-      pos = self.interactor_bottom:getPose():getPos()
+      pos = self.interactor:getPose():getPos()
    else
       pos = self.interactor_top:getPose():getPos()
    end

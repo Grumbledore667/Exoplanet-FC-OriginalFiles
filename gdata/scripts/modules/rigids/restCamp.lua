@@ -1,23 +1,14 @@
-local oo = require "loop.simple"
-local ItemsData = (require "itemsData")
+local oo = require "loop.multiple"
+local _rootRigid = (require "roots")._rootRigid
+local CInteractable = require "mixins.interactable"
 
-local CRestCamp = oo.class({})
+---@class CRestCamp : shRigidEntity
+local CRestCamp = oo.class({}, _rootRigid, CInteractable)
 
 function CRestCamp:OnCreate()
-   self:initWithParams( nil )
-end
+   CInteractable.OnCreate(self)
 
-function CRestCamp:initWithParams( params )
-   if ( not params ) then
-      self.interactor = self:createAspect( "interactor" )
-      self.interactor:setObject( self )
-      self.interactor:setRaycastRadius( 100.0 )
-      self.interactor:getPose():setParent( self:getPose() )
-      self.interactor:getPose():resetLocalPose()
-      self.interactor:getPose():setLocalPos( {x=0,y=0,z=0} )
-      self.interactor:setRaycastActive( true )
-   end
-
+   self.interactor:setRaycastRadius(100)
    self.activated = false
 end
 
@@ -25,24 +16,20 @@ function CRestCamp:isActivated()
    return self.activated
 end
 
-function CRestCamp:activate( obj )
-   if ( self.activated ) then
-      return false
-   end
+function CRestCamp:activate(obj)
+   if self.activated then return false end
 
-   if ( obj:restAtCamp(self) ) then
+   if obj:restAtCamp(self) then
       self.activated = true
       return true
    end
    return false
 end
 
-function CRestCamp:deactivate( obj )
-   if ( not self.activated ) then
-      return false
-   end
+function CRestCamp:deactivate(obj)
+   if not self.activated then return false end
 
-   if ( obj:leaveCamp(self) ) then
+   if obj:leaveCamp(self) then
       self.activated = false
       return true
    end

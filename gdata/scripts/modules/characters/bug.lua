@@ -2,27 +2,28 @@ local oo = require "loop.simple"
 local CCharacter = (require "character").CCharacter
 local ItemsData = (require "itemsData")
 
-local CEventManager = (require "notificationCenter2").CNotificationCenter
-
 local ai = require "ai"
+local coro = require "coroutines.helpers"
+local random = require "random"
 
 local hlp = require "helpers"
 
+---@class CBug : CCharacter
 local CBug = oo.class({
-   itemType     = "bug.itm",
-   itemTypeDead = "bug_dead.itm",
+   itemName     = "bug.itm",
+   itemNameDead = "bug_dead.itm",
+   itemNameChipped = "bug_chipped.itm",
    installer = nil,
+   spawnCorpseDummy = false,
 }, CCharacter)
-
-function CBug:setInstaller(obj)
-   self.installer = obj
-end
 
 function CBug:OnDestroy()
    CCharacter.OnDestroy(self)
    if self.installer then
       self.installer:removeInstallation(self)
    end
+   self:stopTimers()
+   self:deleteBehaviorTree()
 end
 
 function CBug:initSenses()
@@ -32,136 +33,122 @@ function CBug:initSenses()
    self.senseScheduler:addSense("inZone"     , false, self.senseScheduler, self.senseScheduler.checkZone)
 end
 
+function CBug:getDefaultParameters()
+   local parameters = CCharacter.getDefaultParameters(self)
+
+   parameters.healthMax    = 10
+   parameters.walkSpeed    = 150
+   parameters.runSpeed     = 400
+
+   parameters.weaponSlotId = 0
+   parameters.weaponDamage = 20
+   parameters.attackDist   = 300
+
+   parameters.viewDist     = 1000  -- 10 meters
+   parameters.backViewDist = 500   -- 5 meters
+   parameters.viewAngle    = 180
+
+   return parameters
+end
+
+function CBug:loadDynamicParameters(params)
+   CCharacter.loadDynamicParameters(self, params)
+   self.parameters.healthMax = params.healthMax
+   self.parameters.zoneSize = params.zoneSize
+   self.parameters.feelRadiusCutoff = params.feelRadiusCutoff
+   self.parameters.blockChirping = params.blockChirping
+   self.parameters.walkSpeed = params.walkSpeed
+   self.parameters.runSpeed = params.runSpeed
+   self.parameters.weaponDamage = params.weaponDamage
+end
+
 function CBug:loadParameters()
-   --log("CBug:loadParameters()")
+   CCharacter.loadParameters(self)
 
-   --log( tostring(self.parameters.zoneSize) )
-   self.parameters.zoneSize = loadParamNumber(self, "walkRange" , 1000)
-   self.parameters.attackDist = 300
-
-   self.parameters.viewDist         = 1000  -- 10 meters
-   self.parameters.backViewDist     = 500   -- 5 meters
-   self.parameters.viewAngle        = 180
-
-   --log( tostring(self.parameters.viewRange) )
-   self.senseScheduler:setFeelRadius( loadParamNumber(self, "viewRange", 3000) )
+   self.senseScheduler:setFeelRadius(loadParamNumber(self, "feelRadiusCutoff", 1000))
    self.blockChirping = loadParam(self, "blockChirping", false)
 
    self.parameters.maxLandingSpeed = 1500
 end
 
-function CBug:OnCreate()
-   CCharacter.OnCreate(self)
-   --log("CBug:OnCreate()")
+function CBug:OnCreate(params)
+   CCharacter.OnCreate(self, params)
+   self.interactor:setRaycastRadius(150)
+   self.interactor:setRaycastActive(false)
 
-   self.stats.healthMax = {base = 10, current = 10, min = 1}
-   self:setStatCount( "health", self.stats.healthMax.current )
+   self:initSenses()
+   self:initFX()
 
    self.weapon = hlp.safeCreateItemWithoutModel("bug_bite.wpn", "CWeapon")
-   self.weapon:setDamage(20)
+   self.weapon:setDamage(self.parameters.weaponDamage)
    self.weapon:setOffset(false)
-   self.weapon:setDimensions(25, 0)
-   self.weapon = self.itemsManager:addItemObj( self.weapon )
-   self.itemsManager:equipSlotWithItem( 0, self.weapon.id, true )
+   self.weapon:setDimensions(35, 0)
+   self.weapon = self:getInventory():addItemObj(self.weapon)
+   self:getInventory():equipSlotWithItem(self:getWeaponSlot(), self.weapon:getId(), true)
 
-   CBug.loadParameters(self)
-   CBug.initSenses    (self)
-   CBug.initFX        (self)
-
-   self.interactor = self:createAspect( "interactor" )
-   self.interactor:setObject( self )
-   self.interactor:setRaycastRadius( 150.0 )
-   self.interactor:getPose():setParent( self:getPose() )
-   self.interactor:getPose():resetLocalPose()
-   self.interactor:getPose():setLocalPos( {x=0,y=0,z=0} )
-   self.interactor:setRaycastActive( false )
-   self.interactor:setTriggerActive( false )
-
-   self.animationsManager:stopAnimation ( "death.caf" )
-
-   self:setRole( ROLE_INSECT )
+   self:setGuild("GLD_INSECT")
 
    self:enablePickupItem()
-   self.eventManager = CEventManager{owner=self}
-   self.eventManager:init()
-   self:CreateTree()
+   self:createTree("ai.trees.bug")
 end
 
-function CBug:setupTimers( freq )
+function CBug:setupTimers(freq)
    self:stopTimers()
 
-   self.senseScheduler.timer = runTimer( freq, self.senseScheduler, self.senseScheduler.OnIdle, true )
-   self.behaviorTreeTimer    = runTimer( freq, nil, function ()
-      if(self.BT) then
-         self.BT:tick()
-         self.eventManager:removeNotifications()
-      end
-   end, true )
+   self.senseScheduler.timer = runTimer(freq, self.senseScheduler, self.senseScheduler.OnIdle, true)
+   self.behaviorTreeTimer    = runTimer(freq, self, ai.utils.ticker, true)
 end
 
 function CBug:stopTimers()
    CCharacter.stopTimers(self)
 
-   if ( self.behaviorTreeTimer ) then
+   if self.behaviorTreeTimer then
       self.behaviorTreeTimer:stop()
       self.behaviorTreeTimer = nil
    end
 end
 
-function CBug:CreateTree()
-   self.BT = ai.utils.loadTree("ai.trees.bug", self)
-   self.BT:setBlackboard(self.blackboard)
-end
-
 function CBug:initFX()
    if not self.fx then
       self.fx = {}
-      self.fx.blood = self:createAspect( "bug_blood.sps" )
-      self.fx.blood:setLoop( false )
-      self.fx.blood:getPose():setParent( self:getBonePose( "item_slot1" ) )
+      self.fx.blood = self:createAspect("bug_damage.sps")
+      self.fx.blood:setLoop(false)
+      self.fx.blood:getPose():setParent(self:getBonePose("item_slot1"))
       self.fx.blood:getPose():resetLocalPos()
       self.fx.blood:disable()
 
-      self.fx.blood_death = self:createAspect( "bug_blood_death.sps" )
-      self.fx.blood_death:setLoop( false )
-      self.fx.blood_death:getPose():setParent( self:getBonePose( "item_slot1" ) )
+      self.fx.blood_death = self:createAspect("bug_blood_death.sps")
+      self.fx.blood_death:setLoop(false)
+      self.fx.blood_death:getPose():setParent(self:getBonePose("item_slot1"))
       self.fx.blood_death:getPose():resetLocalPos()
       self.fx.blood_death:disable()
-
-      self.sounds = {}
-      self.sounds.chirp = "bug_live.wav"
    end
 end
 
 function CBug:enablePickupItem()
-   self.interactor:setRaycastActive( true )
+   self.interactor:setRaycastActive(true)
 end
 
 function CBug:disablePickupItem()
-   self.interactor:setRaycastActive( false )
+   self.interactor:setRaycastActive(false)
 end
 
-function CBug:OnCaught( pose )
-   --log( "CBug:OnCaught" )
-   self:setState( "caught", true )
-   self.caughtPose = pose
+function CBug:OnCaught()
+   self:setState("caught", true)
 end
 
-function CBug:OnFree( pose )
-   --  if ( self:getState("dead") ) then
-   --    return
-   --  end
-   log( "CBug:OnFree" )
-
-   self:setCollision  ( true )
-   self:setFeelVisible( true )
+function CBug:OnFree(pose)
+   self:setCollision  (true)
+   self:setFeelVisible(true)
 
    self:getPose():resetParent()
-   self:getPose():setRot( pose:getRot() )
+   self:getPose():setRot(pose:getRot())
+   self:setSpawnPos(pose:getPos())
 
    self:enablePickupItem()
-   self:setState( "caught", false )
-   self:CreateTree()
+   self:setState("caught", false)
+   self:createTree("ai.trees.bug")
+   self:setupTimers(self.defaultTimerFrequency)
 end
 
 function CBug:hit(damage, charAttacker)
@@ -169,175 +156,101 @@ function CBug:hit(damage, charAttacker)
    self:setState("damage", true)
 end
 
-function CBug:move_start()
-   self:setOrientationSpeed( 500 )
+function CBug:die__()
+   CCharacter.die__(self)
 
-   self:setMoveSpeed( 300 )
-   self.animationsManager:loopAnimation( "run_front.caf" )
-
-   if ( not self.senseScheduler:getSense("inZone") ) then
-      --log( "outzone" )
-      self:setOrientation( getTargetAngleDir(self, self.senseScheduler:getCurZone()) )
-   else
-      if ( not self.senseScheduler:getCurEnemy() ) then
-         self:setOrientation( rand(360) )
-      else
-         self:setOrientation( getTargetAngle(self, self.senseScheduler:getCurEnemy():getPose():getPos()) )
-      end
-   end
+   self:playDeathAnimation("death")
 end
 
-function CBug:death_start()
+function CBug:die()
+   CCharacter.die(self)
+
    self.fx.blood_death:play()
-   self:stopMove()
-   self.animationsManager:stopAnimations()
-   self.animationsManager:playAnimationWithLock( "death.caf" )
-   self.itemsManager:getSlotItem( 0 ):OnDeactivate()
+   self:OnItemDeactivateSafe(self:getWeaponSlotItem())
 
-   if ( self.senseScheduler:getLastEnemy() ~= nil ) then
-      local pushPos = self.senseScheduler:getLastEnemy():getPose():getPos()
-      local selfPos = self:getPose():getPos()
-      pushPos.x = -(pushPos.x - selfPos.x)
-      pushPos.y =  (pushPos.y - selfPos.y) + 180
-      pushPos.z = -(pushPos.z - selfPos.z)
-      self:push( pushPos, 5000, 1.5 )
+   local lastEnemy = self.senseScheduler:getLastEnemy()
+   if lastEnemy then
+      self:pushFrom(lastEnemy:getPose():getPos(), 5000, 1.5, {y=180})
    end
-
-   self.BT = nil
-   self:stopTimers()
-   self:enablePickupItem()
-end
-
-function CBug:death_stop()
-end
-
-
-function CBug:move_stop()
-   self:setMoveSpeed( 0 )
 end
 
 function CBug:chase_start()
-   self:setOrientationSpeed( 400 )
-   self:setMoveSpeed       ( 400 )
-   self.animationsManager:loopAnimation( "run_front.caf" )
-   self:setTarget( self.senseScheduler:getCurEnemy(), {y=100} )
-   self:setOrientation( getTargetAngleDir(self, self.senseScheduler:getCurEnemy():getPose():getPos()) )
+   self:setOrientationSpeed(400)
+   self:setMoveSpeed(self.parameters.runSpeed)
+   self.animationsManager:playCycle("run_front")
+
+   local enemy = self.senseScheduler:getCurEnemy()
+   self:setTarget(enemy, {y=100})
+   self:setOrientation(getTargetAngleDir(self, enemy:getPose():getPos()))
 end
 
-function CBug:chase_stop()
+function CBug:chase_finish()
    self:resetTarget()
-end
-
-function CBug:attack_start()
-   -- log("---attack")
-   local currentEnemy = self.senseScheduler:getCurEnemy()
-   if currentEnemy then
-      self:setOrientation( getTargetAngleDir(self, currentEnemy:getPose():getPos()) )
-      self:setOrientationSpeed(500)
-   end
-
-   self:startJump   ( 400 )
-   self:setMoveSpeed( 600 )
-
-   self.itemsManager:getSlotItem( 0 ):OnActivate()
-   self.animationsManager:loopAnimation("jump_front.caf")
-end
-
-function CBug:attack_running()
-   return #self.eventManager:notification("OnLanding") == 0
-end
-
-
-function CBug:attack_stop()
-   --self.animationsManager:stopAnimations()
-   self.itemsManager:getSlotItem( 0 ):OnDeactivate()
    self:stopMove()
-   -- end
+end
+
+-- CoroutineAction
+function CBug:attack_running()
+   local currentEnemy = self.senseScheduler:getCurEnemy()
+
+   self:setOrientationSpeed(500)
+   self:setOrientation(getTargetAngleDir(self, currentEnemy:getPose():getPos()))
+   self.animationsManager:playAction("jump_ready")
+   self.animationsManager:playCycle("jump_front")
+
+   coro.waitAnimationEnd(self, "jump_ready")
+
+   self:setOrientation(getTargetAngleDir(self, currentEnemy:getPose():getPos()))
+
+   self:startJump(350)
+   self:setMoveSpeed(600)
+
+   self:OnItemActivateSafe(self:getWeaponSlotItem())
+
+   coro.waitEvent("OnLanding")
+end
+
+function CBug:attack_finish()
+   self:OnItemDeactivateSafe(self:getWeaponSlotItem())
+   self:stopMove()
 end
 
 function CBug:caught_start()
-   self.animationsManager:loopAnimation( "escaping.caf" )
+   self.animationsManager:playCycle("escaping")
+   self:OnItemDeactivateSafe(self:getWeaponSlotItem())
 
-   self:setCollision  ( false )
-   self:setFeelVisible( false )
-
-   self.itemsManager:getSlotItem( 0 ):OnDeactivate()
-
-   self:getPose():setParent( self.caughtPose )
-   self:getPose():resetLocalPose()
-   self:getPose():setLocalRotQuat( quatFromEuler({x=-45}) )
-
-   self:disablePickupItem()
-   self.BT = nil
-
-end
-
-function CBug:caught_stop()
--- self.animationsManager:loopAnimation( "idle.caf" )
-end
-
-function CBug:preattack_start()
-   self:stopMove()
-   self:setOrientationSpeed(500)
-   self:setOrientation( getTargetAngleDir(self, self.senseScheduler:getCurEnemy():getPose():getPos()))
-   self.animationsManager:playAnimation("jump_ready.caf", false )
-end
-
-function CBug:preattack_stop()
+   self:deleteBehaviorTree()
+   self:stopTimers()
 end
 
 function CBug:idle_start()
-   self:stopMove()
-   self.animationsManager:loopAnimation( "idle.caf" )
-   self.timer = runTimer(rand(5), nil,nil,false)
-end
-
-function CBug:idle_running()
-   return self.timer:getTimeLeft() > 0
-end
-
-function CBug:idle_stop()
-   self.animationsManager:stopAnimations()
+   self.animationsManager:playCycle("idle")
 end
 
 function CBug:walk_start()
-   self:setOrientationSpeed( 500 )
-   self:setMoveSpeed( 150 )
-   self.animationsManager:loopAnimation( "walk_front.caf" )
+   self:setOrientationSpeed(150)
 
-   if ( not self.senseScheduler:getSense("inZone") ) then
-      self:setOrientation( getTargetAngleDir(self, self.senseScheduler:getCurZone()) )
+   if not self.senseScheduler:getSense("inZone") then
+      self:setOrientation(getTargetAngleDir(self, self.senseScheduler:getCurZone()))
    else
-      self:setOrientation( rand(360) )
+      self:setOrientation(random.normal(-180, 180))
    end
-   self.timer = runTimer(rand(5), nil,nil,false)
+   self:setMoveSpeed(self.parameters.walkSpeed)
+   self.animationsManager:playCycle("walk_front")
 end
 
-function CBug:walk_running()
-   return self.timer:getTimeLeft() > 0
-end
-
-function CBug:walk_stop()
-   self.animationsManager:stopAnimations()
-   self:stopMove()
-end
-
-function CBug:damaged_start()
-   log("-----------------get damage")
-   self.animationsManager:playAnimation( "hit.caf", false )
+-- CoroutineAction
+function CBug:damaged_running()
+   self.animationsManager:playAction("hit")
    self.fx.blood:play()
-   self:stopMove()
-   if ( self.senseScheduler:getCurEnemy() ~= nil ) then
-      local pushPos = self.senseScheduler:getCurEnemy():getPose():getPos()
-      local selfPos = self:getPose():getPos()
-      pushPos.x = -(pushPos.x - selfPos.x)
-      pushPos.y =  (pushPos.y - selfPos.y) + 180
-      pushPos.z = -(pushPos.z - selfPos.z)
-      self:push( pushPos, 5000, 1.5 )
+   local enemy = self.senseScheduler:getCurEnemy()
+   if enemy then
+      self:pushFrom(enemy:getPose():getPos(), 5000, 1.5, {y=180})
    end
+   coro.waitAnimationEnd(self, "hit")
 end
 
-function CBug:damaged_stop()
+function CBug:damaged_finish()
    self:setState("damage", false)
 end
 
@@ -346,66 +259,64 @@ function CBug:getType()
 end
 
 function CBug:getLabel()
-   if ( self:getState("dead") ) then
-      return ItemsData.getItemLabel( self.itemTypeDead )
-   else
-      return ItemsData.getItemLabel( self.itemType )
-   end
+   return ItemsData.getItemLabel(self:getItemName())
 end
 
 function CBug:getInteractLabel()
-   if ( self:getState("dead") ) then
+   if self:getState("dead") then
       return "pick up"
    else
       return "catch"
    end
 end
 
+function CBug:getItemName()
+   local itemName = self.itemName
+
+   if self:getState("dead") then
+      itemName = self.itemNameDead
+   elseif self.wasChipped then
+      itemName = self.itemNameChipped
+   end
+   return itemName
+end
+
 function CBug:getAsItem()
-   local itemName = self.itemType
+   local itemName = self:getItemName()
 
-   if ( self:getState("dead") ) then
-      itemName = self.itemTypeDead
-   end
+   local item = hlp.safeCreateItemWithoutModel(itemName, ItemsData.getItemClass(itemName))
 
-   if ( ItemsData.isItemAlive(itemName) and getPlayer() and getPlayer().itemsManager:isItemsAliveLimit() ) then
-      return nil
-   end
-
-   local item = hlp.safeCreateItemWithoutModel( itemName, ItemsData.getItemClass(itemName) )
-
-   if ( item ) then
-      self.weapon:OnDeactivate()
-      self.itemsManager:destroyItem(self.weapon.id)
-      getScene():destroyEntity( self )
-      item:setVisible( false )
+   if item then
+      self:OnItemDeactivateSafe(self.weapon)
+      self:getInventory():destroyItem(self.weapon, -1, true, true)
+      getScene():destroyEntity(self)
+      item:setVisible(false)
       return item
    else
-      log( "Can't create " .. itemName )
+      log("Can't create " .. itemName)
       return nil
    end
 end
 
-function CBug:OnLanding( landingSpeed )
-   self.eventManager:postNotification("OnLanding")
-   CCharacter.OnLanding( self, 0 ) -- TODO: FIXME: potential bug: the bug won't receive fall damage
-   self.weapon:OnDeactivate()
+function CBug:OnLanding(landingSpeed)
+   CCharacter.OnLanding(self, 0) -- TODO: FIXME: potential bug: the bug won't receive fall damage
+   self:OnItemDeactivateSafe(self:getWeaponSlotItem())
 end
 
-function CBug:OnSaveState( state )
-   state.dead = self:getState( "dead" )
+function CBug:OnSaveState(state)
+   state.dead = self:getState("dead")
    -- dynamic object spawned by installer
    if self.installer then
-      local pos = self:getPose():getPos()
-      state.pos = {x=pos.x, y=pos.y, z=pos.z}
+      state.pos = self:getSafePos()
+      state.orientationGlobal = self:getOrientationGlobal()
       if not state.dead then
-         state.health = self:getHealthCount()
+         state.health = self:getStatCount("health")
       end
       state.caught = self:getState("caught")
    end
 end
 
-function CBug:OnLoadState( state )
+function CBug:OnLoadState(state)
    -- prevent duping when holding bug in hand
    if state.caught then
       getScene():destroyEntity(self)
@@ -415,10 +326,15 @@ function CBug:OnLoadState( state )
       if state.pos then
          self:getPose():setPos(state.pos)
       end
+      if state.orientationGlobal then
+         self:setOrientationGlobal(state.orientationGlobal)
+      end
+      if state.health and not state.dead then
+         self:setStatCount("health", state.health)
+      end
    end
-   if ( state.dead ) then
+   if state.dead then
       self:die__()
-      self:stopSounds()
    end
 end
 

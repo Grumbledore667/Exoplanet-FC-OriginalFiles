@@ -1,22 +1,22 @@
 local oo = require "loop.simple"
--- local CAnimationsManager = (require "animationsManager").CAnimationsManager
--- local CNotificationCenter = (require "notificationCenter").CNotificationCenter
+local _rootRigid = (require "roots")._rootRigid
 
-local CCargo = oo.class({})
+---@class CCargo : shRigidEntity
+local CCargo = oo.class({}, _rootRigid)
 
 function CCargo:OnCreate()
-   self.interactor = self:createAspect( "interactor" )
-   self.interactor:setObject( self )
-   self.interactor:setRaycastRadius( 150.0 )
-   self.interactor:getPose():setParent( self:getPose() )
+   self.interactor = self:createAspect("interactor")
+   self.interactor:setObject(self)
+   self.interactor:setRaycastRadius(150.0)
+   self.interactor:getPose():setParent(self:getPose())
    self.interactor:getPose():resetLocalPose()
    local pos = self:getMeshByName("door_left"):getPose():getLocalPos()
    pos.x = pos.x + 165
-   self.interactor:getPose():setLocalPos( pos )
-   self.interactor:setRaycastActive( true )
+   self.interactor:getPose():setLocalPos(pos)
+   self.interactor:setRaycastActive(true)
 
    if not self:check_name() then
-      self.interactor:setRaycastActive( false )
+      self.interactor:setRaycastActive(false)
    end
 
    self.opened    = false
@@ -62,10 +62,10 @@ end
 function CCargo:OnDestroy()
 end
 
-function CCargo:OnInteractBegin( obj )
+function CCargo:OnInteractBegin(obj)
 end
 
-function CCargo:OnInteractEnd( obj )
+function CCargo:OnInteractEnd(obj)
 end
 
 function CCargo:animating()
@@ -113,15 +113,15 @@ function CCargo:animation()
    end
 end
 
-function CCargo:activate( obj )
+function CCargo:activate(obj)
    if not self:check_name() then return end
    if self.lock_opened then
-      if ( self:animating() ) then
+      if self:animating() then
          return false
       end
 
       -- self.animating = true
-      if ( not self.opened ) then
+      if not self.opened then
          self.opening = true
          self.degrees_left = 160
          self.animateTimer = runTimer(0.025, self, self.animation, true)
@@ -137,13 +137,13 @@ function CCargo:activate( obj )
    return true
 end
 
-function CCargo:deactivate( obj )
+function CCargo:deactivate(obj)
    return true
 end
 
 function CCargo:closeDoor()
    if not self:check_name() then return end
-   if ( not self.opened or self:animating() ) then
+   if not self.opened or self:animating() then
       return false
    end
 

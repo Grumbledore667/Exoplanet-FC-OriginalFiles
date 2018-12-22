@@ -42,6 +42,7 @@ end\
 	["message_00004"] = {
 		["ID"] = 4;
 		["actor"] = 2;
+		["animation"] = "dl_stop_twohand";
 		["posX"] = 780;
 		["posY"] = 390;
 		["script"] = "";
@@ -52,6 +53,7 @@ end\
 	["message_00005"] = {
 		["ID"] = 5;
 		["actor"] = 1;
+		["animation"] = "dl_point_forward";
 		["connectID"] = 6;
 		["posX"] = 1050;
 		["posY"] = 210;
@@ -63,6 +65,7 @@ end\
 	["message_00006"] = {
 		["ID"] = 6;
 		["actor"] = 2;
+		["animation"] = "dl_chuckle";
 		["connectID"] = 7;
 		["posX"] = 1320;
 		["posY"] = 210;
@@ -74,6 +77,7 @@ end\
 	["message_00007"] = {
 		["ID"] = 7;
 		["actor"] = 1;
+		["animation"] = "dl_chintouch_loop";
 		["connectID"] = 8;
 		["posX"] = 1590;
 		["posY"] = 210;
@@ -85,6 +89,7 @@ end\
 	["message_00008"] = {
 		["ID"] = 8;
 		["actor"] = 2;
+		["animation"] = "dl_point_right";
 		["connectID"] = 4;
 		["posX"] = 1860;
 		["posY"] = 210;
@@ -104,4 +109,10 @@ end\
 		["type"] = "switch";
 	};
 }
-return obj1
+local obj2 = {
+	["actor_prefab"] = {
+		[1] = "human_male";
+		[2] = "abori";
+	};
+}
+return obj1 ,obj2

@@ -49,6 +49,7 @@ local obj1 = {
 	["message_00010"] = {
 		["ID"] = 10;
 		["actor"] = 2;
+		["animation"] = "dl_shrug_short";
 		["posX"] = 3090;
 		["posY"] = 690;
 		["script"] = "function message:onStart()\
@@ -56,7 +57,7 @@ end\
 \
 function message:onStop()\
    runTimer(1, nil, function()\
-       gameplayUI:addSubtitle(\"*mumbles* Damn humas, gonna wear an abori out wherever he is.\", 5, self:getNPC())\
+       gameplayUI.subtitlesUI:addSubtitle(\"*mumbles* Damn humas, gonna wear an abori out wherever he is.\", 5, self:getNPC())\
    end, false)\
 end\
 \
@@ -83,6 +84,7 @@ end\
 	["message_00015"] = {
 		["ID"] = 15;
 		["actor"] = 2;
+		["animation"] = "dl_look_down";
 		["connectID"] = 11;
 		["posX"] = 2550;
 		["posY"] = 690;
@@ -114,6 +116,7 @@ end\
 	["message_00018"] = {
 		["ID"] = 18;
 		["actor"] = 2;
+		["animation"] = "dl_stop_onehand";
 		["connectID"] = 40;
 		["posX"] = 2550;
 		["posY"] = 330;
@@ -125,11 +128,12 @@ end\
 	["message_00019"] = {
 		["ID"] = 19;
 		["actor"] = 2;
+		["animation"] = "dl_hand_chopfast";
 		["connectID"] = 40;
 		["posX"] = 2550;
 		["posY"] = 450;
 		["script"] = "";
-		["text"] = "We dont take orders from that asshole. He can play soldiers with his chickenshit mercs, but we dont give a shit about what he needs now.";
+		["text"] = "We don't take orders from that asshole. He can play soldiers with his chickenshit mercs, but we don't give a shit about what he needs now.";
 		["time"] = 14;
 		["type"] = "message";
 	};
@@ -180,6 +184,7 @@ end\
 	["message_00025"] = {
 		["ID"] = 25;
 		["actor"] = 1;
+		["connectID"] = 43;
 		["posX"] = 2040;
 		["posY"] = 150;
 		["script"] = "";
@@ -226,7 +231,7 @@ end\
 		["posX"] = 1830;
 		["posY"] = 570;
 		["script"] = "";
-		["text"] = "Really? And why should I do that. I'm a builder not some cheap-ass loader.";
+		["text"] = "Really? And why should I do that? I'm a builder, not some cheap-ass loader.";
 		["time"] = 8;
 		["type"] = "message";
 	};
@@ -266,6 +271,7 @@ end\
 	["message_00034"] = {
 		["ID"] = 34;
 		["actor"] = 2;
+		["animation"] = "dl_righthand_wave_med";
 		["connectID"] = 47;
 		["posX"] = 2550;
 		["posY"] = 570;
@@ -385,6 +391,7 @@ end\
 	["message_00047"] = {
 		["ID"] = 47;
 		["actor"] = 1;
+		["animation"] = "dl_chuckle";
 		["connectID"] = 48;
 		["posX"] = 2820;
 		["posY"] = 570;
@@ -396,6 +403,7 @@ end\
 	["message_00048"] = {
 		["ID"] = 48;
 		["actor"] = 2;
+		["animation"] = "dl_head_2nods";
 		["connectID"] = 40;
 		["posX"] = 3090;
 		["posY"] = 570;
@@ -433,9 +441,11 @@ end\
 			[4] = 24;
 			[5] = 25;
 		};
+		["h"] = 140;
 		["posX"] = 1860;
 		["posY"] = -150;
 		["type"] = "switch";
+		["w"] = 100;
 	};
 	["switch_00040"] = {
 		["ID"] = 40;
@@ -446,9 +456,11 @@ end\
 			[4] = 44;
 			[5] = 36;
 		};
+		["h"] = 140;
 		["posX"] = 2130;
 		["posY"] = 540;
 		["type"] = "switch";
+		["w"] = 100;
 	};
 	["switch_00043"] = {
 		["ID"] = 43;
@@ -462,4 +474,10 @@ end\
 		["type"] = "switch";
 	};
 }
-return obj1
+local obj2 = {
+	["actor_prefab"] = {
+		[1] = "human_male";
+		[2] = "abori";
+	};
+}
+return obj1 ,obj2

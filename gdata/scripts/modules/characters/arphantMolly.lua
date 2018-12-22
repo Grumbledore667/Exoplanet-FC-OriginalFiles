@@ -1,55 +1,89 @@
 local oo = require "loop.simple"
-local CCharacter = (require "character").CCharacter
-local CTalker = (require "characters.talker").CTalker
+local CNPC = (require "characters.npc").CNPC
+local SkySystem = (require "environment.sky").SkySystem
+local f = require "fun"
+local partial = f.partial
 
-local CArphantMolly = oo.class( {}, CTalker )
+local coro = require "coroutines.helpers"
 
-function CArphantMolly:loadParameters()
-   self.stats.healthMax = {base = 2000, current = 2000, min = 1}
-   self:setStatCount( "health", self.stats.healthMax.current )
+---@class CArphantMolly : CNPC
+local CArphantMolly = oo.class({}, CNPC)
 
-   self.interactor:getPose():setLocalPos({x=0,y=150,z=0})
-   self.interactor:setTriggerRadius( 350 )
-   self.interactor:setTriggerActive( true )
-   self.interactor:setRaycastRadius( 450 )
-   self.interactor:setRaycastActive( true )
+function CArphantMolly:getDefaultParameters()
+   local parameters = CNPC.getDefaultParameters(self)
+   parameters.defaultAnimation = "sleep_idle"
+   parameters.patrolAllowed = false
+   parameters.healthMax = 2000
+   return parameters
 end
 
 function CArphantMolly:OnCreate()
-   CTalker.OnCreate( self )
-
-   CArphantMolly.loadParameters( self )
-   self:subscribeOnDeath(self.OnDeath, self)
+   CNPC.OnCreate(self)
+   self.interactor:getPose():setParent(self:findBonePose("Head"))
+   self.interactor:getPose():resetLocalPos()
+   self.interactor:setTriggerRadius(350)
+   self.interactor:setTriggerActive(true)
+   self.interactor:setRaycastRadius(450)
+   self.interactor:setRaycastActive(true)
 end
 
-function CArphantMolly:animatedEvent( eventType )
-   CCharacter.animatedEvent( self, eventType )
-
-   if ( self:getHealth() == 0 and eventType ~= "die" ) then
-      return
+function CArphantMolly:patrol_running()
+   self:setBBVar("runPatrol", true)
+   if self.nextPatrolPoint == 1 then
+      self.animationsManager:playCycle("idle")
+      self.animationsManager:playAction("sleep_back")
+      coro.waitAnimationEnd(self, "sleep_back")
    end
+   self.ffPatrolCallback = SkySystem:subscribeFastForwardTime(partial(self.onFastForwardTimePatrol, self))
+   CNPC.patrol_running(self)
+end
 
-   if ( eventType == "hit" ) then
-      self:setState( "damage", true )
+function CArphantMolly:subscribeToStepEvents(anim)
+   self.animationsManager:subscribeAnimationEventIn(anim, "step1", self.onStepEventIn, self)
+   self.animationsManager:subscribeAnimationEventIn(anim, "step2", self.onStepEventIn, self)
+   self.animationsManager:subscribeAnimationEventIn(anim, "step3", self.onStepEventIn, self)
+end
+
+function CArphantMolly:initAnimations()
+   if self:getPrefabName() == "arphant.cfg" then
+      return {
+         idle = {
+            default = {"idle"},
+         },
+         walk = {
+            front = {
+               default = "walk",
+               fast = "walk_fast",
+            },
+         },
+         run = {
+            front = {
+               default = "run",
+            },
+         },
+         talk = {
+            default = {"idle"},
+         },
+      }
    end
-
-   if ( eventType == "die" ) then
-      self:stopMove()
-      self.animationsManager:stopAnimations()
-      self.animationsManager:playAnimationWithLock( "death.caf" )
-   end
 end
 
-function CArphantMolly:OnDeath( self )
-   self.interactor:setTriggerActive(false)
+function CArphantMolly:getWalkSpeed()
+   return 150
 end
 
-function CArphantMolly:onStartMessage()
-   self.animationsManager:loopAnimation( "idle_talk.caf" )
+function CArphantMolly:getRunSpeed()
+   return 400
 end
 
-function CArphantMolly:onStopMessage()
-   self.animationsManager:loopAnimation( self.idleAnimation .. ".caf" )
+function CArphantMolly:OnSaveState(state)
+   CNPC.OnSaveState(self, state)
+   state.defaultAnimation = self.defaultAnimation
+end
+
+function CArphantMolly:OnLoadState(state)
+   CNPC.OnLoadState(self, state)
+   self.defaultAnimation = state.defaultAnimation
 end
 
 return {CArphantMolly=CArphantMolly}

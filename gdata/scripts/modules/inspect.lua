@@ -180,6 +180,7 @@ local function processRecursive(process, item, path, visited)
       end
 
       local mt  = processRecursive(process, getmetatable(processed), makePath(path, inspect.METATABLE), visited)
+      if type(mt) ~= 'table' then mt = nil end -- ignore not nil/table __metatable field
       setmetatable(processedCopy, mt)
       processed = processedCopy
     end

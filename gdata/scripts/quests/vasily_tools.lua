@@ -21,7 +21,7 @@ local obj1 = {
 			["event"] = "get";
 			["posX"] = 90;
 			["posY"] = 270;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self:writeLog(\"GotTools\")\
    return true\
 end\
@@ -39,7 +39,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = -120;
 			["posY"] = 120;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self:writeLog(\"LookTurbines\")\
    return true\
 end\
@@ -72,9 +72,9 @@ end\
 			["event"] = "discuss";
 			["posX"] = 540;
 			["posY"] = 270;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self:writeLog(\"GaveToolbox\")\
-   removeItemFromPlayer(\"vasily_tools.itm\")\
+   giveItemFromPlayerTo(\"vasily_tools.itm\", getObj(\"vasily\"))\
    self:setTopicVisible(\"vasily_get_lost\", false)\
    self:setTopicVisible(\"vasily_give_scrap\", true)\
    getQuest(\"broken_shotgun\"):setTopicVisible(\"vasily_can_fix_shotgun\", true)\
@@ -95,9 +95,9 @@ end\
 			["event"] = "discuss";
 			["posX"] = 990;
 			["posY"] = 270;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self:writeLog(\"GaveScrap\")\
-   removeItemFromPlayer(\"scrap_mechanical.itm\", 6)\
+   giveItemFromPlayerTo(\"scrap_mechanical.itm\", getObj(\"vasily\"), 6)\
    self:setTopicVisible(\"vasily_give_scrap\", false)\
    getQuest(\"broken_shotgun\"):setParam(\"discount\", getQuest(\"broken_shotgun\"):getParam(\"discount\") + 1)\
    return true\
@@ -157,7 +157,7 @@ function Step:onStart()\
    self:setTopicVisible(\"vasily_intro\", false)\
    if hasPlayerItem(\"vasily_tools.itm\") then\
       self:writeLog(\"GotToolsAlready\")\
-      self:goToStep( \"return_tools\", true )\
+      self:goToStep(\"return_tools\", true)\
    end\
 end\
 \
@@ -190,15 +190,15 @@ function Quest:onFinish()\
 end\
 \
 function Quest:getTopicVisible_vasily_give_drink()\
-   return hasPlayerBooze( 1 )\
+   return hasPlayerBooze(1)\
 end\
 \
 function Quest:getTopicVisible_vasily_give_tools()\
-   return hasPlayerItem( \"vasily_tools.itm\" )\
+   return hasPlayerItem(\"vasily_tools.itm\")\
 end\
 \
 function Quest:getTopicVisible_vasily_give_scrap()\
-   return hasPlayerItemCount(\"scrap_mechanical.itm\", 6)\
+   return hasPlayerItem(\"scrap_mechanical.itm\", 6)\
 end";
 	["title"] = "Tools for Vasily";
 }

@@ -22,7 +22,7 @@ end
 -- if action observes a notification and it is posted then the action is restarted
 -- in short, this function's better name is RestartOnNotification
 function CAction:allowRestartOnEvent(observer)
-   if (not self.observers) then
+   if not self.observers then
       self.observers = {}
    end
    self.observers[observer] = true

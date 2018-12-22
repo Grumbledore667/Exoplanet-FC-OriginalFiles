@@ -1,6 +1,9 @@
 local oo = require "loop.simple"
+local _rootRigid = (require "roots")._rootRigid
+local random = require "random"
 
-local CWater = oo.class({})
+---@class CWater : shRigidEntity
+local CWater = oo.class({}, _rootRigid)
 
 
 function CWater:OnCreate()
@@ -35,8 +38,8 @@ function CWater:OnCreate()
    self.sounds = {}
 
    for i = 1, 4 do
-      local name = randChoice(self.soundNames)
-      local snd = self:createAspect( name )
+      local name = random.choice(self.soundNames)
+      local snd = self:createAspect(name)
       if snd ~= nil then
          snd:setVolume(self.volume)
          snd:setLoop(true)

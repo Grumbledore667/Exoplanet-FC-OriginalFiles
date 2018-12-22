@@ -152,7 +152,7 @@ end\
 		["posX"] = 2010;
 		["posY"] = 210;
 		["script"] = "";
-		["text"] = "[t_my_clothes:bandits_scared]... Alright huma. You win. I don't know why you even care about this old gongo, but you can jaga bahamadron with him for all I care.  Let's get out of here, bro.";
+		["text"] = "[t_my_clothes:bandits_scared]... Alright huma. You win. I don't know why you even care about this old gongo, but you can jaga bahamadron with him for all I care. Let's get out of here, bro.";
 		["time"] = 18;
 		["type"] = "message";
 	};
@@ -211,11 +211,13 @@ end\
 function message:onStop()\
    --This will start fade sequence after the msssage is played\
    getQuest(\"my_clothes\"):goToStep(\"looters_persuaded\")\
-   --Have to give the hat after the step change\
-   --or the quest will be finished if player already has clothes.\
+\
+   --Have to delay hat recieving like this so the quest won't end immediately\
+   --And the autosave won't be corrupted cause of unsaved bandit TP timers\
    local bandit = self:getActor(3)\
-   bandit:giveItemByName( \"hat_jack.itm\", getPlayer(), 1 )\
+   removeItemFromObj(\"hat_jack.itm\", bandit)\
    bandit:setupAppearance(\"q_my_clothes_bandit_2\")\
+   getQuest(\"my_clothes\"):setParam(\"hatRecieved\", true)\
 end\
 \
 function message:isVisible()\
@@ -267,11 +269,11 @@ end\
 end\
 \
 function message:onStop()\
-   runTimer( 0, nil, function()\
+   runTimer(0, nil, function()\
       for i=1,2 do\
          getObj(\"q_my_clothes_bandit_\"..i):changeStatCount(\"health\",-500)\
       end\
-   end, false )\
+   end, false)\
 end\
 \
 function message:isVisible()\

@@ -42,7 +42,7 @@ end\
 		["posX"] = 990;
 		["posY"] = 330;
 		["script"] = "";
-		["text"] = "What about them? I pay taxes! Relax spacer, this is K'Tharsis. As long as those in power get their share - nobody's going to care about what kind of poison you numb youself with.";
+		["text"] = "What about them? I pay taxes! Relax spacer, this is K'Tharsis. As long as those in power get their share - nobody's going to care about what kind of poison you numb yourself with.";
 		["time"] = 18;
 		["type"] = "message";
 	};

@@ -6,39 +6,63 @@ local obj1 = {
 	["description"] = "The scanner I was using was fried and I can no longer use it. I need to find someone who can help me fix it.";
 	["hidden"] = false;
 	["logs"] = {
-		["Finish"] = "I have managed to fix my scanner with the help of Vasily.";
-		["VasilyCanFix"] = "Vasily in Hunter's Rest can fix my scanner if I bring him some electronic scrap.";
+		["can_fix_carry_the_stone"] = "Carry the Stone can fix my scanner if I bring him some electronic scrap.";
+		["can_fix_vasily"] = "Vasily in Hunter's Rest can fix my scanner if I bring him some electronic scrap.";
+		["fixes_scanner"] = "I have managed to fix my scanner with the help of %s.";
 	};
 	["nodes"] = {
-		["condition_00003"] = {
-			["ID"] = 3;
+		["condition_00005"] = {
+			["ID"] = 5;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = 480;
+			["posY"] = 90;
+			["script"] = "function Condition:onCheck(name, obj)\
+   self:writeLog(name .. \"_\" .. obj:getName())\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "can_fix";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00006"] = {
+			["ID"] = 6;
 			["connectionsID"] = {
 				[1] = 2;
 			};
 			["event"] = "discuss";
 			["posX"] = 360;
 			["posY"] = 270;
-			["script"] = "";
-			["targetsAll"] = "";
-			["targetsAny"] = "vasily_fix_scanner";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00004"] = {
-			["ID"] = 4;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = 360;
-			["posY"] = 120;
-			["script"] = "function Condition:onCheck(obj)\
-   self.q:writeLog(\"VasilyCanFix\")\
+			["script"] = "function Condition:onCheck(name, obj)\
+   self:writeLog(name, obj:getLabel())\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "vasily_can_fix_scanner";
+			["targetsAny"] = "fixes_scanner";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00007"] = {
+			["ID"] = 7;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = 240;
+			["posY"] = 90;
+			["script"] = "function Condition:onCheck(name, obj)\
+   removeItemFromPlayer(\"scrap_electric.itm\")\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "give_items";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -55,7 +79,7 @@ end\
 		["start"] = {
 			["ID"] = 0;
 			["connectionsID"] = {
-				[1] = 3;
+				[1] = 6;
 			};
 			["name"] = "start";
 			["posX"] = 120;
@@ -65,27 +89,28 @@ end\
 		};
 	};
 	["script"] = "function Quest:onCreate()\
-   self:setTopicVisible(\"vasily_can_fix_scanner\", false)\
-   self:setTopicVisible(\"vasily_fix_scanner\", true)\
+   self:setTopicVisible(\"can_fix\", false)\
+   self:setTopicVisible(\"fixes_scanner\", true)\
+   self:setTopicVisible(\"give_items\", true)\
 end\
 \
 function Quest:onStart()\
-   self:setTopicVisible(\"vasily_can_fix_scanner\", true)\
+   self:setTopicVisible(\"can_fix\", true)\
 end\
 \
 function Quest:onFinish()\
-   removeItemFromPlayer(\"scrap_electric.itm\")\
+   self:setTopicVisible(\"can_fix\", false)\
    removeItemFromPlayer(\"scanner_broken.itm\")\
    addItemToPlayer(\"scanner.itm\")\
-   self:writeLog(\"Finish\")\
+   equipItemForPlayer(\"scanner.itm\", \"gadget\", false)\
 end\
 \
-function Quest:getTopicVisible_vasily_can_fix_scanner()\
-   return hasPlayerItem( \"scanner_broken.itm\" )\
+function Quest:getTopicVisible_can_fix()\
+   return hasPlayerItem(\"scanner_broken.itm\")\
 end\
 \
-function Quest:getTopicVisible_vasily_fix_scanner()\
-   return hasPlayerItem( \"scrap_electric.itm\" )\
+function Quest:getTopicVisible_give_items()\
+   return hasPlayerItem(\"scrap_electric.itm\")\
 end";
 	["title"] = "Fixing the Scanner";
 }

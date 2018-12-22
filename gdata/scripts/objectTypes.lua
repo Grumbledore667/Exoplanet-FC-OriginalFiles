@@ -1,55 +1,116 @@
 Scene =
 {
    CLevel01 = "scenes.level01.level01",
-   COldFriendBug = "scenes.level01.level01",
+   CSceneTestRunner = "scenes.sceneTestRunner",
+   -- _rootScene = "roots", -- scenes are handled differently, so no root
 }
 
 Items =
 {
-   CItem          = "items.item",
-   CGun           = "items.gun",
-   CGunShock      = "items.gun",
-   CGunFlare      = "items.gun",
-   CWeapon        = "items.weapon",
-   CHandToHand    = "items.weapon",
-   CInstallation  = "items.installation",
-   CBugItem       = "items.bugItem",
-   CEnergyBoots   = "items.energyBoots",
-   CEnergyShield  = "items.energyShield",
+   _rootItem      = "roots",
+   _rootWeapon    = "roots",
+   _rootGun       = "roots",
+   CItem = {
+      module = "items.item",
+      root = "_rootItem",
+   },
+   CItemContainer = {
+      module = "items.itemContainer",
+      root = "_rootItem",
+   },
+   CGun = {
+      module = "items.gun",
+      root = "_rootGun",
+   },
+   CGunShock = {
+      module = "items.gun",
+      root = "_rootGun",
+   },
+   CGunFlare = {
+      module = "items.gun",
+      root = "_rootGun",
+   },
+   CWeapon = {
+      module = "items.weapon",
+      root = "_rootWeapon",
+   },
+   CHandToHand = {
+      module = "items.weapon",
+      root = "_rootWeapon",
+   },
+   CInstallation = {
+      module = "items.installation",
+      root = "_rootItem",
+   },
+   CBugItem = {
+      module = "items.bugItem",
+      root = "_rootItem",
+   },
+   CEnergyBoots = {
+      module = "items.energyBoots",
+      root = "_rootItem",
+   },
+   CStrangeDetector = {
+      module = "items.strangeDetector",
+      root = "_rootItem",
+   },
+   CEnergyShield = {
+      module = "items.energyShield",
+      root = "_rootItem",
+   },
 }
 
 Rigids =
 {
-   CRigid       = "rigids.rigid",
-   CEnergyFence = "rigids.energyFence",
-   CTerminal    = "rigids.terminal",
-   CBeacon      = "rigids.beacon",
+   _rootRigid = "roots",
+   CRigid = {
+      module = "rigids.rigid",
+      root = "_rootRigid",
+   },
+   CEnergyFence = {
+      module = "rigids.energyFence",
+      root = "_rootRigid",
+   },
+   CTerminal = {
+      module = "rigids.terminal",
+      root = "_rootRigid",
+   },
+   CBeacon = {
+      module = "rigids.beacon",
+      root = "_rootRigid",
+   },
    CDynamicFloor =
    {
       module = "rigids.dynamicFloor",
+      root = "_rootRigid",
       description = "Dynamic Floor",
    },
-   CElevator       =
+   CElevator =
    {
       module = "rigids.elevator",
+      root = "_rootRigid",
       description = "Elevator",
       parameters =
       {
          { name = "obj", value = "", label = "Destination Object", tip = "Object to which position the user will be teleported.", },
       },
    },
-   CDoor       =
+   CDoor =
    {
       module = "rigids.door",
+      root = "_rootRigid",
       description = "Doors",
       parameters =
       {
+         { name = "keyItems",      value = "", label = "Key items",          tip = "Names of the items to have in inventory to be able to open this", },
+         { name = "code",          value = "", label = "Lock Code",          tip = "Enter FOUR digits that will open this object. Ex. '4273'", },
          { name = "disableOnOpen", value = false, label = "Disable on open", tip = "The door can only be opened once.", },
       },
    },
-   CWater       =
+   CWater =
    {
       module = "rigids.water",
+      root = "_rootRigid",
       description = "Water class, doesn't let through camera and spawns sounds on edges",
       parameters =
       {
@@ -62,18 +123,21 @@ Rigids =
    CShroomBomb =
    {
       module      = "rigids.shroomBomb",
+      root = "_rootRigid",
       description = "Dangerous bursting shroom class.",
    },
 
    CShroom =
    {
       module      = "rigids.shroom",
+      root = "_rootRigid",
       description = "Growing and harvestable shroom class. For cages, cause it spawns the fruit and a broken version of the cage by itself.",
    },
 
    CHarvestable =
    {
       module      = "rigids.harvestable",
+      root = "_rootRigid",
       description = "Generic class for plants that grow harvestable fruits",
       parameters =
       {
@@ -84,6 +148,7 @@ Rigids =
    CBloodRoot =
    {
       module      = "rigids.harvestable",
+      root = "_rootRigid",
       parent      = "CHarvestable",
       description = "Generic class for plants that grow harvestable fruits",
       parameters =
@@ -95,6 +160,7 @@ Rigids =
    CKTharsianAloe =
    {
       module      = "rigids.harvestable",
+      root = "_rootRigid",
       parent      = "CHarvestable",
       description = "Generic class for plants that grow harvestable fruits",
       parameters =
@@ -106,6 +172,7 @@ Rigids =
    CStygmyanGoldenApple =
    {
       module      = "rigids.harvestable",
+      root = "_rootRigid",
       parent      = "CHarvestable",
       description = "Generic class for plants that grow harvestable fruits",
       parameters =
@@ -116,6 +183,7 @@ Rigids =
    CMelon =
    {
       module      = "rigids.harvestable",
+      root = "_rootRigid",
       parent      = "CHarvestable",
       description = "Generic class for plants that grow harvestable fruits",
       parameters =
@@ -126,6 +194,7 @@ Rigids =
    CBluethorn =
    {
       module      = "rigids.harvestable",
+      root = "_rootRigid",
       parent      = "CHarvestable",
       description = "Regrowable bluethorn leaves",
       parameters =
@@ -134,9 +203,10 @@ Rigids =
       },
    },
 
-   CFastTravel  =
+   CFastTravel =
    {
       module      = "rigids.fastTravel",
+      root        = "_rootRigid",
       description = "Fast travel marker",
       parameters =
       {
@@ -147,6 +217,7 @@ Rigids =
    CAntigraviumMine  =
    {
       module      = "rigids.antigraviumMine",
+      root = "_rootRigid",
       description = "Antigravium Mine",
       parameters =
       {
@@ -160,6 +231,7 @@ Rigids =
    CDigSite  =
    {
       module      = "rigids.digSite",
+      root = "_rootRigid",
       description = "Digging Site",
       parameters =
       {
@@ -170,24 +242,27 @@ Rigids =
          { name = "position", value = "", label = "Relative Position", tip = "Relative position of the item/container in whole numbers 'x,y,z'", },
          { name = "rotation", value = "", label = "Absolute Rotation", tip = "Absolute rotation of the item/container in whole numbers 'x,y,z'", },
          { name = "meshRaycast", value = true, label = "Mesh-based raycast",  tip = "Mesh source will be used as a raycast", },
+         { name = "digSound", value = "", label = "Sound",  tip = "Sound event name from shared sound table. Default is 'dig_dirt'.", },
       },
    },
 
-   CCombinationLock  =
+   CAnomalyDigSite =
    {
-      module      = "rigids.combinationLock",
-      parent      = "CDoor",
-      description = "Combination Lock",
+      module = "rigids.digSite",
+      root = "_rootRigid",
+      description = "Special digging site inside anomaly that is detected with a special item",
+      parent = "CDigSite",
       parameters =
       {
-         { name = "code", value = "0000", label = "Code", tip = "Code.", },
-         { name = "lockObjectName", value = "", label = "Lock Object", tip = "The name of the lock object that will show open/closed.", },
+         { name = "radMax", value = 1500, label = "Detection Max", tip = "How far to be to recieve the signal", },
+         { name = "radCritical", value = 250, label = "Detection Critical", tip = "How far to be to recieve critical signal", },
       },
    },
 
    CReadable =
    {
       module      = "rigids.readable",
+      root = "_rootRigid",
       description = "Notice, warning, hanging document etc",
       parameters  =
       {
@@ -198,19 +273,21 @@ Rigids =
          { name = "window",     value = false, label = "Show window", tip = "Show window (with close button) instead of a popup.", },
          { name = "enabled",     value = true, label = "Enabled", tip = "Enabled interaction on start.", },
          { name = "is_char",     value = false, label = "Character", tip = "Is the object a character(have skeleton).", },
-         { name = "death_animation",     value = "death.caf", label = "Death animation", tip = "Death animation to play and lock.", },
+         { name = "death_animation",     value = "death", label = "Death animation", tip = "Death animation to play and lock.", },
       }
    },
 
    CKabarogHead =
    {
       module      = "rigids.kabarogHead",
+      root = "_rootRigid",
       description = "Kabarog head.",
    },
 
    CHint =
    {
       module      = "rigids.hint",
+      root = "_rootRigid",
       description = "Evidence, hint, etc. Discoverable by scanner.",
       parent      = "CReadable",
       parameters  =
@@ -229,12 +306,14 @@ Rigids =
    CLadder =
    {
       module      = "rigids.ladder",
+      root = "_rootRigid",
       description = "Ladder",
    },
 
    COpenClose =
    {
       module      = "rigids.openclose",
+      root = "_rootRigid",
       description = "Open/Close Object",
       parameters  =
       {
@@ -245,6 +324,7 @@ Rigids =
    CCargo =
    {
       module      = "rigids.cargo",
+      root = "_rootRigid",
       description = "Generic class for shipping cargo containers with lockable doors",
       parameters  =
       {
@@ -255,6 +335,7 @@ Rigids =
    CTurretMedium =
    {
       module      = "rigids.turretMedium",
+      root = "_rootRigid",
       description = "Turret Medium",
       parameters  =
       {
@@ -266,6 +347,7 @@ Rigids =
    CSpawn =
    {
       module      = "rigids.spawn",
+      root = "_rootRigid",
       description = "Spawner",
       parameters  =
       {
@@ -283,6 +365,7 @@ Rigids =
    CSmartSpawn =
    {
       module      = "rigids.smartSpawn",
+      root = "_rootRigid",
       description = "A spawner that can have loot and weapons assigned to its chars and can spawn upon player's approach",
       parent      = "CSpawn",
       parameters  =
@@ -299,6 +382,7 @@ Rigids =
    CSpawnBugs =
    {
       module      = "rigids.spawn",
+      root = "_rootRigid",
       parent      = "CSpawn",
       description = "Spawner",
       parameters  =
@@ -313,6 +397,7 @@ Rigids =
    CSpawnGreenBugs =
    {
       module      = "rigids.spawn",
+      root = "_rootRigid",
       parent      = "CSpawnBugs",
       description = "Spawner",
       parameters  =
@@ -325,6 +410,7 @@ Rigids =
    CSpawnKabarogs =
    {
       module      = "rigids.spawn",
+      root = "_rootRigid",
       parent      = "CSpawn",
       description = "Kabarogs Spawner",
       parameters  =
@@ -338,6 +424,7 @@ Rigids =
    CSpawnDustSharks =
    {
       module      = "rigids.spawn",
+      root = "_rootRigid",
       parent      = "CSpawn",
       description = "Dust Sharks Spawner",
       parameters  =
@@ -352,6 +439,7 @@ Rigids =
    CItemGenerator =
    {
       module      = "rigids.itemGenerator",
+      root = "_rootRigid",
       description = "Creates interactive Item",
       parameters  =
       {
@@ -364,9 +452,17 @@ Rigids =
       }
    },
 
+   CCactus =
+   {
+      module      = "rigids.cactus",
+      root = "_rootRigid",
+      description = "Creates interactive cactus with either firewood.itm or cactus_head.itm",
+   },
+
    CShells =
    {
       module      = "rigids.rigidShells",
+      root = "_rootRigid",
       description = "Shells for different weapon and guns",
       parameters  =
       {
@@ -378,6 +474,7 @@ Rigids =
    CSmallRigid =
    {
       module      = "rigids.smallRigid",
+      root = "_rootRigid",
       description = "A small item that a bug can carry",
       parameters  =
       {
@@ -388,35 +485,55 @@ Rigids =
    CEnergySphere =
    {
       module      = "rigids.energySphere",
+      root = "_rootRigid",
       description = "Energy sphere",
    },
 
    CContainer =
    {
       module      = "rigids.container",
-      description = "Contain items",
+      root = "_rootRigid",
+      description = "Contains items",
       parameters  =
       {
-         { name = "items"         , value = "",  label = "Items list",      tip = "Enter list of items separated by comma", },
-         { name = "raycastRadius",  value = "",  label = "Raycast Radius",  tip = "Bounding sphere radius", },
-         { name = "labelId",        value = "",  label = "Label ID" ,       tip = "Lebel ID that should ref to objectsLabels.lua file record", },
+         { name = "items"         , value = "", label = "Items list",     tip = "Enter list of items separated by comma", },
+         { name = "raycastRadius",  value = "", label = "Raycast Radius", tip = "Bounding sphere radius", },
+         { name = "labelId",        value = "", label = "Label ID" ,      tip = "Lebel ID that should ref to objectsLabels.lua file record", },
+         { name = "keyItems",       value = "", label = "Key items",      tip = "Names of the items to have in inventory to be able to open this", },
+         { name = "code",           value = "", label = "Lock Code",      tip = "Enter FOUR digits that will open this container. Ex. '4273'", },
+         { name = "textureName",    value = "", label = "Texture",        tip = "Name of a texture to be applied solely to case meshes. Ex. 'chest_med_dif.dds'", },
+      }
+   },
+
+   CCombinationLock  =
+   {
+      module      = "rigids.combinationLock",
+      root        = "_rootRigid",
+      description = "Interactable combination lock whose reference should be stored on a locked object",
+      parameters  =
+      {
+         { name = "keyItems",      value = "", label = "Key items",      tip = "Names of the items to have in inventory to be able to open this", },
+         { name = "code",          value = "", label = "Lock Code",      tip = "Enter FOUR digits that will open this object. Ex. '4273'", },
+         { name = "lockedObjects", value = "", label = "Locked Objects", tip = "Names of objects separated by commas that are controlled by this lock.", },
       }
    },
 
    CContainerStash =
    {
       module      = "rigids.containerStash",
+      root = "_rootRigid",
       description = "Contains player items",
       parameters  =
       {
-         { name = "raycastRadius",  value = "",  label = "Raycast Radius",  tip = "Bounding sphere radius", },
-         { name = "labelId",        value = "",  label = "Label ID" , tip = "Lebel ID that should ref to objectsLabels.lua file record", },
+         { name = "raycastRadius", value = "",  label = "Raycast Radius",  tip = "Bounding sphere radius", },
+         { name = "labelId",       value = "",  label = "Label ID" , tip = "Lebel ID that should ref to objectsLabels.lua file record", },
       }
    },
 
    CActivator =
    {
       module      = "rigids.activator",
+      root = "_rootRigid",
       description = "Activates/Deactivates different objects set in parameters",
       parameters  =
       {
@@ -447,6 +564,9 @@ Rigids =
          { name = "objectsToEnable",     value = "", label = "Enable Objects" , tip = "Enter list of objects that should be Enabled", },
          { name = "objectsToDisable",    value = "", label = "Disable Objects", tip = "Enter list of objects that should be Disabled", },
 
+         { name = "collisionsToEnable",     value = "", label = "Enable Collisions" , tip = "Enter list of objects which collisions should be Enabled", },
+         { name = "collisionsToDisable",    value = "", label = "Disable Collisions", tip = "Enter list of objects which collisions should be Disabled", },
+
          { name = "objectTypeToSpawn",     value = "", label = "Spawn Object Type" , tip = "Enter object type (fireplace.sbg, kabarog.cfg) that should be spawned upon activation", },
          { name = "objectClassToSpawn",     value = "", label = "Spawn Object Class" , tip = "Enter object class (CFireplace, CKabarog) that should be spawned upon activation", },
 
@@ -457,6 +577,7 @@ Rigids =
    CBed =
    {
       module      = "rigids.bed",
+      root = "_rootRigid",
       description = "Activates/Deactivates sleep mode",
       parameters  =
       {
@@ -466,11 +587,13 @@ Rigids =
    CRestCamp =
    {
       module      = "rigids.restCamp",
+      root = "_rootRigid",
       description = "Activates/Deactivates rest mode",
    },
    CFireplace =
    {
       module      = "rigids.fireplace",
+      root = "_rootRigid",
       parent      = "CRestCamp",
       description = "Activates/Deactivates rest mode",
    },
@@ -478,13 +601,22 @@ Rigids =
 
 Characters =
 {
-   CMainCharacterBug = "characters.mainCharacterBug",
+   _rootCharacter = "roots",
+   _rootPlayer = "roots",
+   CMainCharacterBug = {
+      module = "characters.mainCharacterBug",
+      root = "_rootPlayer",
+   },
 
-   CCloth = "characters.cloth",
+   CCloth = {
+      module = "characters.cloth",
+      root = "_rootCharacter",
+   },
 
    CLemfather =
    {
       module      = "characters.lemfather",
+      root = "_rootCharacter",
       parent      = "CTalker",
       description = "lemfather",
    },
@@ -492,6 +624,7 @@ Characters =
    CMainCharacter =
    {
       module      = "characters.mainCharacter",
+      root = "_rootPlayer",
       description = "mc",
       parameters  =
       {
@@ -500,9 +633,10 @@ Characters =
       }
    },
 
-   Character =
+   CCharacter =
    {
       module      = "character",
+      root = "_rootCharacter",
       description = "character virtual",
       parameters  =
       {
@@ -514,7 +648,8 @@ Characters =
    CTalker =
    {
       module      = "characters.talker",
-      parent      = "Character",
+      root = "_rootCharacter",
+      parent      = "CCharacter",
       description = "talker",
       parameters  =
       {
@@ -537,17 +672,118 @@ Characters =
          { name = "tradeWhitelistName",  value = "",              label = "Trade whitelist name", tip = "An item list name of the goods that the NPC will agree to buy", },
       }
    },
-
    CNPC = {
       module = "characters.npc",
-      parent = "Character",
-      description = "base npc class",
+      root = "_rootCharacter",
+      description = "base npc class, set params in npcData.lua",
+   },
+   _testCNPC = {
+      module = "characters.npc",
+      root = "_rootCharacter",
+      parent = "CCharacter",
+      description = "CNPC for test levels. Not for use in main level.",
       parameters = {
+         {
+            name  = "tree",
+            value = "",
+            label = "AI Tree",
+            tip   = "behavior tree in the format ai.trees.tree",
+         },
+         {
+            name  = "guild",
+            value = "",
+            label = "NPC guild",
+            tip   = "example: GLD_NPC_FRIEND, GLD_NPC_ENEMY",
+         },
+         {
+            name  = "immortality",
+            value = "",
+            label = "Immortality",
+            tip   = "NPC immortality flag. values: immortal, protected, false",
+         },
+         {
+            name  = "weaponList",
+            value = "",
+            label = "Weapons",
+            tip   = "Weapon item names list, will be chosen at random",
+         },
+         {
+            name  = "lootItems",
+            value = "",
+            label = "Loot",
+            tip   = "Enter list of loot items",
+         },
          {
             name  = "dialog",
             value = "",
             label = "Dialog",
             tip   = "filename without '.lua' extension",
+         },
+         {
+            name = "dialogActors",
+            value = "",
+            label = "Dialog Actors",
+            tip = "List of dialog actors",
+         },
+         {
+            name  = "dialogInitiator",
+            value = false,
+            label = "Dialog Initiator",
+            tip   = "NPC Starts dialog when he sees the player nearby",
+         },
+         {
+            name  = "dialogInitiatorDist",
+            value = "",
+            label = "Dialog Init Dist",
+            tip   = "NPC Starts dialog when the player is within dist",
+         },
+         {
+            name  = "feelRadiusCutoff",
+            value = "",
+            label = "Sense Radius Cutoff",
+            tip   = "NPC doesn't detect anything beyond this radius",
+         },
+         {
+            name  = "viewDist",
+            value = "",
+            label = "enemyDetect distance",
+            tip   = "Distance at which enemyDetect sense triggers",
+         },
+         {
+            name  = "labelId",
+            value = "",
+            label = "Label ID",
+            tip   = "Label ID from objectsLabels.lua. If empty or missing, tries object name as label id. ",
+         },
+         {
+            name  = "patrolPoints",
+            value = "",
+            label = "Patrol Waypoints",
+            tip   = "comma separated list of waypoint triggers",
+         },
+         {
+            name  = "patrolAllowed",
+            value = true,
+            label = "Patrol Allowed",
+            tip   = "the npc is allowed to patrol",
+         },
+         {
+            name  = "patrolLoop",
+            value = false,
+            label = "Patrol Loop",
+            tip   = "the npc will repeat patrolling specified waypoints",
+         },
+         {
+            name  = "tradeInventory",
+            value = "",
+            label = "Trade inventory",
+            tip   = "Trade inventory (items and item list names) that the NPC starts with",
+         },
+         {
+            name  = "tradeWhitelistName",
+            value = "",
+            label = "Trade whitelist name",
+            tip   = "An item list name of the goods that the NPC will agree to buy",
          },
       },
    },
@@ -555,55 +791,34 @@ Characters =
    CCorpse =
    {
       module      = "characters.corpse",
-      parent      = "CTalker",
-      description = "corpse",
+      root = "_rootCharacter",
+      description = "A static posed corpse",
       parameters  =
       {
-         { name = "death_animation",     value = "", label = "Death pose" , tip = "Death pose", },
-         { name = "dialog",              value = "", label = "Character's dialog" , tip = "Dialog's name is same to filename without .lua", },
-         { name = "labelId",             value = "", label = "Label ID" , tip = "Lebel ID that should ref to objectsLabels.lua file record", },
-         { name = "dialogActors",        value = "", label = "Dialog Actors",     tip = "List of dialog actors", },
-         { name = "defaultAnimation",    value = "", label = "Idle Animation"  ,  tip = "Default idle animation name without extension", },
-         { name = "moveAnimation",       value = "", label = "Move Animation"  ,  tip = "Default move animation name without extension", },
-         { name = "orientateToPlayer",   value = false,   label = "Orient to Player" , tip = "Orientate to Player", },
-         { name = "orientateSpeed",      value = 120,    label = "Orient Speed" ,     tip = "Orientate Speed", },
-         { name = "patrolSpeed",         value = 300,    label = "Patrol Speed" ,     tip = "Patrol Speed", },
-         { name = "patrolPoints",        value = "",     label = "Patrol Points",     tip = "List of patrol waypoints", },
-         { name = "patrolActive",        value = false,   label = "Patrol Mode Active", tip = "Activate patrol mode", },
-         { name = "patrolLoop",          value = false,   label = "Patrol Loop Active", tip = "Activate patrol looping", },
-         { name = "headLooking",         value = false,   label = "Head Looking" , tip = "Head looking at target", },
+         { name = "death_animation", value = "", label = "Death pose" , tip = "Death pose", },
+         { name = "style",           value = "", label = "Style" , tip = "Style", },
       }
+   },
+
+   CCorpseDummy =
+   {
+      module      = "characters.corpseDummy",
+      root = "_rootCharacter",
+      description = "Corpse dummy",
    },
 
    CArphantMolly =
    {
       module      = "characters.arphantMolly",
-      parent      = "CTalker",
+      root = "_rootCharacter",
+      parent      = "CNPC",
       description = "arphant Molly",
-   },
-
-   CBetterBirds =
-   {
-      module      = "characters.betterBirds",
-      parent      = "CTalker",
-      description = "better birds",
-      parameters  =
-      {
-         { name = "dialog",  value = "", label = "Character's dialog" , tip = "Dialog's name is same to filename without .lua", },
-         { name = "labelId", value = "", label = "Label ID" , tip = "Lebel ID that should ref to objectsLabels.lua file record", },
-         { name = "defaultAnimation",    value = "idle", label = "Idle Animation"  ,  tip = "Default idle animation name without extension", },
-         { name = "moveAnimation",       value = "move", label = "Move Animation"  ,  tip = "Default move animation name without extension", },
-         { name = "orientateToPlayer",   value = true,   label = "Orient to Player" , tip = "Orientate to Player", },
-         { name = "orientateSpeed",      value = 120,    label = "Orient Speed" ,     tip = "Orientate Speed", },
-         { name = "patrolSpeed",         value = 300,    label = "Patrol Speed" ,     tip = "Patrol Speed", },
-         { name = "patrolPoints",        value = "",     label = "Patrol Points",     tip = "List of patrol waypoints", },
-         { name = "patrolActive",        value = true,   label = "Patrol Mode Active", tip = "Activate patrol mode", },
-      }
    },
 
    COldOutcast =
    {
       module      = "characters.oldOutcast",
+      root = "_rootCharacter",
       parent      = "CTalker",
       description = "Old Outcast",
    },
@@ -611,6 +826,7 @@ Characters =
    CSwiftStrider =
    {
       module      = "characters.swiftStrider",
+      root = "_rootCharacter",
       parent      = "CTalker",
       description = "Swift Strider",
    },
@@ -618,6 +834,7 @@ Characters =
    CSlave =
    {
       module      = "characters.slave",
+      root = "_rootCharacter",
       parent      = "CTalker",
       description = "Slave",
    },
@@ -625,6 +842,7 @@ Characters =
    CDrone =
    {
       module      = "characters.drone",
+      root = "_rootCharacter",
       parent      = "CTalker",
       description = "Drone",
       parameters  =
@@ -635,7 +853,8 @@ Characters =
    CTrailerSmoker =
    {
       module      = "characters.trailer",
-      parent      = "Character",
+      root = "_rootCharacter",
+      parent      = "CCharacter",
       description = "Static smoking npc",
       parameters  =
       {
@@ -645,25 +864,29 @@ Characters =
    CTrailerDrinker =
    {
       module      = "characters.trailer",
-      parent      = "Character",
+      root = "_rootCharacter",
+      parent      = "CCharacter",
       description = "Static drinking npc",
    },
    CTrailerCook =
    {
       module      = "characters.trailer",
-      parent      = "Character",
+      root = "_rootCharacter",
+      parent      = "CCharacter",
       description = "Static pot stirring abori",
    },
    CTrailerEater =
    {
       module      = "characters.trailer",
-      parent      = "Character",
+      root = "_rootCharacter",
+      parent      = "CCharacter",
       description = "Static eating npc",
    },
 
    CBugGreen =
    {
       module      = "characters.bugGreen",
+      root = "_rootCharacter",
       parent      = "CBug",
       description = "bug green",
    },
@@ -671,11 +894,12 @@ Characters =
    CBug =
    {
       module      = "characters.bug",
+      root = "_rootCharacter",
       description = "bug",
       parameters  =
       {
-         { name = "viewRange", value = 1000, label = "View range", tip = "", },
-         { name = "walkRange", value = 1000, label = "Walk range", tip = "", },
+         { name = "feelRadiusCutoff", value = 1000, label = "View range", tip = "", },
+         { name = "zoneSize", value = 1000, label = "Walk range", tip = "", },
          { name = "blockChirping", value = false, label = "Block Chirping", tip = "Block this bug's chirping idle sounds or not.", },
       }
    },
@@ -683,21 +907,11 @@ Characters =
    CKabarog =
    {
       module      = "characters.kabarog",
+      root = "_rootCharacter",
       description = "kabarog",
       parameters  =
       {
-         { name = "viewRange", value = 1000, label = "View range", tip = "", },
-         { name = "lootItems", value = "",   label = "Loot Items", tip = "Enter list of loot items", },
-      }
-   },
-
-   CKabarogPain =
-   {
-      module      = "characters.kabarogPain",
-      description = "kabarog",
-      parameters  =
-      {
-         { name = "viewRange", value = 1000, label = "View range", tip = "", },
+         { name = "feelRadiusCutoff", value = 1000, label = "View range", tip = "", },
          { name = "lootItems", value = "",   label = "Loot Items", tip = "Enter list of loot items", },
       }
    },
@@ -705,6 +919,7 @@ Characters =
    CKabarogWeak =
    {
       module      = "characters.kabarog",
+      root = "_rootCharacter",
       description = "kabarogWeak",
       parent      = "CKabarog",
    },
@@ -712,31 +927,25 @@ Characters =
    CArphant =
    {
       module      = "characters.arphant",
+      root = "_rootCharacter",
       description = "arphant",
       parameters  =
       {
-         { name = "viewRange", value = 0, label = "View range", tip = "Arphants are peaceful while having 0 view range, but gain 1000 after being attacked.", },
+         { name = "feelRadiusCutoff", value = 0, label = "View range", tip = "Arphants are peaceful while having 0 view range, but gain 1000 after being attacked.", },
          { name = "lootItems", value = "",   label = "Loot Items", tip = "Enter list of loot items", },
       }
    },
 
    CBandit =
    {
-      module      = "characters.bandit",
+      module      = "characters.banditNew",
+      root = "_rootCharacter",
       description = "bandit",
-      parameters  =
-      {
-         { name = "weapon", value = "",   label = "Weapon item", tip = "Enter a name of the item to attack with", },
-         { name = "energyMax", value = 0,   label = "Shield Energy", tip = "Amount of shield energy.", },
-         { name = "lootItems", value = "",   label = "Loot Items", tip = "Enter list of loot items", },
-         { name = "style", value = "",   label = "Style", tip = "Appearance Style", },
-         { name = "customLabel", value = "",   label = "Label", tip = "Custom label for this character.", },
-         { name = "viewRange", value = 1000, label = "View range", tip = "", },
-      }
    },
    CBanditTalker =
    {
       module      = "characters.banditTalker",
+      root = "_rootCharacter",
       description = "Not aggressive talking bandit",
       parameters  =
       {
@@ -753,39 +962,37 @@ Characters =
          { name = "dialogInitiatorDist", value = 300,          label = "Dialog Init Distance", tip = "Distance at which NPC Starts dialog", },
       }
    },
-   CCrat =
+   CCrucas =
    {
       module      = "characters.crucas",
-      description = "crat",
+      root = "_rootCharacter",
+      description = "crucas",
       parameters  =
       {
-         { name = "viewRange", value = 1000, label = "View range", tip = "", },
+         { name = "feelRadiusCutoff", value = 1000, label = "View range", tip = "", },
          { name = "lootItems", value = "",   label = "Loot Items", tip = "Enter list of loot items", },
       }
    },
-   CCratEating =
+   CCrucasEating =
    {
       module      = "characters.crucas",
-      description = "eating crat",
-      parent      = "CCrat",
+      root = "_rootCharacter",
+      description = "eating crucas",
+      parent      = "CCrucas",
    },
 
-   CCratWeak =
+   CCrucasWeak =
    {
       module      = "characters.crucas",
-      description = "cratWeak",
-      parent      = "CCrat",
-   },
-
-   CBirds =
-   {
-      module      = "characters.birds",
-      description = "birds",
+      root = "_rootCharacter",
+      description = "weak crucas",
+      parent      = "CCrucas",
    },
 
    CShark =
    {
       module      = "characters.shark",
+      root = "_rootCharacter",
       description = "Shark",
       parameters  =
       {
@@ -797,6 +1004,7 @@ Characters =
    CTurret =
    {
       module      = "characters.turret",
+      root = "_rootCharacter",
       description = "Turret",
       parameters  =
       {
@@ -808,9 +1016,11 @@ Characters =
 
 Triggers =
 {
+   _rootTrigger = "roots",
    CTrigger =
    {
       module      = "trigger",
+      root = "_rootTrigger",
       description = "Default trigger",
       parameters  =
       {
@@ -819,9 +1029,36 @@ Triggers =
       }
    },
 
+   CTriggerMusicChange =
+   {
+      module      = "triggers.triggerMusicChange",
+      root        = "_rootTrigger",
+      parent      = "CTrigger",
+      description = "Directional trigger that starts the theme upon leaving from the local positive Z axis side (blue arrow side). Plays the default theme after leaving from the opposite side",
+      parameters  =
+      {
+         { name = "themeName", value = "", label = "Theme Name", tip = "Theme name from playlist.lua", },
+         { name = "byPlayer", value = true, label = "Activate by Player", tip = "", },
+      }
+   },
+
+   CTriggerPlayerSound =
+   {
+      module      = "triggers.triggerPlayerSound",
+      root = "_rootTrigger",
+      parent      = "CTrigger",
+      description = "",
+      parameters  =
+      {
+         { name = "soundName", value = ""  , label = "Sound Name"        , tip = "sound.wav", },
+         { name = "byPlayer" , value = true, label = "Activate by Player", tip = "", },
+      }
+   },
+
    CTriggerBillboard =
    {
       module      = "triggers.triggerBillboard",
+      root = "_rootTrigger",
       parent      = "CTrigger",
       description = "",
       parameters  =
@@ -836,18 +1073,21 @@ Triggers =
    CTriggerSwim =
    {
       module      = "triggers.triggerSwim",
+      root = "_rootTrigger",
       description = "",
    },
 
    CTriggerMetalSteps =
    {
       module      = "triggers.triggerMetalSteps",
+      root = "_rootTrigger",
       description = "",
    },
 
    CDamageZone =
    {
       module      = "triggers.damageZone",
+      root = "_rootTrigger",
       parent      = "CTrigger",
       description = "",
       parameters  =
@@ -861,6 +1101,7 @@ Triggers =
    CTriggerActivator =
    {
       module      = "triggers.triggerActivator",
+      root = "_rootTrigger",
       parent      = "CTrigger",
       description = "activates/enables deactivates/disables different objects",
       parameters  =
@@ -872,11 +1113,15 @@ Triggers =
 
          { name = "objectsToEnable",     value = "", label = "Enable Objects" , tip = "Enter list of objects that should be Enabled", },
          { name = "objectsToDisable",    value = "", label = "Disable Objects", tip = "Enter list of objects that should be Disabled", },
+
+         { name = "collisionsToEnable",     value = "", label = "Enable Collisions" , tip = "Enter list of objects which collisions should be Enabled", },
+         { name = "collisionsToDisable",    value = "", label = "Disable Collisions", tip = "Enter list of objects which collisions should be Disabled", },
       }
    },
    CTriggerQuestEvent =
    {
       module      = "triggers.triggerQuestEvent",
+      root = "_rootTrigger",
       parent      = "CTrigger",
       description = "activates/enables deactivates/disables different objects",
       parameters  =
@@ -890,6 +1135,7 @@ Triggers =
 
 Cameras =
 {
+   -- _rootCamera = "roots", -- Camera prefabs aren't used anywhere at the moment
    CCameraTrig =
    {
       module      = "cameras.cameraTrig",

@@ -29,7 +29,7 @@ local obj1 = {
 end\
 \
 function Step:onStart()\
-   runTimer(0, self, function() getPlayer():stopSound( \"quest_start.wav\" ) end, false)\
+   runTimer(0, self, function() getPlayer():stopSound(\"quest_start.wav\") end, false)\
 end\
 \
 function Step:onFinish()\

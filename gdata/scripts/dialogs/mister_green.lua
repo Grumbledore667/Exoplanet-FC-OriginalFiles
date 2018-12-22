@@ -675,7 +675,7 @@ end\
 \
 function message:isVisible()\
    -- no such trigger yet and no sharks as well\
-   return false and self:isFirstTime() and wasPlayerInTrigger( \"Trigger_sharks\" )\
+   return false and self:isFirstTime() and wasPlayerInTrigger(\"Trigger_sharks\")\
 end\
 \
 ";

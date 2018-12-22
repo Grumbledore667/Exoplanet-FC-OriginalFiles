@@ -7,11 +7,18 @@ local CActionSequence = (require "action").CActionSequence
 local CNode = (require "node").CNode
 local ItemsData = (require "itemsData")
 local ObjectsLabels = (require "objectsLabels")
+local SkySystem = (require "environment.sky").SkySystem
+local f = require "fun"
+local partial = f.partial
 
-local CSlave = oo.class( {}, CTalker )
+---@class CSlave : CTalker
+local CSlave = oo.class({}, CTalker)
 
 function CSlave:OnCreate()
-   CTalker.OnCreate( self )
+   CTalker.OnCreate(self)
+
+   self.defaultDigDelta = 1
+   self.digTimerStep = 1.5 --How many seconds between each dig_loop AI call
 
    self:subscribeOnDeath(self.OnDeath, self)
 end
@@ -61,11 +68,11 @@ function CSlave:addActions()
 end
 
 function CSlave:startMoveNextPoint()
-   if ( self.nextPatrolPoint ) then
-      self:setTarget( self.patrolPoints[ self.nextPatrolPoint ], {} )
-      self:setMoveSpeed( self.patrolSpeed )
+   if self.nextPatrolPoint then
+      self:setTarget(self.patrolPoints[ self.nextPatrolPoint ], {})
+      self:setMoveSpeed(self.patrolSpeed)
    else
-      self:setMoveSpeed( 0 )
+      self:setMoveSpeed(0)
       self:resetTarget()
    end
 end
@@ -88,16 +95,17 @@ function CSlave:dig_start()
 
    self.shovelEntity:getPose():setParent(self:getBonePose("item_slot1"))
    self.shovelEntity:getPose():resetLocalPose()
-   self.animationsManager:loopAnimation("dig.caf")
+   self.animationsManager:playCycle("dig")
 
    self:setTarget(getObj("q_lost_arphant_bridge"), {})
    runTimer(1, self, function(self) self:resetTarget() end, false)
    if string.lower(self:getName()) == "juggo" then
       self.refuseTalk = false
+      self.digCallback = SkySystem:subscribeFastForwardTime(partial(self.onFastForwardTime, self))
    end
 end
 
-function CSlave:dig_loop()
+function CSlave:dig_loop(digDelta)
    if string.lower(self:getName()) ~= "juggo" then
       if getQuest("lost_arphant"):isStepPassed("slave_dig") then
          self:setState("dig", false)
@@ -105,14 +113,14 @@ function CSlave:dig_loop()
       end
       return false
    else
+      local finishedHeight = getQuestParam("lost_arphant", "ramp_finished_height")
+      digDelta = digDelta or ((isDebug("quest") and 50 or self.defaultDigDelta) * math.abs(SkySystem:getTimeRate()))
       local o = getObj("q_lost_arphant_bridge")
       local p = o:getPose():getPos()
-      p.y = p.y + (isDebug("quest") and 50 or 1)
+      p.y = math.min(finishedHeight, p.y + digDelta)
       o:getPose():setPos(p)
-      if p.y >= getQuestParam("lost_arphant", "ramp_initial_height") + 200 then
-         --      self.animationsManager:loopAnimation("idle_2.caf")
+      if p.y >= finishedHeight then
          questSystem:fireEvent("dig_done")
-         --      goToQuestStep("lost_arphant", "clear_way")
          self:setState("dig", false)
          return true
       end
@@ -121,9 +129,18 @@ function CSlave:dig_loop()
 end
 
 function CSlave:dig_stop()
-   getScene():destroyEntity( self.shovelEntity )
+   getScene():destroyEntity(self.shovelEntity)
    self.shovelEntity = nil
-   --   self.animationsManager:loopAnimation( self.idleAnimation .. ".caf" )
+   --   self.animationsManager:playCycle(self.idleAnimation)
+   if string.lower(self:getName()) == "juggo" then
+      SkySystem:unsubscribeFastForwardTime(self.digCallback)
+   end
+end
+
+function CSlave:onFastForwardTime(event, ...)
+   local stepsToCatchUp = math.floor(event.elapsed:getAs("rSecond") / self.digTimerStep)
+   local digDelta = (isDebug("quest") and 50 or self.defaultDigDelta)
+   self:dig_loop(stepsToCatchUp * digDelta)
 end
 
 function CSlave:OnDeath()
@@ -134,21 +151,17 @@ function CSlave:getType()
    return self.refuseTalk and "" or "talker"
 end
 
-function CSlave:onStartMessage()
-   self.animationsManager:loopAnimation( "idle_talk.caf" )
-end
-
 function CSlave:onStopMessage()
-   self.animationsManager:loopAnimation( self.idleAnimation .. ".caf" )
+   self.animationsManager:playCycle(self.idleAnimation)
 end
 
-function CSlave:OnSaveState( state )
+function CSlave:OnSaveState(state)
    CTalker.OnSaveState(self, state)
    state.dig = self:getState("dig")
    state.refuseTalk = self.refuseTalk
 end
 
-function CSlave:OnLoadState( state )
+function CSlave:OnLoadState(state)
    CTalker.OnLoadState(self, state)
    self:setState("dig", state.dig)
    self.refuseTalk = state.refuseTalk

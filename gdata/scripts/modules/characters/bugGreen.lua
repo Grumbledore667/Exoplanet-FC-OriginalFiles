@@ -1,79 +1,57 @@
 local oo = require "loop.simple"
-local CCharacter = (require "character").CCharacter
 local CBug = (require "characters.bug").CBug
-local ai = require "ai"
 
+---@class CBugGreen : CBug
 local CBugGreen = oo.class({}, CBug)
 
-function CBugGreen:OnCreate()
-   CBug.OnCreate( self )
+function CBugGreen:OnCreate(params)
+   CBug.OnCreate(self, params)
 
    self:disablePickupItem()
 
-   if ( not self.effects ) then
+   if not self.effects then
       self.effects = {}
-      self.effects.magic = self:createAspect( "antigrav_magic.sps" )
-      self.effects.magic:getPose():setParent( self:getPose() )
+      self.effects.magic = self:createAspect("antigrav_magic.sps")
+      self.effects.magic:getPose():setParent(self:getPose())
       self.effects.magic:getPose():resetLocalPose()
-      --self.effects.magic:getPose():setLocalPos( {y=-15} )
-      --self.effects.magic:getPose():setLocalScale( {x=0.9, y=0.9, z=0.9} )
       self.effects.magic:enable()
    end
 
-   if ( not self.omni ) then
-      self.omni = self:createAspect( "omni" )
-      self.omni:getPose():setParent( self:getPose() )
+   if not self.omni then
+      self.omni = self:createAspect("omni")
+      self.omni:getPose():setParent(self:getPose())
       self.omni:getPose():resetLocalPose()
-      self.omni:getPose():setLocalPos( {x=0,y=10,z=0} )
-      self.omni:setColor( {r=0,g=0.7,b=0} )
-      self.omni:setRadius ( 100 )
-      self.omni:setVisible( true )
+      self.omni:getPose():setLocalPos({x=0,y=10,z=0})
+      self.omni:setColor({r=0,g=0.7,b=0})
+      self.omni:setRadius (100)
+      self.omni:setVisible(true)
    end
 
-   self.itemType     = "bug_green.itm"
-   self.itemTypeDead = "bug_green_dead.itm" -- used for item generation at death (by parent)
+   self.itemName     = "bug_green.itm"
+   self.itemNameDead = "bug_green_dead.itm" -- used for item generation at death (by parent)
 end
 
-function CBugGreen:CreateTree()
-   self.BT = ai.utils.loadTree("ai.trees.bugGreen", self)
-   self.BT:setBlackboard(self.blackboard)
+function CBugGreen:createTree(path)
+   CBug.createTree(self, "ai.trees.bugGreen")
 end
 
-function CBugGreen:animatedEvent( eventType )
-   CCharacter.animatedEvent(self, eventType)
+function CBugGreen:animatedEvent(eventType)
+   CBug.animatedEvent(self, eventType)
 
-   if ( self:getHealth() == 0 and eventType ~= "die" ) then
+   if self:getHealth() == 0 and eventType ~= "die" then
       return
    end
 
-   if ( eventType == "hit" ) then
+   if eventType == "hit" then
       self.fx.blood:play()
-      self.animationsManager:playAnimation( "hit.caf", false )
-
-      if ( self.senseScheduler:getCurEnemy() ~= nil ) then
-         self:stopMove()
-         local pushPos = self.senseScheduler:getCurEnemy():getPose():getPos()
-         local selfPos = self:getPose():getPos()
-         pushPos.x = -(pushPos.x - selfPos.x)
-         pushPos.y =  (pushPos.y - selfPos.y) + 180
-         pushPos.z = -(pushPos.z - selfPos.z)
-         self:push( pushPos, 5000, 1.5 )
-      end
+      self.animationsManager:playAction("hit")
    end
+end
 
-   if ( eventType == "die" ) then
-      self.fx.blood_death:play()
-      self:stopMove()
-      self.animationsManager:stopAnimations()
-      self.animationsManager:playAnimationWithLock( "death.caf" )
-      self.itemsManager:getSlotItem( 0 ):OnDeactivate()
+function CBugGreen:die()
+   CBug.die(self)
 
-      self:startJump(1000)
-
-      self:enablePickupItem()
-
-      self:hideBait()
-   end
+   self:hideBait()
 end
 
 function CBugGreen:getAsItem()

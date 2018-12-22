@@ -6,12 +6,15 @@ local CAction = (require "action").CAction
 local CNode = (require "node").CNode
 local ItemsData = (require "itemsData")
 local ObjectsLabels = (require "objectsLabels")
+local random = require "random"
 
-local CTrailerSmoker = oo.class( {}, CTalker )
+local CTrailerSmoker = oo.class({}, CTalker)
 
 function CTrailerSmoker:loadParameters()
-   self.smoke_fx = self:createAspect( "koster_smoke.sps" )
-   self.smoke_fx:getPose():setParent( self:getBonePose("head_slot") )
+   CTalker.loadParameters(self)
+
+   self.smoke_fx = self:createAspect("koster_smoke.sps")
+   self.smoke_fx:getPose():setParent(self:getBonePose("head_slot"))
    self.smoke_fx:getPose():resetLocalPose()
    local z = -15
    local y = -15
@@ -19,19 +22,13 @@ function CTrailerSmoker:loadParameters()
       y = -12
       z = -12
    end
-   self.smoke_fx:getPose():setLocalPos( {z=z, y=y} )
-   self.smoke_fx:getPose():setLocalRotQuat(quatFromEuler({x=-90}) )
-   self.smoke_fx:getPose():setLocalScale( {x=0.25, y=0.25, z=0.25} )
+   self.smoke_fx:getPose():setLocalPos({z=z, y=y})
+   self.smoke_fx:getPose():setLocalRotQuat(quatFromEuler({x=-90}))
+   self.smoke_fx:getPose():setLocalScale({x=0.25, y=0.25, z=0.25})
    self.smoke_fx:enable()
    self.smoke_fx:stop()
 
    self.smokeAnim = loadParam(self, "smokeAnim", "idle_smoking")
-end
-
-function CTrailerSmoker:OnCreate()
-   CTalker.OnCreate( self )
-
-   CTrailerSmoker.loadParameters( self )
 end
 
 function CTrailerSmoker:addActions()
@@ -52,26 +49,26 @@ function CTrailerSmoker:smoke_start()
 
    self.jointEntity:getPose():setParent(self:getBonePose("item_slot1"))
    self.jointEntity:getPose():resetLocalPose()
-   -- self.jointEntity:getPose():setLocalRotQuat(quatFromEuler({x=90, y=90}) )
-   -- self.jointEntity:getPose():setLocalPos    ( {z=-10} )
-   self.animationsManager:loopAnimation( self.smokeAnim .. ".caf")
+   -- self.jointEntity:getPose():setLocalRotQuat(quatFromEuler({x=90, y=90}))
+   -- self.jointEntity:getPose():setLocalPos    ({z=-10})
+   self.animationsManager:loopAnimation(self.smokeAnim)
 end
 
 function CTrailerSmoker:smoke_stop()
-   getScene():destroyEntity( self.jointEntity )
+   getScene():destroyEntity(self.jointEntity)
    self.jointEntity = nil
-   self.animationsManager:loopAnimation( self.idleAnimation .. ".caf" )
+   self.animationsManager:loopAnimation(self.idleAnimation)
    self.headLooking = true
 end
 
-function CTrailerSmoker:OnAnimationEventIn( animation, event )
+function CTrailerSmoker:OnAnimationEventIn(animation, event)
    CCharacter.OnAnimationEventIn(animation, event)
    if event == "smoke" then
       self.smoke_fx:play()
    end
 end
 
-function CTrailerSmoker:OnAnimationEventOut( animation, event )
+function CTrailerSmoker:OnAnimationEventOut(animation, event)
    CCharacter.OnAnimationEventOut(animation, event)
    if event == "smoke" then
       self.smoke_fx:stop()
@@ -79,16 +76,7 @@ function CTrailerSmoker:OnAnimationEventOut( animation, event )
 end
 
 
-local CTrailerDrinker = oo.class( {}, CTalker )
-
-function CTrailerDrinker:loadParameters()
-end
-
-function CTrailerDrinker:OnCreate()
-   CTalker.OnCreate( self )
-
-   CTrailerDrinker.loadParameters( self )
-end
+local CTrailerDrinker = oo.class({}, CTalker)
 
 function CTrailerDrinker:addActions()
    local drink = CAction{}
@@ -108,38 +96,29 @@ function CTrailerDrinker:drink_start()
 
    self.drinkEntity:getPose():setParent(self:getBonePose("item_slot2"))
    self.drinkEntity:getPose():resetLocalPose()
-   -- self.drinkEntity:getPose():setLocalRotQuat(quatFromEuler({x=90, y=90}) )
-   self.drinkEntity:getPose():setLocalPos    ( {y=-30} )
-   self.animationsManager:loopAnimation( "drink_idle" .. ".caf")
-   self.drinkTimer = runTimer(5 + rand(7), self, CTrailerDrinker.drink_loop, false)
+   -- self.drinkEntity:getPose():setLocalRotQuat(quatFromEuler({x=90, y=90}))
+   self.drinkEntity:getPose():setLocalPos    ({y=-30})
+   self.animationsManager:loopAnimation("drink_idle")
+   self.drinkTimer = runTimer(5 + random.random() * 7, self, CTrailerDrinker.drink_loop, false)
 end
 
 function CTrailerDrinker:drink_loop()
-   self.animationsManager:playAnimation( "drink_loop" .. ".caf", false)
-   self.drinkTimer = runTimer(5 + rand(7), self, CTrailerDrinker.drink_loop, false)
+   self.animationsManager:playAnimation("drink_loop", false)
+   self.drinkTimer = runTimer(5 + random.random() * 7, self, CTrailerDrinker.drink_loop, false)
 end
 
 function CTrailerDrinker:drink_stop()
-   getScene():destroyEntity( self.drinkEntity )
+   getScene():destroyEntity(self.drinkEntity)
    self.drinkEntity = nil
    if self.drinkTimer then
       self.drinkTimer:stop()
       self.drinkTimer = nil
    end
-   self.animationsManager:loopAnimation( self.idleAnimation .. ".caf" )
+   self.animationsManager:loopAnimation(self.idleAnimation)
    self.headLooking = true
 end
 
-local CTrailerEater = oo.class( {}, CTalker )
-
-function CTrailerEater:loadParameters()
-end
-
-function CTrailerEater:OnCreate()
-   CTalker.OnCreate( self )
-
-   CTrailerEater.loadParameters( self )
-end
+local CTrailerEater = oo.class({}, CTalker)
 
 function CTrailerEater:addActions()
    local eat = CAction{}
@@ -159,41 +138,32 @@ function CTrailerEater:eat_start()
 
    self.eatEntity:getPose():setParent(self:getBonePose("item_slot2"))
    self.eatEntity:getPose():resetLocalPose()
-   self.eatEntity:getPose():setLocalRotQuat(quatFromEuler({x=90}) )
+   self.eatEntity:getPose():setLocalRotQuat(quatFromEuler({x=90}))
    local scale = 0.5
    self.eatEntity:getPose():setLocalScale({x=scale,y=scale,z=scale})
    self.eatEntity:getPose():setLocalPos({y=3,x=3})
-   self.animationsManager:loopAnimation( "eat_idle" .. ".caf")
-   self.eatTimer = runTimer(5 + rand(7), self, CTrailerEater.eat_loop, false)
+   self.animationsManager:loopAnimation("eat_idle")
+   self.eatTimer = runTimer(5 + random.random() * 7, self, CTrailerEater.eat_loop, false)
 end
 
 function CTrailerEater:eat_loop()
-   self.animationsManager:playAnimation( "eat_loop" .. ".caf", false)
-   self.eatTimer = runTimer(5 + rand(7), self, CTrailerEater.eat_loop, false)
+   self.animationsManager:playAnimation("eat_loop", false)
+   self.eatTimer = runTimer(5 + random.random() * 7, self, CTrailerEater.eat_loop, false)
 end
 
 function CTrailerEater:eat_stop()
-   getScene():destroyEntity( self.eatEntity )
+   getScene():destroyEntity(self.eatEntity)
    self.eatEntity = nil
    if self.eatTimer then
       self.eatTimer:stop()
       self.eatTimer = nil
    end
-   self.animationsManager:loopAnimation( self.idleAnimation .. ".caf" )
+   self.animationsManager:loopAnimation(self.idleAnimation)
    self.headLooking = true
 end
 
 
-local CTrailerCook = oo.class( {}, CTalker )
-
-function CTrailerCook:loadParameters()
-end
-
-function CTrailerCook:OnCreate()
-   CTalker.OnCreate( self )
-
-   CTrailerCook.loadParameters( self )
-end
+local CTrailerCook = oo.class({}, CTalker)
 
 function CTrailerCook:addActions()
    local cook = CAction{}
@@ -213,37 +183,37 @@ function CTrailerCook:cook_start()
 
    self.spoonEntity:getPose():setParent(self:getBonePose("item_slot1"))
    self.spoonEntity:getPose():resetLocalPose()
-   -- self.jointEntity:getPose():setLocalRotQuat(quatFromEuler({x=90, y=90}) )
-   -- self.jointEntity:getPose():setLocalPos    ( {z=-10} )
-   self.animationsManager:loopAnimation( "idle_pot" .. ".caf")
-   self.animationsManager:playAnimation( "idle_pot" .. ".caf", false)
-   self.animationsManager:subscribeAnimationEnd("idle_pot" .. ".caf", self, CTrailerCook.cook_loop)
+   -- self.jointEntity:getPose():setLocalRotQuat(quatFromEuler({x=90, y=90}))
+   -- self.jointEntity:getPose():setLocalPos    ({z=-10})
+   self.animationsManager:loopAnimation("idle_pot")
+   self.animationsManager:playAnimation("idle_pot", false)
+   self.animationsManager:subscribeAnimationEnd("idle_pot", CTrailerCook.cook_loop, self)
    --   self.cookTimer = runTimer(5 + rand(7), self, CTrailerCook.cook_loop, false)
 end
 
 function CTrailerCook:cook_loop()
-   local r = rand(10)
+   local r = random.random(0, 10)
    local anim
    if r > 9 then
-      anim = "idle_pot_2.caf"
+      anim = "idle_pot_2"
    else
-      anim = "idle_pot.caf"
+      anim = "idle_pot"
    end
-   self.animationsManager:playAnimation( anim, false)
+   self.animationsManager:playAnimation(anim, false)
    runTimer(0, {self=self, anim=anim}, function(self)
-      self.self.animationsManager:subscribeAnimationEnd(self.anim, self.self, CTrailerCook.cook_loop)
+      self.self.animationsManager:subscribeAnimationEnd(self.anim, CTrailerCook.cook_loop, self.self)
    end, false)
    --   self.cookTimer = runTimer(5 + rand(7), self, CTrailerCook.cook_loop, false)
 end
 
 function CTrailerCook:cook_stop()
-   getScene():destroyEntity( self.spoonEntity )
+   getScene():destroyEntity(self.spoonEntity)
    self.spoonEntity = nil
    if self.cookTimer then
       self.cookTimer:stop()
       self.cookTimer = nil
    end
-   self.animationsManager:loopAnimation( self.idleAnimation .. ".caf" )
+   self.animationsManager:loopAnimation(self.idleAnimation)
    self.headLooking = true
 end
 

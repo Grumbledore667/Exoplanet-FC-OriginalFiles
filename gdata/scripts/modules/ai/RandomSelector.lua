@@ -1,10 +1,16 @@
+local stringx = require "pl.stringx"
+local className = select(3, stringx.rpartition((...), '.'))
+
 local oo = require "loop.simple"
 local Composite = require "ai.Composite"
 local NodeState = require "ai.NodeState"
 
 local seq = require "pl.seq"
 
-local RandomSelector = oo.class({}, Composite)
+---@class ai.RandomSelector : ai.Composite
+local RandomSelector = oo.class({
+   className = className,
+}, Composite)
 
 
 function RandomSelector:start()
@@ -17,7 +23,7 @@ function RandomSelector:running()
    while self.shuffledIndex ~= nil do
       local childStatus = self.children[self.shuffledIndex]:update()
 
-      if(childStatus ~= NodeState.FAILURE) then
+      if childStatus ~= NodeState.FAILURE then
          return childStatus
       end
 

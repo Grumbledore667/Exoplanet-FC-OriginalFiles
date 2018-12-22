@@ -26,7 +26,7 @@ Aborigine raider - 10";
 			["event"] = "discuss";
 			["posX"] = -60;
 			["posY"] = 240;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    runTimer(0, self, function(self) self:setTopicVisible(\"terminal\", false) end, false)\
    return true\
 end\
@@ -44,7 +44,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = 480;
 			["posY"] = 120;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self:goToStep(\"give_tokens\")\
    return false\
 end\
@@ -74,10 +74,10 @@ end\
 			["posX"] = 510;
 			["posY"] = 270;
 			["script"] = "function Step:onCheck()\
-   local getbonusMoneyCount = function( itemName )\
-      local count = getPlayerItemCount( itemName )\
+   local getbonusMoneyCount = function(itemName)\
+      local count = getPlayerItemCount(itemName)\
       if count == 0 then return 0 end\
-      removeItemFromPlayer( itemName, count )\
+      giveItemFromPlayerTo(itemName, getObj(\"castor\"), count)\
       if itemName == \"token_abori.itm\" then count = count/2 end\
       local bonuscount = 0\
       local total = self:getParam(\"totalTokens\")\
@@ -96,10 +96,10 @@ end\
       self:setParam(\"totalTokens\", self:getParam(\"totalTokens\") + count)\
       return 10 * count + bonuscount\
    end\
-   local count1 = getbonusMoneyCount( \"token_human.itm\" )\
-   local count2 = getbonusMoneyCount( \"token_abori.itm\" )\
-   addItemsToPlayer( \"antigravium_shards.itm\", count1+count2 )\
-   getPlayer():addExp((count1+count2) * 2)\
+   local count1 = getbonusMoneyCount(\"token_human.itm\")\
+   local count2 = getbonusMoneyCount(\"token_abori.itm\")\
+   addItemToPlayer(\"antigravium_shards.itm\", count1+count2)\
+   getMC():addExp((count1+count2) * 2)\
    return false\
 end\
 \

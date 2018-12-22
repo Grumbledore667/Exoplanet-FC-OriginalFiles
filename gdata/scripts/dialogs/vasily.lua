@@ -997,7 +997,7 @@ end\
 		["posX"] = 2310;
 		["posY"] = 480;
 		["script"] = "";
-		["text"] = "Go up the river, you won't miss it. When you see the big bridge you'll know.";
+		["text"] = "[t_to_fort:start]Go up the river, you won't miss it. When you see the big bridge you'll know.";
 		["time"] = 9;
 		["type"] = "message";
 	};
@@ -1017,7 +1017,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 103;
 		["posX"] = 960;
-		["posY"] = 1350;
+		["posY"] = 1380;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -1038,7 +1038,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 117;
 		["posX"] = 1380;
-		["posY"] = 1470;
+		["posY"] = 1500;
 		["script"] = "";
 		["text"] = "\\[BACK]";
 		["time"] = 1.5;
@@ -1049,7 +1049,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 107;
 		["posX"] = 1380;
-		["posY"] = 1350;
+		["posY"] = 1380;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -1061,7 +1061,7 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "[t_broken_scanner:vasily_can_fix_scanner]...my scanner?";
+		["text"] = "[t_broken_scanner:can_fix]...my scanner?";
 		["time"] = 1;
 		["type"] = "message";
 	};
@@ -1070,7 +1070,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 108;
 		["posX"] = 1620;
-		["posY"] = 1350;
+		["posY"] = 1380;
 		["script"] = "";
 		["text"] = "Let me see...";
 		["time"] = 4;
@@ -1081,7 +1081,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 110;
 		["posX"] = 1860;
-		["posY"] = 1350;
+		["posY"] = 1380;
 		["script"] = "";
 		["text"] = "Well, seems like case of a blown fuse. I can replace it with my eyes closed. Bring me some electronic scrap and I'll fix it for you.";
 		["time"] = 14.5;
@@ -1090,9 +1090,9 @@ end\
 	["message_00111"] = {
 		["ID"] = 111;
 		["actor"] = 1;
-		["connectID"] = 114;
+		["connectID"] = 159;
 		["posX"] = 2250;
-		["posY"] = 1290;
+		["posY"] = 1320;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -1104,7 +1104,7 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "[t_broken_scanner:vasily_fix_scanner]\\[Give electronic scrap]";
+		["text"] = "[t_broken_scanner:give_items]\\[Give electronic scrap]";
 		["time"] = 2.5;
 		["type"] = "message";
 	};
@@ -1113,7 +1113,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 115;
 		["posX"] = 2250;
-		["posY"] = 1410;
+		["posY"] = 1440;
 		["script"] = "";
 		["text"] = "I don't have any.";
 		["time"] = 3;
@@ -1122,18 +1122,20 @@ end\
 	["message_00114"] = {
 		["ID"] = 114;
 		["actor"] = 2;
-		["posX"] = 2490;
-		["posY"] = 1290;
+		["connectID"] = 117;
+		["posX"] = 2730;
+		["posY"] = 1320;
 		["script"] = "";
-		["text"] = "Here you go!";
+		["text"] = "[t_broken_scanner:fixes_scanner]Here you go!";
 		["time"] = 1;
 		["type"] = "message";
 	};
 	["message_00115"] = {
 		["ID"] = 115;
 		["actor"] = 2;
+		["connectID"] = 117;
 		["posX"] = 2490;
-		["posY"] = 1410;
+		["posY"] = 1440;
 		["script"] = "";
 		["text"] = "Come back when you find some.";
 		["time"] = 4;
@@ -1474,6 +1476,17 @@ end\
 		["time"] = 4.5;
 		["type"] = "message";
 	};
+	["message_00159"] = {
+		["ID"] = 159;
+		["actor"] = 2;
+		["connectID"] = 114;
+		["posX"] = 2490;
+		["posY"] = 1320;
+		["script"] = "";
+		["text"] = "Easy peasy!";
+		["time"] = 2;
+		["type"] = "message";
+	};
 	["switch_00001"] = {
 		["ID"] = 1;
 		["connectionsID"] = {
@@ -1503,9 +1516,11 @@ end\
 			[3] = 20;
 			[4] = 25;
 		};
+		["h"] = 120;
 		["posX"] = -1080;
 		["posY"] = 600;
 		["type"] = "switch";
+		["w"] = 100;
 	};
 	["switch_00026"] = {
 		["ID"] = 26;
@@ -1519,9 +1534,11 @@ end\
 			[7] = 121;
 			[8] = 33;
 		};
+		["h"] = 200;
 		["posX"] = 540;
 		["posY"] = 750;
 		["type"] = "switch";
+		["w"] = 100;
 	};
 	["switch_00040"] = {
 		["ID"] = 40;
@@ -1623,9 +1640,11 @@ end\
 			[4] = 83;
 			[5] = 36;
 		};
+		["h"] = 140;
 		["posX"] = 1200;
 		["posY"] = 540;
 		["type"] = "switch";
+		["w"] = 100;
 	};
 	["switch_00088"] = {
 		["ID"] = 88;
@@ -1646,7 +1665,7 @@ end\
 			[3] = 105;
 		};
 		["posX"] = 1230;
-		["posY"] = 1350;
+		["posY"] = 1380;
 		["type"] = "switch";
 	};
 	["switch_00110"] = {
@@ -1656,7 +1675,7 @@ end\
 			[2] = 112;
 		};
 		["posX"] = 2100;
-		["posY"] = 1350;
+		["posY"] = 1380;
 		["type"] = "switch";
 	};
 	["switch_00120"] = {

@@ -1,23 +1,30 @@
+local stringx = require "pl.stringx"
+local className = select(3, stringx.rpartition((...), '.'))
+
 local oo = require "loop.simple"
 local Node = require "ai.Node"
 
+---@class ai.Composite : ai.Node
+---@field children ai.Node[]
 local Composite = oo.class({
    children = nil,
+   className = className,
 }, Node)
 
 function Composite:__init()
    self.children = self.children or {}
 end
 
-function Composite:setBlackboard(bb)
-   Node.setBlackboard(self, bb)
-   for _, child in pairs(self.children) do
-      child:setBlackboard(bb)
-   end
-end
-
 function Composite:start()
    self.currentIndex = 1
+end
+
+function Composite:finish()
+   local child = self.children[self.currentIndex]
+   if child then
+      child:finish()
+   end
+   Node.finish(self)
 end
 
 function Composite:addChild(child)
@@ -29,8 +36,8 @@ function Composite:removeChild(child)
 end
 
 function Composite:reset()
-   Node.reset(self)
    self:resetChildren()
+   Node.reset(self)
 end
 
 function Composite:resetChildren()

@@ -59,7 +59,7 @@ end\
 		["posX"] = 630;
 		["posY"] = 120;
 		["script"] = "function message:onStart()\
-   self:setParam(\"class\", \"CCrat\")\
+   self:setParam(\"class\", \"CCrucas\")\
    self:setParam(\"prefab\", \"crucas.cfg\")\
 end\
 \

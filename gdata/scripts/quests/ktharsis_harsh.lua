@@ -37,7 +37,7 @@ local obj1 = {
 			["posY"] = 150;
 			["script"] = "";
 			["targetsAll"] = "";
-			["targetsAny"] = "q_ktharsis_harsh_campfire";
+			["targetsAny"] = "var:campfire_act";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -77,8 +77,8 @@ local obj1 = {
 			["event"] = "discuss";
 			["posX"] = 30;
 			["posY"] = 240;
-			["script"] = "function Condition:onCheck(obj)\
-   removeItemFromPlayer( \"spacer_jacket.itm\" )\
+			["script"] = "function Condition:onCheck(name, obj)\
+   removeItemFromPlayer(\"spacer_jacket.itm\")\
    self:writeLog(\"BandageShirt\")\
    return true\
 end\
@@ -97,8 +97,8 @@ end\
 			["event"] = "discuss";
 			["posX"] = 660;
 			["posY"] = 150;
-			["script"] = "function Condition:onCheck(obj)\
-   giveItemToNPC(\"pure_water_bottle.itm\", \"swift_strider\")\
+			["script"] = "function Condition:onCheck(name, obj)\
+   giveItemFromPlayerTo(\"pure_water_bottle.itm\", getObj(\"swift_strider\"))\
    self:writeLog(\"GaveWater\")\
    return true\
 end\
@@ -117,8 +117,8 @@ end\
 			["event"] = "discuss";
 			["posX"] = 660;
 			["posY"] = 300;
-			["script"] = "function Condition:onCheck(obj)\
-   giveItemToNPC(\"melon.itm\", \"swift_strider\")\
+			["script"] = "function Condition:onCheck(name, obj)\
+   giveItemFromPlayerTo(\"melon.itm\", getObj(\"swift_strider\"))\
    self:writeLog(\"GaveMelon\")\
    return true\
 end\
@@ -136,9 +136,9 @@ end\
 			["event"] = "discuss";
 			["posX"] = 1170;
 			["posY"] = -30;
-			["script"] = "function Condition:onCheck(obj)\
-   showObject(\"q_ktharsis_harsh_campfire\")\
-   enableObject(\"q_ktharsis_harsh_campfire\")\
+			["script"] = "function Condition:onCheck(name, obj)\
+   showObject(self.campfire_act)\
+   enableObject(self.campfire_act)\
    self:setTopicVisible(\"strider_make_fireplace\", false)\
    self:setTopicVisible(\"strider_what_again\", true)\
    return true\
@@ -185,9 +185,9 @@ end\
 			["event"] = "discuss";
 			["posX"] = 2040;
 			["posY"] = 60;
-			["script"] = "function Condition:onCheck(obj)\
-   giveItemToNPC(\"fried_bug.itm\", \"swift_strider\")\
-   getObj(\"swift_strider\"):changeStatCount( \"health\", 10)\
+			["script"] = "function Condition:onCheck(name, obj)\
+   giveItemFromPlayerTo(\"fried_bug.itm\", getObj(\"swift_strider\"))\
+   getObj(\"swift_strider\"):changeStatCount(\"health\", 10)\
    if self:getParam(\"joint\") then\
       self:writeLog(\"GaveFoodJoint\")\
    else\
@@ -210,9 +210,9 @@ end\
 			["event"] = "discuss";
 			["posX"] = 2040;
 			["posY"] = -90;
-			["script"] = "function Condition:onCheck(obj)\
-   giveItemToNPC(\"fried_meat.itm\", \"swift_strider\")\
-   getObj(\"swift_strider\"):changeStatCount( \"health\", 10)\
+			["script"] = "function Condition:onCheck(name, obj)\
+   giveItemFromPlayerTo(\"fried_meat.itm\", getObj(\"swift_strider\"))\
+   getObj(\"swift_strider\"):changeStatCount(\"health\", 10)\
    if self:getParam(\"joint\") then\
       self:writeLog(\"GaveFoodJoint\")\
    else\
@@ -235,9 +235,9 @@ end\
 			["event"] = "discuss";
 			["posX"] = 1800;
 			["posY"] = 0;
-			["script"] = "function Condition:onCheck(obj)\
-   giveItemToNPC(\"bluethorn_leaf.itm\", \"swift_strider\")\
-   getObj(\"swift_strider\"):changeStatCount( \"health\", 10)\
+			["script"] = "function Condition:onCheck(name, obj)\
+   giveItemFromPlayerTo(\"bluethorn_leaf.itm\", getObj(\"swift_strider\"))\
+   getObj(\"swift_strider\"):changeStatCount(\"health\", 10)\
    self:setParam(\"joint\", true)\
    self:writeLog(\"GaveJoint\")\
    self:setTopicVisible(\"strider_optional_weed\", false)\
@@ -257,7 +257,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = -210;
 			["posY"] = -90;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self:setTopicVisible(\"strider_what_to_do\", false)\
    self:setTopicVisible(\"strider_bandage_cloth\", true)\
    self:setTopicVisible(\"strider_bandage_shirt\", true)\
@@ -307,8 +307,8 @@ end\
 			["event"] = "discuss";
 			["posX"] = 30;
 			["posY"] = 90;
-			["script"] = "function Condition:onCheck(obj)\
-   removeItemFromPlayer( \"medkit.itm\" )\
+			["script"] = "function Condition:onCheck(name, obj)\
+   removeItemFromPlayer(\"medkit.itm\")\
    self:writeLog(\"Medkit\")\
    return true\
 end\
@@ -327,8 +327,8 @@ end\
 			["event"] = "discuss";
 			["posX"] = 30;
 			["posY"] = 390;
-			["script"] = "function Condition:onCheck(obj)\
-   removeItemFromPlayer( \"cloth.itm\", 2 )\
+			["script"] = "function Condition:onCheck(name, obj)\
+   removeItemFromPlayer(\"cloth.itm\", 2)\
    self:writeLog(\"BandageCloth\")\
    return true\
 end\
@@ -346,7 +346,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = 30;
 			["posY"] = -90;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self:writeLog(\"BandageNothing\")\
    return true\
 end\
@@ -365,11 +365,11 @@ end\
 			["event"] = "add_installation";
 			["posX"] = 1170;
 			["posY"] = 300;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    local strider = getObj(\"swift_strider\")\
-   if objInDist( strider:getPose():getPos(), getPlayer():getPose():getPos(), self.campfire_distance ) then\
-      hideObject( self.campfire_activator )\
-      disableObject( self.campfire_activator )\
+   if objInDist(strider:getPose():getPos(), getPlayer():getPose():getPos(), self.campfire_distance) then\
+      hideObject(self.campfire_act)\
+      disableObject(self.campfire_act)\
       return true\
    end\
    return false\
@@ -378,6 +378,27 @@ end\
 ";
 			["targetsAll"] = "";
 			["targetsAny"] = "CFireplace";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00043"] = {
+			["ID"] = 43;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = 3690;
+			["posY"] = 120;
+			["script"] = "function Condition:onCheck(name, obj)\
+   local booze = next(getPlayerBooze(), nil)\
+   giveItemFromPlayerTo(booze, getObj(\"swift_strider\"))\
+   self:setTopicVisible(\"strider_drunk\", true)\
+   return false\
+end\
+\
+";
+			["supercondition"] = true;
+			["targetsAll"] = "";
+			["targetsAny"] = "strider_give_booze";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -408,8 +429,8 @@ end\
 function Step:onStart()\
    local strider = getObj(\"swift_strider\")\
    strider:setupAppearance(\"swift_strider_bandaged\")\
-   strider:changeStatCount( \"health\", 10)\
-   strider:addDeathTime()\
+   strider:changeStatCount(\"health\", 10)\
+   strider:postponeDeath(6)\
    self:setTopicVisible(\"strider_bandage_cloth\", false)\
    self:setTopicVisible(\"strider_bandage_shirt\", false)\
    self:setTopicVisible(\"strider_medkit\", false)\
@@ -435,11 +456,12 @@ end\
 end\
 \
 function Step:onStart()\
+   local strider = getObj(\"swift_strider\")\
+   strider:setImmortality(\"immortal\")\
    self.q:openStriderShack()\
    self:setTopicVisible(\"strider_saving\", false)\
    self:setTopicVisible(\"strider_safety\", true)\
    self:setTopicVisible(\"help_on_the_way\", false)\
-   getQuest(\"family_relic\"):setTopicVisible(\"strider_give_axe_safe\", true)\
 end\
 \
 function Step:onFinish()\
@@ -451,7 +473,8 @@ end\
 		["made_fireplace"] = {
 			["ID"] = 36;
 			["connectionsID"] = {
-				[1] = 27;
+				[1] = 17;
+				[2] = 27;
 			};
 			["name"] = "made_fireplace";
 			["posX"] = 1440;
@@ -462,11 +485,13 @@ end\
 \
 function Step:onStart()\
    local strider = getObj(\"swift_strider\")\
-   strider:changeStatCount( \"health\", 10)\
+   strider:changeStatCount(\"health\", 10)\
+   strider:setImmortality(\"protected\")\
    strider:deactivateDeath()\
    self:setTopicVisible(\"strider_what_again\", false)\
    self:setTopicVisible(\"strider_feeling_warmer\", true)\
    self:writeLog(\"MadeFireplace\")\
+   getQuest(\"family_relic\"):setTopicVisible(\"strider_saved\", true)\
 end\
 \
 function Step:onFinish()\
@@ -491,8 +516,8 @@ end\
 \
 function Step:onStart()\
    local strider = getObj(\"swift_strider\")\
-   strider:changeStatCount( \"health\", 10)\
-   strider:addDeathTime()\
+   strider:changeStatCount(\"health\", 10)\
+   strider:postponeDeath(6)\
    self:setTopicVisible(\"strider_hydrate\", false)\
    self:setTopicVisible(\"strider_make_fireplace\", true)\
 end\
@@ -516,13 +541,18 @@ end\
 end\
 \
 function Step:onStart()\
+   getQuest(\"family_relic\"):setTopicVisible(\"strider_saved\", false)\
+   getQuest(\"family_relic\"):setTopicVisible(\"strider_unknown\", false)\
+   getQuest(\"family_relic\"):setTopicVisible(\"strider_dead\", true)\
+\
    if getObj(\"swift_strider\").killer == getPlayer() then\
-      self:setParam(\"murder\", true)\
       self:writeLog(\"StriderKilled\")\
+      getQuest(\"family_relic\"):setTopicVisible(\"strider_killed\", true)\
    else\
-      self:setParam(\"murder\", false)\
       self:writeLog(\"StriderDied\")\
    end\
+   hideObject(self.campfire_act)\
+   disableObject(self.campfire_act)\
 end\
 \
 function Step:onFinish()\
@@ -573,11 +603,13 @@ end\
 end\
 \
 function Step:onStart()\
-   --self.q:goToStep( \"in_fort\", false )\
+   --self.q:goToStep(\"in_fort\", false)\
    --self:writeLog(\"ReportSaved\")\
    self:setTopicVisible(\"help_on_the_way\", true)\
    self:writeLog(\"Report\")\
-   getObj(\"swift_strider\"):activateToFort( 0.5 )\
+   getObj(\"swift_strider\"):activateToFort(0.5)\
+   getQuest(\"family_relic\"):setTopicVisible(\"strider_reported\", true)\
+   getQuest(\"family_relic\"):setTopicVisible(\"strider_unknown\", false)\
 end\
 \
 function Step:onFinish()\
@@ -626,15 +658,11 @@ end\
 		};
 	};
 	["script"] = "function Quest:onCreate()\
-   self:declareVar(\"campfire_activator\", \"q_ktharsis_harsh_campfire\")\
+   self:declareVar(\"campfire_act\", \"q_ktharsis_harsh_campfire\")\
    self:declareVar(\"campfire_distance\", 700)\
    self:declareVar(\"strider_safe\", \"q_ktharsis_harsh_strider_safety\")\
    self:declareVar(\"shack_closed\", \"q_ktharsis_harsh_shack_closed\")\
    self:declareVar(\"shack_open\", \"q_ktharsis_harsh_shack_open\") --Group of objs\
-   \
-   runTimer(0, nil, function()\
-      hideDisableObjectGroup( self.shack_open, true )\
-   end, false )\
 \
    self:setTopicVisible(\"start\", true)\
    self:setTopicVisible(\"strider_saving\", true)\
@@ -659,6 +687,8 @@ end\
    self:setTopicVisible(\"castor_report\", false)\
    self:setTopicVisible(\"help_on_the_way\", false)\
    self:setTopicVisible(\"strider_safety\", false)\
+   self:setTopicVisible(\"strider_drunk\", false)\
+   self:setTopicVisible(\"strider_give_booze\", true)\
    self:setParam(\"expMult\", 2)\
 end\
 \
@@ -671,26 +701,25 @@ function Quest:onFinish()\
 end\
 \
 function Quest:OnLoadState()\
-   if self:isStepPassed( \"reported\" ) then\
+   if self:isStepPassed(\"reported\") then\
       self:openStriderShack()\
    end\
 end\
 \
 function Quest:openStriderShack()\
-   local obj = getObj( self.strider_safe )\
+   local obj = getObj(self.strider_safe)\
    if obj then\
-      local strider = getObj( \"swift_strider\" )\
+      local strider = getObj(\"swift_strider\")\
       if strider and not strider:getState(\"dead\") then\
-         strider:changeStatCount( \"health\", 100 )\
-         moveObjectTo( \"swift_strider\", self.strider_safe )\
+         strider:changeStatCount(\"health\", 100)\
+         moveCharTo(\"swift_strider\", self.strider_safe)\
          strider:getPose():setRot(obj:getPose():getRot())\
-         local cont_closed = getObj( self.shack_closed )\
+         local cont_closed = getObj(self.shack_closed)\
          if cont_closed then\
             cont_closed:setVisible(false)\
-            disableObjectCollisions( self.shack_closed )\
+            disableObjectCollisions(self.shack_closed)\
          end\
-         showEnableObjectGroup( self.shack_open, true )\
-         strider:setImmortality(\"immortal\")\
+         showEnableObjectGroup(self.shack_open, true)\
       end\
    else\
       log(\"No \" .. self.strider_safe .. \", swift_strider will not teleport\")\
@@ -698,7 +727,7 @@ function Quest:openStriderShack()\
 end\
 \
 function Quest:getTopicVisible_strider_bandage_cloth()\
-   return hasPlayerItemCount(\"cloth.itm\", 2)\
+   return hasPlayerItem(\"cloth.itm\", 2)\
 end\
 \
 function Quest:getTopicVisible_strider_bandage_shirt()\
@@ -735,6 +764,10 @@ end\
 \
 function Quest:getTopicVisible_strider_give_aloe()\
    return hasPlayerItem(\"ktharsian_aloe.itm\")\
+end\
+\
+function Quest:getTopicVisible_strider_give_booze()\
+   return hasPlayerBooze()\
 end";
 	["title"] = "K'Tharsis is a harsh mistress";
 }

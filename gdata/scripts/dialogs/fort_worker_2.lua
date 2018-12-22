@@ -90,6 +90,7 @@ end\
 	["message_00010"] = {
 		["ID"] = 10;
 		["actor"] = 2;
+		["animation"] = "dl_head_2nods";
 		["connectID"] = 11;
 		["posX"] = 2610;
 		["posY"] = 660;
@@ -101,6 +102,7 @@ end\
 	["message_00011"] = {
 		["ID"] = 11;
 		["actor"] = 1;
+		["animation"] = "dl_come_here";
 		["connectID"] = 12;
 		["posX"] = 2880;
 		["posY"] = 660;
@@ -112,6 +114,7 @@ end\
 	["message_00012"] = {
 		["ID"] = 12;
 		["actor"] = 2;
+		["animation"] = "dl_righthand_wave_short";
 		["posX"] = 3150;
 		["posY"] = 660;
 		["script"] = "";
@@ -253,6 +256,7 @@ end\
 	["message_00028"] = {
 		["ID"] = 28;
 		["actor"] = 1;
+		["connectID"] = 14;
 		["posX"] = 2100;
 		["posY"] = 120;
 		["script"] = "";
@@ -263,6 +267,7 @@ end\
 	["message_00029"] = {
 		["ID"] = 29;
 		["actor"] = 2;
+		["animation"] = "dl_chuckle";
 		["connectID"] = 30;
 		["posX"] = 1890;
 		["posY"] = 540;
@@ -274,6 +279,7 @@ end\
 	["message_00031"] = {
 		["ID"] = 31;
 		["actor"] = 1;
+		["animation"] = "dl_point_self";
 		["connectID"] = 36;
 		["posX"] = 2340;
 		["posY"] = 300;
@@ -339,6 +345,7 @@ end\
 	["message_00036"] = {
 		["ID"] = 36;
 		["actor"] = 2;
+		["animation"] = "dl_hand_negative";
 		["connectID"] = 30;
 		["posX"] = 2610;
 		["posY"] = 300;
@@ -350,6 +357,7 @@ end\
 	["message_00037"] = {
 		["ID"] = 37;
 		["actor"] = 2;
+		["animation"] = "dl_clench_fist";
 		["connectID"] = 30;
 		["posX"] = 2610;
 		["posY"] = 420;
@@ -361,6 +369,7 @@ end\
 	["message_00038"] = {
 		["ID"] = 38;
 		["actor"] = 2;
+		["animation"] = "dl_frustration";
 		["connectID"] = 30;
 		["posX"] = 2610;
 		["posY"] = 540;
@@ -409,9 +418,11 @@ end\
 			[4] = 26;
 			[5] = 28;
 		};
+		["h"] = 140;
 		["posX"] = 1920;
 		["posY"] = -180;
 		["type"] = "switch";
+		["w"] = 100;
 	};
 	["switch_00030"] = {
 		["ID"] = 30;
@@ -422,9 +433,17 @@ end\
 			[4] = 34;
 			[5] = 35;
 		};
+		["h"] = 140;
 		["posX"] = 2190;
 		["posY"] = 510;
 		["type"] = "switch";
+		["w"] = 100;
 	};
 }
-return obj1
+local obj2 = {
+	["actor_prefab"] = {
+		[1] = "human_male";
+		[2] = "abori";
+	};
+}
+return obj1 ,obj2

@@ -29,7 +29,7 @@ end
 
 
 function CRouteManager:addWpnToRoute(routeName, wpn)
-   if (not self.m_routes.routeName) then
+   if not self.m_routes.routeName then
       self:createRoute(routeName)
    end
    table.insert(self.m_routes.routeName.m_wpn, wpn)
@@ -37,7 +37,7 @@ end
 
 
 function CRouteManager:setRoute(routeName)
-   if (not self.m_routes.routeName) then
+   if not self.m_routes.routeName then
       self.m_curRoute = nil
    else
       self.m_curRoute = self.m_routes.routeName
@@ -49,7 +49,7 @@ function CRouteManager:setRoute(routeName)
       self:setCurWpn(curWpn)
       self:setLastWpn(lastWpn)
       self.m_curRoute.m_size = lastWpnI
-      if (self.m_obj:isInTrigger(curWpn)) then
+      if self.m_obj:isInTrigger(curWpn) then
          self:onWpnEnter(curWpn)
       end
    end
@@ -68,7 +68,7 @@ end
 
 function CRouteManager:setLastWpn(wpn)
    local curRoute = self:getCurRoute()
-   if (not curRoute) then
+   if not curRoute then
       return
    end
    curRoute.m_lastWpn = wpn
@@ -77,7 +77,7 @@ end
 
 function CRouteManager:getLastWpn()
    local curRoute = self:getCurRoute()
-   if (not curRoute) then
+   if not curRoute then
       return nil
    end
    return curRoute.m_lastWpn
@@ -86,7 +86,7 @@ end
 
 function CRouteManager:setCurWpn(wpn)
    local curRoute = self:getCurRoute()
-   if (not curRoute) then
+   if not curRoute then
       return
    end
    curRoute.m_curWpn = wpn
@@ -95,7 +95,7 @@ end
 
 function CRouteManager:getCurWpn()
    local curRoute = self:getCurRoute()
-   if (not curRoute) then
+   if not curRoute then
       return nil
    end
    return curRoute.m_curWpn
@@ -104,15 +104,15 @@ end
 
 function CRouteManager:onWpnEnter(wpn)
    local curRoute = self:getCurRoute()
-   if (not curRoute) then
+   if not curRoute then
       return false
    end
    local curWpn = self:getCurWpn()
-   if (curWpn ~= wpn) then
+   if curWpn ~= wpn then
       return false
    end
-   if (curRoute.m_visitedWpnCnt + 1 == curRoute.m_size) then
-      if (curRoute.m_wrap) then
+   if curRoute.m_visitedWpnCnt + 1 == curRoute.m_size then
+      if curRoute.m_wrap then
          self.m_obj.onChangeWpn(self.m_obj)
          self:setRoute(curRoute.m_name)
       else

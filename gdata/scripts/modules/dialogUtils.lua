@@ -1,4 +1,7 @@
 local ItemsData = (require "itemsData")
+
+local table_concat = (require "pl.List").extend
+
 local dialogUtils = {}
 
 function dialogUtils.makeBlankMessage(root, data)
@@ -84,14 +87,14 @@ function dialogUtils.paginateMessages(messages, root, maxPerPage, bidirectional,
 end
 
 function dialogUtils.generateSellDialog(root, whitelist)
-   local p = getPlayer()
+   local p = getMC()
    local info = ItemsData.ItemsInfo
    local messages = {}
 
    local function onStart(name, value, count)
       count = count or 1
       return function()
-         addItemsToPlayer("antigravium_shards.itm", value * count)
+         addItemToPlayer("antigravium_shards.itm", value * count)
          removeItemFromPlayer(name, count)
       end
    end
@@ -109,7 +112,7 @@ function dialogUtils.generateSellDialog(root, whitelist)
 
          for _, amount in pairs{1,5,10,100,"all"} do
             if amount == "all" and not inList({1,5,10,100}, count) then amount = count end
-            if amount ~= "all" and hasPlayerItemCount(name, amount) then
+            if amount ~= "all" and hasPlayerItem(name, amount) then
                local sellMulti = dialogUtils.makeBlankMessage(root)
                sellMulti.text = string.format("\\[SELL] %d items for %d shards   \\[%s]", amount, value * amount, ItemsData.getItemLabel(v.name))
                sellMulti.actor = 1
@@ -138,7 +141,7 @@ function dialogUtils.generateBuyDialog(root, whitelist)
    local messages = {}
    local function isVisible(value)
       return function()
-         return hasPlayerItemCount("antigravium_shards.itm", value)
+         return hasPlayerItem("antigravium_shards.itm", value)
       end
    end
    local function onStart(name, count, value)
@@ -146,7 +149,7 @@ function dialogUtils.generateBuyDialog(root, whitelist)
          if count == 1 then
             addItemToPlayer(name)
          else
-            addItemsToPlayer(name, count)
+            addItemToPlayer(name, count)
          end
          removeItemFromPlayer("antigravium_shards.itm", value)
       end

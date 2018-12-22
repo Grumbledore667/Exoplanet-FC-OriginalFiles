@@ -3,7 +3,7 @@ local multiRefObjects = {
 
 } -- multiRefObjects
 local obj1 = {
-	["description"] = "Assistance of skilful hunters is required to track and capture a rare antigravium-imbued mutant.\
+	["description"] = "Assistance of skillful hunters is required to track and capture a rare antigravium-imbued mutant.\
 Reward: antigravium shards, 150 dead, 300 alive.";
 	["hidden"] = false;
 	["logs"] = {
@@ -28,7 +28,7 @@ Reward: antigravium shards, 150 dead, 300 alive.";
 			["posX"] = 720;
 			["posY"] = 240;
 			["script"] = "function Step:onCheck()\
-   if objInDist(getPlayer():getPose():getPos(), getObj(\"q_greenbug_spawn\"):getPose():getPos(), self.spawn_distance) then\
+   if objInDist(getMC():getPose():getPos(), getObj(self.bug_spawn):getPose():getPos(), self.spawn_distance) then\
       self.q:goToStepTimer(self:getName(), 5)\
       gameplayUI:showInfoTextEx(\"I'm standing too close\", \"minor\", \"\")\
       return false\
@@ -38,7 +38,7 @@ Reward: antigravium shards, 150 dead, 300 alive.";
 end\
 \
 function Step:onStart()\
-   activateObject(\"q_greenbug_spawn\")\
+   activateObject(self.bug_spawn)\
    self:setParam(\"expMult\", 0)\
 end\
 \
@@ -59,7 +59,7 @@ end\
 			["posX"] = 720;
 			["posY"] = 420;
 			["script"] = "function Step:onCheck()\
-   if objInDist(getPlayer():getPose():getPos(), getObj(\"q_greenbug_spawn\"):getPose():getPos(), self.spawn_distance) then\
+   if objInDist(getMC():getPose():getPos(), getObj(self.bug_spawn):getPose():getPos(), self.spawn_distance) then\
       self.q:goToStepTimer(self:getName(), 5)\
       gameplayUI:showInfoTextEx(\"I'm standing too close\", \"minor\", \"\")\
       return false\
@@ -69,8 +69,8 @@ end\
 end\
 \
 function Step:onStart()\
-   deactivateObject(\"q_greenbug_spawn\")\
-   activateObject(\"q_greenbug_spawn\")\
+   deactivateObject(self.bug_spawn)\
+   activateObject(self.bug_spawn)\
 end\
 \
 function Step:onFinish()\
@@ -89,7 +89,7 @@ end\
 			["posX"] = 720;
 			["posY"] = 600;
 			["script"] = "function Step:onCheck()\
-   if objInDist(getPlayer():getPose():getPos(), getObj(\"q_greenbug_spawn\"):getPose():getPos(), self.spawn_distance) then\
+   if objInDist(getMC():getPose():getPos(), getObj(self.bug_spawn):getPose():getPos(), self.spawn_distance) then\
       self.q:goToStepTimer(self:getName(), 5)\
       gameplayUI:showInfoTextEx(\"I'm standing too close\", \"minor\", \"\")\
       return false\
@@ -99,8 +99,8 @@ end\
 end\
 \
 function Step:onStart()\
-   deactivateObject(\"q_greenbug_spawn\")\
-   activateObject(\"q_greenbug_spawn\")\
+   deactivateObject(self.bug_spawn)\
+   activateObject(self.bug_spawn)\
 end\
 \
 function Step:onFinish()\
@@ -145,7 +145,7 @@ end\
 			["event"] = "get";
 			["posX"] = 1170;
 			["posY"] = 510;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self.q:setParam(\"dead_bug\", true)\
    return true\
 end\
@@ -164,7 +164,7 @@ end\
 			["event"] = "get";
 			["posX"] = 1170;
 			["posY"] = 270;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self.q:setParam(\"alive_bug\", true)\
    return true\
 end\
@@ -199,7 +199,7 @@ end\
 			["posY"] = 210;
 			["script"] = "";
 			["targetsAll"] = "";
-			["targetsAny"] = "q_greenbug_bait_placeholder";
+			["targetsAny"] = "var:bait_act";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -213,7 +213,7 @@ end\
 			["posY"] = 390;
 			["script"] = "";
 			["targetsAll"] = "";
-			["targetsAny"] = "q_greenbug_bait_placeholder";
+			["targetsAny"] = "var:bait_act";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -227,7 +227,28 @@ end\
 			["posY"] = 570;
 			["script"] = "";
 			["targetsAll"] = "";
-			["targetsAny"] = "q_greenbug_bait_placeholder";
+			["targetsAny"] = "var:bait_act";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00053"] = {
+			["ID"] = 53;
+			["connectionsID"] = {
+			};
+			["event"] = "get";
+			["posX"] = -300;
+			["posY"] = 60;
+			["script"] = "function Condition:onCheck(name, obj)\
+   if not self:getParam(\"GotCrystal\") then\
+      self:writeLog(\"GotCrystal\")\
+      self:setParam(\"GotCrystal\", true)\
+   end\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "antigravium.itm";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -248,10 +269,10 @@ end\
 function Step:onStart()\
    if hasPlayerItem(\"bug_green.itm\") then\
       removeItemFromPlayer(\"bug_green.itm\")\
-      addItemsToPlayer(\"antigravium_shards.itm\", 300)\
+      addItemToPlayer(\"antigravium_shards.itm\", 300)\
    elseif hasPlayerItem(\"bug_green_dead.itm\") then\
       removeItemFromPlayer(\"bug_green_dead.itm\")\
-      addItemsToPlayer(\"antigravium_shards.itm\", 150)\
+      addItemToPlayer(\"antigravium_shards.itm\", 150)\
    end\
 end\
 \
@@ -269,21 +290,7 @@ end\
 			["name"] = "get_bait";
 			["posX"] = -540;
 			["posY"] = 240;
-			["script"] = "function Step:onCheck()\
-   return true\
-end\
-\
-function Step:onStart()\
-   self:writeLog(\"GotCrystal\")\
-   if hasPlayerItem(\"antigravium_bait.itm\") then\
-      self.q:goToStep(\"set_bait\")\
-   end\
-end\
-\
-function Step:onFinish()\
-end\
-\
-";
+			["script"] = "";
 			["type"] = "step";
 		};
 		["set_bait"] = {
@@ -300,8 +307,8 @@ end\
 \
 function Step:onStart()\
    self:writeLog(\"FindHive\")\
-   showObject(\"q_greenbug_bait_placeholder\")\
-   enableObject(\"q_greenbug_bait_placeholder\")\
+   showObject(self.bait_act)\
+   enableObject(self.bait_act)\
 end\
 \
 function Step:onFinish()\
@@ -324,8 +331,8 @@ end\
 \
 function Step:onStart()\
    self:writeLog(\"Missed\")\
-   showObject(\"q_greenbug_bait_placeholder\")\
-   enableObject(\"q_greenbug_bait_placeholder\")\
+   showObject(self.bait_act)\
+   enableObject(self.bait_act)\
 end\
 \
 function Step:onFinish()\
@@ -348,8 +355,8 @@ end\
 \
 function Step:onStart()\
    self:writeLog(\"MissedAgain\")\
-   showObject(\"q_greenbug_bait_placeholder\")\
-   enableObject(\"q_greenbug_bait_placeholder\")\
+   showObject(self.bait_act)\
+   enableObject(self.bait_act)\
 end\
 \
 function Step:onFinish()\
@@ -404,7 +411,7 @@ function Step:onStart()\
    if isDebug(\"quest\") then\
       self.q:goToStepTimer(\"catch_bug\", 1)\
    else\
-      self.q:goToStepAtNight(\"catch_bug\", 1)\
+      self.q:goToStepAtDayState(\"night\", \"catch_bug\", 1)\
    end\
 end\
 \
@@ -431,7 +438,7 @@ function Step:onStart()\
    if isDebug(\"quest\") then\
       self.q:goToStepTimer(\"catch_bug2\", 1)\
    else\
-      self.q:goToStepAtNight(\"catch_bug2\", 1)\
+      self.q:goToStepAtDayState(\"night\", \"catch_bug2\", 1)\
    end\
 end\
 \
@@ -458,7 +465,7 @@ function Step:onStart()\
    if isDebug(\"quest\") then\
       self.q:goToStepTimer(\"catch_bug3\", 1)\
    else\
-      self.q:goToStepAtNight(\"catch_bug3\", 1)\
+      self.q:goToStepAtDayState(\"night\", \"catch_bug3\", 1)\
    end\
 end\
 \
@@ -470,16 +477,30 @@ end\
 		};
 	};
 	["script"] = "function Quest:onCreate()\
+   self:declareVar(\"bait_act\", \"q_greenbug_bait_placeholder\")\
+   self:declareVar(\"bug_spawn\", \"q_greenbug_spawn\")\
+   self:declareVar(\"spawn_distance\", 1500)\
    self:declareVar(\"spawn_distance\", 1500) --don't forget to set it to 2000\
    self:setParam(\"despawn_dist\", 40)\
    self:setParam(\"eat_time\", 3)\
    self:setParam(\"food_radius\", 500)\
+   local markers = {\
+      set_bait = {{pos = {x=676, y=1932, z=114877}, radius = 60, tip = \"Bug Hills\"}},\
+      set_bait2 = {{pos = {x=676, y=1932, z=114877}, radius = 60, tip = \"Bug Hills\"}},\
+      set_bait3 = {{pos = {x=676, y=1932, z=114877}, radius = 60, tip = \"Bug Hills\"}},\
+   }\
+   self:declareQuestMarkers(markers)\
 end\
 \
 function Quest:onStart()\
    if isDebug(\"quest\") then\
-      --getPlayer():obtainItem( \"bug_green.itm\", 1 )\
-      getPlayer():obtainItem( \"antigravium_bait.itm\", 10 )\
+      addItemToPlayer(\"antigravium_bait.itm\", 10)\
+   end\
+   if hasPlayerItem(\"antigravium_bait.itm\") then\
+      self:goToStep(\"set_bait\")\
+   elseif hasPlayerItem(\"antigravium.itm\") then\
+      self:writeLog(\"GotCrystal\")\
+      self:setParam(\"GotCrystal\", true)\
    end\
 end\
 \

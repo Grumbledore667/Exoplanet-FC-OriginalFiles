@@ -10,7 +10,7 @@ function CCamManager:init()
 end
 
 
-function CCamManager:setCurCam( cam )
+function CCamManager:setCurCam(cam)
    self.m_curCam = cam
 end
 
@@ -21,12 +21,12 @@ end
 
 
 function CCamManager:setCamPlayer()
-   if ( not getPlayer() ) then
+   if not getPlayer() then
       return
    end
 
-   self:setCam( getPlayer():getCamera() )
-   getPlayer():setCameraHeight( getDefaultPlayerCameraHeight(), 0 )
+   self:setCam(getPlayer():getCamera())
+   getPlayer():setCameraHeight(getDefaultPlayerCameraHeight(), 0)
 end
 
 
@@ -36,25 +36,25 @@ function CCamManager:setCamByName(camName)
 end
 
 
-function CCamManager:setCam( cam )
-   if ( self:getCurCam() == cam ) then
+function CCamManager:setCam(cam)
+   if self:getCurCam() == cam then
       return
    end
 
-   if ( not getPlayer() ) then
+   if not getPlayer() then
       return
    end
 
    local playerCam = getPlayer():getCamera()
 
-   if ( playerCam == cam ) then
+   if playerCam == cam then
       returnUserControl()
    else
       blockUserControl()
    end
 
-   self:setCurCam( cam )
-   activateCamera( cam )
+   self:setCurCam(cam)
+   activateCamera(cam)
 end
 
 
@@ -64,8 +64,8 @@ function CCamManager:clonePlayerCam(cam)
 end
 
 
-function CCamManager:cloneCam( destCam, srcCam )
-   cloneCamParams( destCam, srcCam )
+function CCamManager:cloneCam(destCam, srcCam)
+   cloneCamParams(destCam, srcCam)
 end
 
 return {CCamManager=CCamManager}

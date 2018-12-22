@@ -13,8 +13,8 @@ local obj1 = {
 			["event"] = "dead";
 			["posX"] = 450;
 			["posY"] = 120;
-			["script"] = "function Condition:onCheck(obj)\
-   if obj and (obj.killer == getPlayer() or obj.killer == getDefaultPlayer()) then\
+			["script"] = "function Condition:onCheck(name, obj)\
+   if obj and (obj.killer == getPlayer() or obj.killer == getMC()) then\
       local reward = 0\
       if obj.getScriptClass then\
          local class = obj:getScriptClass()\
@@ -24,9 +24,9 @@ local obj1 = {
             elseif obj:getPrefabName() == \"abori.cfg\" then\
                reward = self.banditAbori\
             end\
-         elseif class == \"CCrat\" or class == \"CCratEating\" then\
+         elseif class == \"CCrucas\" or class == \"CCrucasEating\" then\
             reward = self.crucas\
-         elseif class == \"CCratWeak\" then\
+         elseif class == \"CCrucasWeak\" then\
             reward = self.crucas - 25\
          elseif class == \"CKabarog\" then\
             reward = self.hornhog\
@@ -84,7 +84,7 @@ end\
    self:declareVar(\"bug\", 50)\
    self:declareVar(\"swiftStrider\", 50)\
    self:declareVar(\"bugGreen\", 50)\
-   runTimer(0, nil, function() self:start() end, false)\
+   self:start()\
 end\
 \
 function Quest:onStart()\

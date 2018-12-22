@@ -1,6 +1,8 @@
 local oo = require "loop.simple"
+local _rootRigid = (require "roots")._rootRigid
 
-local CFastTravel = oo.class( {} )
+---@class CFastTravel : shRigidEntity
+local CFastTravel = oo.class({}, _rootRigid)
 
 function CFastTravel:loadParameters()
    self.prettyName = loadParam(self, "prettyName", self:getName())
@@ -9,17 +11,17 @@ function CFastTravel:loadParameters()
 end
 
 function CFastTravel:OnCreate()
-   CFastTravel.loadParameters( self )
+   self:loadParameters(self)
 
-   self.interactor = self:createAspect( "interactor" )
-   self.interactor:setObject( self )
-   self.interactor:setTriggerRadius( self.activateDistance )
-   self.interactor:setRaycastRadius( 150 )
-   self.interactor:getPose():setParent( self:getPose() )
+   self.interactor = self:createAspect("interactor")
+   self.interactor:setObject(self)
+   self.interactor:setTriggerRadius(self.activateDistance)
+   self.interactor:setRaycastRadius(150)
+   self.interactor:getPose():setParent(self:getPose())
    self.interactor:getPose():resetLocalPose()
-   self.interactor:getPose():setLocalPos( {x=0,y=100,z=0} )
-   self.interactor:setTriggerActive( true )
-   self.interactor:setRaycastActive( true )
+   self.interactor:getPose():setLocalPos({x=0,y=100,z=0})
+   self.interactor:setTriggerActive(true)
+   self.interactor:setRaycastActive(true)
 
    if isEditor() then
       self.cube_helper = self:createAspect("dummy_item.sbg")
@@ -42,7 +44,7 @@ function CFastTravel:register(activate)
    end
    self.activated = activate
    if self.activated then
-      gameplayUI:mapAddFastTravel( self )
+      gameplayUI.mapUI:mapAddFastTravel(self)
    end
 end
 
@@ -60,19 +62,19 @@ function CFastTravel:OnInteractHighlightBegin(obj)
          if not q:isStarted() then
             q:startImediate()
          end
-         q:writeLog(string.format("%s", self.prettyName))
+         q:writeLog("%s", self.prettyName)
       end
 
-      getPlayer():addExp(getGlobalParam("expDiscover"))
+      getMC():addExp(getGlobalParam("expDiscover"))
       gameplayUI:showInfoTextEx("Discovered " .. self.prettyName, "major", "")
    end
 end
 
-function CFastTravel:activate( obj )
+function CFastTravel:activate(obj)
    if not self.activated then
       self:register(true)
    end
-   if not gameplayUI:isTravelVisible() then
+   if not gameplayUI.travelUI:isVisible() then
       local count = 0
       for k, v in pairs(getGlobalParam("fast_travel_destinations")) do
          if v.activated then
@@ -80,7 +82,7 @@ function CFastTravel:activate( obj )
          end
       end
       if count > 1 then
-         gameplayUI:setupTravel()
+         gameplayUI.travelUI:setupTravel(self)
       else
          gameplayUI:showInfoTextEx("I should explore more places", "minor", "")
       end

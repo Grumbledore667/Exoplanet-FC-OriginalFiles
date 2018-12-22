@@ -1,8 +1,14 @@
+local stringx = require "pl.stringx"
+local className = select(3, stringx.rpartition((...), '.'))
+
 local oo = require "loop.simple"
 local Decorator = require "ai.Decorator"
 local NodeState = require "ai.NodeState"
 
-local ForceFailure = oo.class({}, Decorator)
+---@class ai.ForceFailure : ai.Decorator
+local ForceFailure = oo.class({
+   className = className,
+}, Decorator)
 
 function ForceFailure:running()
    local childStatus = self.child:update()

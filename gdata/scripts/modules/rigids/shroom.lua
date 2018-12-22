@@ -1,10 +1,15 @@
-local oo = require "loop.simple"
+local oo = require "loop.multiple"
+local _rootRigid = (require "roots")._rootRigid
+local CDestroyable = require "mixins.destroyable"
 
 local hlp = require "helpers"
 local ItemsData = (require "itemsData")
-local CShroom = oo.class({})
+
+---@class CShroom : shRigidEntity
+local CShroom = oo.class({}, _rootRigid, CDestroyable)
 
 function CShroom:OnCreate()
+   CDestroyable.OnCreate(self)
    self.growTimerStep = 0.1
    if not isDebug("plants") then
       self.growTimerStep = 25
@@ -12,74 +17,74 @@ function CShroom:OnCreate()
 
    self.itemName = "shroom_grenade.itm"
 
-   self.interactor = self:createAspect( "interactor" )
-   self.interactor:setObject( self )
-   self.interactor:setRaycastRadius( 100 )
-   self.interactor:getPose():setParent( self:getPose() )
+   self.interactor = self:createAspect("interactor")
+   self.interactor:setObject(self)
+   self.interactor:setRaycastRadius(100)
+   self.interactor:getPose():setParent(self:getPose())
    self.interactor:getPose():resetLocalPose()
-   self.interactor:getPose():setLocalPos( {x=0,y=0,z=0} )
-   self.interactor:setRaycastActive( false )
+   self.interactor:getPose():setLocalPos(vec3Zero())
+   self.interactor:setRaycastActive(false)
 
    self.broken = false
-   local cageBrokenName = self:getPrefabName():gsub(".sbg", "_broken.sbg")
-   self.cageBroken = getScene():createEntity( cageBrokenName, "")
-   self.cageBroken:setPose( self:getPose() )
-   self.cageBroken:setVisible( false )
+   local cageBrokenName = string.gsub(self:getPrefabName(), ".sbg$", "_broken.sbg")
+   self.cageBroken = getScene():createEntity(cageBrokenName, "")
+   self.cageBroken:setPose(self:getPose())
+   self.cageBroken:setVisible(false)
 
    self.fruit = {}
    self.fruit.ready = true
-   self.fruit.entity = getScene():createEntity( "shroom_grenade.sbg", "")
-   self.fruit.entity:setPose( self:getPose() )
+   self.fruit.entity = getScene():createEntity("shroom_grenade.sbg", "")
+   self.fruit.entity:setPose(self:getPose())
    self.fruit.scale = self:getPose():getScale()
 
-   self.fruit.entity:addMaterial( "highlight" )
-   self.fruit.entity:setMaterialVisible( "highlight", false )
+   self.fruit.entity:addMaterial("highlight")
+   self.fruit.entity:setMaterialVisible("highlight", false)
 
    self.sounds = {}
-   self.sounds.broken = self:createAspect( "shroom_cage_crash.wav" )
-   self.sounds.broken:getPose():setParent( self:getPose() )
+   self.sounds.broken = self:createAspect("shroom_cage_crash.wav")
+   self.sounds.broken:getPose():setParent(self:getPose())
    self.sounds.broken:getPose():resetLocalPose()
-   self.sounds.broken:setLoop( false )
-   self.sounds.broken:setDistance( 3000 )
+   self.sounds.broken:setLoop(false)
+   self.sounds.broken:setDistance(3000)
 
-   self:setCollisionCharacters( false, false )
+   self:setCollisionCharacters(false, false)
 end
 
 function CShroom:OnFocusBegin(obj)
    self:stopHighlightTimer()
-   self.fruit.entity:setMaterialVisible( "highlight", true )
+   self.fruit.entity:setMaterialVisible("highlight", true)
 end
 
 function CShroom:OnFocusEnd(obj)
    self:stopHighlightTimer()
-   self.fruit.entity:setMaterialVisible( "highlight", false )
+   self.fruit.entity:setMaterialVisible("highlight", false)
 end
 
-function CShroom:OnInteractHighlightBegin( obj )
+function CShroom:OnInteractHighlightBegin(obj)
    self:stopHighlightTimer()
 
-   self.highlightTimer = runTimer( 2, self,
-      function( self )
-         self.fruit.entity:setMaterialVisible( "highlight", false )
+   self.highlightTimer = runTimer(2, self,
+      function(self)
+         self.fruit.entity:setMaterialVisible("highlight", false)
          self.highlightTimer = nil
-      end, false )
+      end, false)
 
-   self.fruit.entity:setMaterialVisible( "highlight", true )
+   self.fruit.entity:setMaterialVisible("highlight", true)
 end
 
 function CShroom:stopHighlightTimer()
-   if ( self.highlightTimer ) then
+   if self.highlightTimer then
       self.highlightTimer:stop()
       self.highlightTimer = nil
    end
 end
 
-function CShroom:OnHit( params )
+function CShroom:OnHit(params)
    if not self.broken then
       self.broken = true
-      self:setVisible( false )
-      self.cageBroken:setVisible( true )
-      self.interactor:setRaycastActive( true )
+      self:setVisible(false)
+      self.cageBroken:setVisible(true)
+      self.interactor:setRaycastActive(true)
       self.sounds.broken:play()
    end
 end
@@ -99,13 +104,13 @@ end
 function CShroom:cutFruit()
    self.fruit.scale = { x = 0.05, y = 0.05, z = 0.05, }
    self.fruit.ready = false
-   self.fruit.entity:getPose():setScale( {x=self.fruit.scale,y=self.fruit.scale,z=self.fruit.scale} )
+   self.fruit.entity:getPose():setScale({x=self.fruit.scale,y=self.fruit.scale,z=self.fruit.scale})
 
-   if ( not self.growTimer ) then
-      self.growTimer = runTimer( self.growTimerStep, self, self.stepRipeFruit, true )
+   if not self.growTimer then
+      self.growTimer = runTimer(self.growTimerStep, self, self.stepRipeFruit, true)
    end
 
-   self.interactor:setRaycastActive( false )
+   self.interactor:setRaycastActive(false)
 end
 
 function CShroom:stepRipeFruit()
@@ -120,28 +125,28 @@ function CShroom:stepRipeFruit()
       self.growTimer = nil
 
       self.broken = false
-      self:setVisible( true )
-      self.cageBroken:setVisible( false )
+      self:setVisible(true)
+      self.cageBroken:setVisible(false)
    else
-      self.fruit.entity:getPose():setScale( { x=self.fruit.scale.x, y=self.fruit.scale.y, z=self.fruit.scale.z } )
+      self.fruit.entity:getPose():setScale({ x=self.fruit.scale.x, y=self.fruit.scale.y, z=self.fruit.scale.z })
    end
 end
 
 function CShroom:getAsItem()
    self:cutFruit()
 
-   local item = hlp.safeCreateItemWithoutModel( self.itemName, ItemsData.getItemClass(self.itemName) )
+   local item = hlp.safeCreateItemWithoutModel(self.itemName, ItemsData.getItemClass(self.itemName))
 
-   if ( item ) then
-      item:setVisible( false )
+   if item then
+      item:setVisible(false)
       return item
    else
-      log( "Can't create " .. self.itemName )
+      log("Can't create " .. self.itemName)
       return nil
    end
 end
 
-function CShroom:getInteractTime( interactType )
+function CShroom:getInteractTime(interactType)
    return 1
 end
 
@@ -167,19 +172,19 @@ function CShroom:OnLoadState(state)
    if state.fruit then
       self.fruit.ready = state.fruit.ready
       self.fruit.scale = state.fruit.scale
-      self.fruit.entity:getPose():setScale( { x=self.fruit.scale.x, y=self.fruit.scale.y, z=self.fruit.scale.z } )
-      self.growTimer = runTimer( self.growTimerStep, self, self.stepRipeFruit, true )
+      self.fruit.entity:getPose():setScale({ x=self.fruit.scale.x, y=self.fruit.scale.y, z=self.fruit.scale.z })
+      self.growTimer = runTimer(self.growTimerStep, self, self.stepRipeFruit, true)
    end
 
    self.broken = state.broken
    if self.broken then
-      self:setVisible( self.fruit.ready )
-      self.cageBroken:setVisible( not self.fruit.ready )
+      self:setVisible(self.fruit.ready)
+      self.cageBroken:setVisible(not self.fruit.ready)
       if self.fruit.ready then
-         self.interactor:setRaycastActive( true )
+         self.interactor:setRaycastActive(true)
       end
    end
-   self.fruit.entity:setMaterialVisible( "highlight", false )
+   self.fruit.entity:setMaterialVisible("highlight", false)
 end
 
 return {

@@ -20,14 +20,15 @@ local obj1 = {
 		["connectID"] = 4;
 		["posX"] = 750.999633789;
 		["posY"] = 241.499755859;
-		["script"] = "function message:onStart()\
+		["script"] = "local random = require \"random\"\
+function message:onStart()\
 end\
 \
 function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return rand(10) > 5\
+   return random.random(0, 10) > 5\
 end\
 \
 ";

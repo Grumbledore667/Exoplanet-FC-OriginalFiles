@@ -1,97 +1,141 @@
-local oo = require "loop.simple"
-local CInventory = (require "inventory").CInventory
+local oo = require "loop.multiple"
+local _rootRigid = (require "roots")._rootRigid
 local ObjectsLabels = (require "objectsLabels")
 local ItemsLists = (require "itemsLists")
+local CInventoryBase = require "inventoryBase"
+local CLockable = require "mixins.lockable"
+local CDestroyable = require "mixins.destroyable"
 
-local CContainer = oo.class({
-   opened = false,
-})
+---@class CContainer : shRigidEntity
+local CContainer = oo.class({}, _rootRigid, CLockable, CDestroyable)
 
-function CContainer:OnCreate()
-   self.inventory = CInventory{}
-   self.inventory:init     ( self )
+function CContainer:OnCreate(params)
+   CLockable.OnCreate(self)
+   CDestroyable.OnCreate(self)
+
+   self.inventory = CInventoryBase{}
+   self.inventory:init(self)
+
+   self.labelId = loadParam(self, "labelId", "")
+
    local items = loadParamItemCounts(self, "items", {})
    for name, count in pairs(items) do
-      for i=1, count do
-         self.inventory:addItem(name)
+      self:getInventory():addItem(name, count)
+   end
+
+   self.textureName = loadParam(self, "textureName", "")
+   if self.textureName ~= "" then
+      local top = self:getMeshByName("chest_top")
+      local bottom = self:getMeshByName("chest_bottom")
+      if top then
+         top:setTexture(0, self.textureName)
+      end
+      if bottom then
+         bottom:setTexture(0, self.textureName)
       end
    end
-
-   self.inventory:setRadius( loadParamNumber ( self, "raycastRadius", 100) )
-
-   self.labelId = loadParam( self, "labelId", "" )
+   self.animAnchor = self:getMeshByName("anchor_1")
 end
 
-function CContainer:OnDestroy()
+function CContainer:isInteractionAnimated()
+   return self.animAnchor ~= nil and self:getPrefabName() == "chest.sbg"
 end
 
-function CContainer:activate( obj )
-   if ( not self.opened ) then
-      self:playAnimation( "open", false )
-      self.opened = true
+function CContainer:showInventory(state)
+   gameplayUI.inventoryContainer:show(state)
+end
+
+function CContainer:activate(obj)
+   if self.locked then
+      CLockable.activate(self, obj)
+   elseif not self.activated then
+      self.activated = true
+      obj.exchangeTarget = self
+      if self:isInteractionAnimated() then
+         obj:openLootbox(self)
+      else
+         self:playAnimation("open", false)
+         obj:exchangeStart(self)
+      end
    end
-
    return true
 end
 
-function CContainer:deactivate( obj )
-   if ( self.opened ) then
-      self:playAnimation( "close", false )
-      self.opened = false
+function CContainer:deactivate(obj)
+   if self.locked then
+      CLockable.deactivate(self, obj)
+   elseif self.activated then
+      self.activated = false
+      self:playAnimation("close", false)
+      obj.exchangeTarget = nil
+      obj:exchangeStop(self)
+      if self:isInteractionAnimated() then
+         obj:closeLootbox(self)
+      end
    end
-
    return true
 end
 
 function CContainer:getLabel()
-   local label = ObjectsLabels.getLabel( self.labelId )
+   local label = ObjectsLabels.getLabel(self.labelId)
 
    if label == "" then
-      label = ItemsLists.getLabelForModel( self:getPrefabName() )
+      label = ItemsLists.getLabelForModel(self:getPrefabName())
    end
 
    if label == "" then
       label = "Container"
    end
 
-   if self.inventory:getItemsCount() == 0 then
+   if not self.locked and self:getInventory():getItemsCount() == 0 then
       label = label.." (empty)"
    end
+
+   label = CLockable.getLabel(self) .. label
 
    return label
 end
 
 function CContainer:getInteractLabel()
-   local label = ObjectsLabels.getInteractLabel( self.labelId )
+   local label = ObjectsLabels.getInteractLabel(self.labelId)
 
-   if ( label == "" ) then
+   if label == "" then
       label = "open"
+   end
+
+   if self.locked then
+      label = CLockable.getInteractLabel(self)
    end
 
    return label
 end
 
+function CContainer:getInventory()
+   return self.inventory
+end
+
 function CContainer:getLootTable()
-   local t = {}
-   local itemsMgr = self.inventory.itemsManager
+   return self:getInventory():getLootTable()
+end
 
-   for _,item in pairs(itemsMgr.items) do
-      t[item:getItemName()] = item.count
-   end
-
-   return t
+function CContainer:getLabelPos()
+   local pos = self.interactor:getPose():getPos()
+   pos.y = pos.y + 60
+   return pos
 end
 
 function CContainer:OnSaveState(state)
-   state.inventory = self.inventory.itemsManager:serialize()
+   CLockable.OnSaveState(self, state)
+   state.inventory = self:getInventory():serialize()
 end
 
 function CContainer:OnLoadState(state)
-   self.inventory.itemsManager.items = {}
+   CLockable.OnLoadState(self, state)
+   self:getInventory().items = {}
    if state.inventory then
-      self.inventory.itemsManager:deserialize(state.inventory)
+      self:getInventory():deserialize(state.inventory)
    end
-   self:setMaterialVisible( "highlight", false )
+   self:setMaterialVisible("highlight", false)
 end
 
 return {CContainer=CContainer}

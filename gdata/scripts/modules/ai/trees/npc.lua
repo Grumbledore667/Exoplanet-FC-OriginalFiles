@@ -3,7 +3,7 @@ local multiRefObjects = {
 
 } -- multiRefObjects
 local obj1 = {
-	["node_00000"] = {
+	["node_NpcBT_00000"] = {
 		["ID"] = 0;
 		["child"] = "root";
 		["class"] = "BehaviorTree";
@@ -17,106 +17,31 @@ local obj1 = {
 		["posY"] = 270;
 		["script"] = "";
 	};
-	["node_00001"] = {
-		["ID"] = 1;
-		["children"] = {
-			[1] = "dialogInit";
-			[2] = "inDialog";
-			[3] = "turnBack";
-			[4] = "patrol";
-			[5] = "idle";
-		};
-		["class"] = "DynamicGuardSelector";
+	["node_ai.trees.conditions_00065"] = {
+		["ID"] = 65;
+		["class"] = "IncludeNodes";
 		["connectionsID"] = {
-			[1] = 2;
-			[2] = 11;
-			[3] = 12;
-			[4] = 21;
-			[5] = 31;
 		};
 		["guard"] = "";
 		["link_type"] = false;
-		["name"] = "root";
-		["posX"] = 630;
-		["posY"] = 270;
+		["name"] = "ai.trees.conditions";
+		["posX"] = 870;
+		["posY"] = -180;
 		["script"] = "";
 	};
-	["node_00002"] = {
-		["ID"] = 2;
-		["class"] = "AnimatedAction";
+	["node_ai.trees.damageable_00092"] = {
+		["ID"] = 92;
+		["class"] = "IncludeTree";
 		["connectionsID"] = {
 		};
-		["guard"] = "forceSuccess";
+		["guard"] = "isEnemyDetected";
 		["link_type"] = false;
-		["name"] = "idle";
+		["name"] = "ai.trees.damageable";
 		["posX"] = 900;
-		["posY"] = 780;
-		["script"] = "{\
-   start_function = function(self)\
-      self.animationsManager:loopAnimation(\"idle_look.caf\")\
-      self.animationsManager:playAnimation(\"idle_look.caf\")\
-   end,\
-   animation = \"idle_look.caf\",\
-}\
-";
-	};
-	["node_00003"] = {
-		["ID"] = 3;
-		["class"] = "Succeeder";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "forceSuccess";
-		["posX"] = 870;
-		["posY"] = -90;
+		["posY"] = 210;
 		["script"] = "";
 	};
-	["node_00004"] = {
-		["ID"] = 4;
-		["class"] = "Failer";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "forceFail";
-		["posX"] = 870;
-		["posY"] = -30;
-		["script"] = "";
-	};
-	["node_00006"] = {
-		["ID"] = 6;
-		["class"] = "StateCondition";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "talkRequest";
-		["posX"] = 1380;
-		["posY"] = -270;
-		["script"] = "{\
-   stateName = \"talkRequest\",\
-}\
-";
-	};
-	["node_00007"] = {
-		["ID"] = 7;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "faceObject";
-		["posX"] = 1620;
-		["posY"] = 150;
-		["script"] = "{\
-   start_function = Entity.faceObject_start,\
-   running_function = Entity.faceObject_running,\
-   finish_function = Entity.faceObject_finish,\
-}\
-";
-	};
-	["node_00008"] = {
+	["node_angleBigger10_00008"] = {
 		["ID"] = 8;
 		["class"] = "ConditionNode";
 		["connectionsID"] = {
@@ -126,17 +51,410 @@ local obj1 = {
 		["name"] = "angleBigger10";
 		["posX"] = 1380;
 		["posY"] = -210;
-		["script"] = "{\
-   condition = function(self)\
-      return math.abs(getTargetAngle(self, getPlayer():getPose():getPos())) > 10\
-   end,\
-}\
+		["script"] = "condition = function(self)\
+   return math.abs(getTargetAngleFlat(self, getPlayer():getPose():getPos())) > 10\
+end";
+	};
+	["node_consumeItemNameIsSet_00068"] = {
+		["ID"] = 68;
+		["class"] = "ConditionNode";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["h"] = 60;
+		["link_type"] = false;
+		["name"] = "consumeItemNameIsSet";
+		["posX"] = 1620;
+		["posY"] = -210;
+		["script"] = "function condition(self)\
+   return self:getBBVar(\"consumeItemName\") ~= nil\
+end";
+		["w"] = 240;
+	};
+	["node_consumeItem_00067"] = {
+		["ID"] = 67;
+		["class"] = "CoroutineAction";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "consumeItem";
+		["posX"] = 1140;
+		["posY"] = 480;
+		["script"] = "running_function = Entity.consumeItem_running\
+finish_function = Entity.consumeItem_finish";
+	};
+	["node_cutChipFinisher_00084"] = {
+		["ID"] = 84;
+		["child"] = "cutChip";
+		["class"] = "Finisher";
+		["connectionsID"] = {
+			[1] = 82;
+		};
+		["guard"] = "shouldCutChip";
+		["link_type"] = false;
+		["name"] = "cutChipFinisher";
+		["posX"] = 2130;
+		["posY"] = 90;
+		["script"] = "function finish_function(self)\
+   self:setBBVar(\"shouldCutChip\", nil)\
+   self:setBBVar(\"lastEquippedWeapon\", self:getInventory():getItemByName(\"kabarog_hsg.gun\"))\
+end";
+	};
+	["node_cutChip_00082"] = {
+		["ID"] = 82;
+		["children"] = {
+			[1] = "tryUnequip";
+			[2] = "setCleaverToEquip";
+			[3] = "reequipWeapon";
+			[4] = "cutOutChip";
+			[5] = "tryUnequip";
+		};
+		["class"] = "Sequence";
+		["connectionsID"] = {
+			[1] = 85;
+			[2] = 86;
+			[3] = 87;
+			[4] = 88;
+			[5] = 91;
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "cutChip";
+		["posX"] = 2370;
+		["posY"] = 90;
+		["script"] = "";
+	};
+	["node_cutOutChip_00091"] = {
+		["ID"] = 91;
+		["class"] = "CoroutineAction";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "cutOutChip";
+		["posX"] = 2640;
+		["posY"] = 150;
+		["script"] = "running_function = Entity.cutOutChip_running";
+	};
+	["node_dialogInit_00011"] = {
+		["ID"] = 11;
+		["children"] = {
+			[1] = "skipIfFacingPlayer";
+			[2] = "talkToPlayer";
+		};
+		["class"] = "Selector";
+		["connectionsID"] = {
+			[1] = 10;
+			[2] = 15;
+		};
+		["guard"] = "canStartDialog";
+		["link_type"] = false;
+		["name"] = "dialogInit";
+		["posX"] = 900;
+		["posY"] = 300;
+		["script"] = "";
+	};
+	["node_faceObject_00066"] = {
+		["ID"] = 66;
+		["class"] = "CoroutineAction";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "faceObject";
+		["posX"] = 1620;
+		["posY"] = 300;
+		["script"] = "function running_function(self)\
+   local mc = getMC()\
+   if math.abs(getTargetAngleFlat(self, mc:getPose():getPos())) > 20 then\
+      self:setTarget(mc)\
+      self:orientationWorker()\
+   end\
+end\
+finish_function = Entity.orientation_finish";
+	};
+	["node_facePlayer_00016"] = {
+		["ID"] = 16;
+		["children"] = {
+			[1] = "orientateToPlayer";
+			[2] = "faceObject";
+		};
+		["class"] = "Sequence";
+		["connectionsID"] = {
+			[1] = 60;
+			[2] = 66;
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "facePlayer";
+		["posX"] = 1380;
+		["posY"] = 270;
+		["script"] = "";
+	};
+	["node_fall_00064"] = {
+		["ID"] = 64;
+		["class"] = "CoroutineAction";
+		["connectionsID"] = {
+		};
+		["guard"] = "isFalling";
+		["link_type"] = false;
+		["name"] = "fall";
+		["posX"] = 900;
+		["posY"] = 120;
+		["script"] = "running_function = Entity.fall_running\
+finish_function = Entity.fall_finish\
 ";
 	};
-	["node_00009"] = {
+	["node_idle_00002"] = {
+		["ID"] = 2;
+		["class"] = "Action";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "idle";
+		["posX"] = 900;
+		["posY"] = 810;
+		["script"] = "start_function = function(self)\
+   if self.defaultAnimation then\
+      self.animationsManager:playCycle(self.defaultAnimation)\
+   end\
+end";
+	};
+	["node_inDialogOrTrading_00056"] = {
+		["ID"] = 56;
+		["children"] = {
+			[1] = "isInDialog";
+			[2] = "isTrading";
+		};
+		["class"] = "Selector";
+		["connectionsID"] = {
+			[1] = 13;
+			[2] = 55;
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "inDialogOrTrading";
+		["posX"] = 1620;
+		["posY"] = -480;
+		["script"] = "";
+	};
+	["node_inDialog_00012"] = {
+		["ID"] = 12;
+		["class"] = "Action";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "inDialog";
+		["posX"] = 1140;
+		["posY"] = 0;
+		["script"] = "start_function = Entity.inDialog_start\
+running_function = true\
+--finish_function = Entity.inDialog_finish";
+	};
+	["node_isInDialog_00013"] = {
+		["ID"] = 13;
+		["class"] = "StateCondition";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "isInDialog";
+		["posX"] = 1860;
+		["posY"] = -510;
+		["script"] = "stateName = \"inDialog\"";
+	};
+	["node_isTrading_00055"] = {
+		["ID"] = 55;
+		["class"] = "StateCondition";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "isTrading";
+		["posX"] = 1860;
+		["posY"] = -450;
+		["script"] = "stateName = \"trading\"";
+	};
+	["node_livelyDialog_00076"] = {
+		["ID"] = 76;
+		["children"] = {
+			[1] = "inDialog";
+			[2] = "preventDialogRestart";
+		};
+		["class"] = "Parallel";
+		["connectionsID"] = {
+			[1] = 12;
+			[2] = 80;
+		};
+		["guard"] = "inDialogOrTrading";
+		["link_type"] = false;
+		["name"] = "livelyDialog";
+		["posX"] = 900;
+		["posY"] = 30;
+		["script"] = "orchestrator = \"resume\"\
+policy = \"sequence\"";
+	};
+	["node_orientateToPlayer_00059"] = {
+		["ID"] = 59;
+		["class"] = "StateCondition";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "orientateToPlayer";
+		["posX"] = 1860;
+		["posY"] = -390;
+		["script"] = "stateName = \"orientateToPlayer\"";
+	};
+	["node_orientateToPlayer_00060"] = {
+		["ID"] = 60;
+		["class"] = "StateCondition";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = "internal";
+		["name"] = "orientateToPlayer";
+		["posX"] = 1620;
+		["posY"] = 240;
+		["script"] = "stateName = \"orientateToPlayer\"";
+	};
+	["node_orientationNotZero_00022"] = {
+		["ID"] = 22;
+		["class"] = "ConditionNode";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "orientationNotZero";
+		["posX"] = 1860;
+		["posY"] = -330;
+		["script"] = "local abs = math.abs\
+condition = function(self)\
+   local defaultAzimuth = self:getBBVar(\"defaultAzimuth\") or 0\
+   local currentAzimuth = self:getOrientationFull()\
+   return abs(abs(defaultAzimuth) - abs(currentAzimuth)) > 0.1\
+end";
+	};
+	["node_patrol_00063"] = {
+		["ID"] = 63;
+		["class"] = "CoroutineAction";
+		["connectionsID"] = {
+		};
+		["guard"] = "shouldPatrol";
+		["link_type"] = false;
+		["name"] = "patrol";
+		["posX"] = 900;
+		["posY"] = 720;
+		["script"] = "running_function = Entity.patrol_running\
+finish_function = Entity.patrol_finish";
+	};
+	["node_preventDialogRestart_00080"] = {
+		["ID"] = 80;
+		["child"] = "stuffDuringDialog";
+		["class"] = "ForceSuccess";
+		["connectionsID"] = {
+			[1] = 81;
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "preventDialogRestart";
+		["posX"] = 1140;
+		["posY"] = 60;
+		["script"] = "";
+	};
+	["node_reequipWeapon_00074"] = {
+		["ID"] = 74;
+		["class"] = "CoroutineAction";
+		["connectionsID"] = {
+		};
+		["guard"] = "shouldReequip";
+		["link_type"] = false;
+		["name"] = "reequipWeapon";
+		["posX"] = 900;
+		["posY"] = 630;
+		["script"] = "running_function = Entity.reequipWeapon_running\
+finish_function = Entity.reequipWeapon_finish";
+	};
+	["node_reequipWeapon_00087"] = {
+		["ID"] = 87;
+		["class"] = "CoroutineAction";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = "internal";
+		["name"] = "reequipWeapon";
+		["posX"] = 2640;
+		["posY"] = 90;
+		["script"] = "running_function = Entity.reequipWeapon_running\
+finish_function = Entity.reequipWeapon_finish";
+	};
+	["node_root_00001"] = {
+		["ID"] = 1;
+		["children"] = {
+			[1] = "livelyDialog";
+			[2] = "fall";
+			[3] = "ai.trees.damageable";
+			[4] = "dialogInit";
+			[5] = "unequipAndConsume";
+			[6] = "turnBack";
+			[7] = "reequipWeapon";
+			[8] = "patrol";
+			[9] = "idle";
+		};
+		["class"] = "DynamicGuardSelector";
+		["connectionsID"] = {
+			[1] = 2;
+			[2] = 11;
+			[3] = 21;
+			[4] = 63;
+			[5] = 64;
+			[6] = 70;
+			[7] = 74;
+			[8] = 76;
+			[9] = 92;
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "root";
+		["posX"] = 630;
+		["posY"] = 270;
+		["script"] = "";
+	};
+	["node_setCleaverToEquip_00086"] = {
+		["ID"] = 86;
+		["class"] = "Action";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "setCleaverToEquip";
+		["posX"] = 2640;
+		["posY"] = 30;
+		["script"] = "function start_function(self)\
+   self:setBBVar(\"lastEquippedWeapon\", self:getInventory():getItemByName(\"cleaver.wpn\"))\
+end";
+	};
+	["node_shouldCutChip_00083"] = {
+		["ID"] = 83;
+		["class"] = "ConditionNode";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "shouldCutChip";
+		["posX"] = 2130;
+		["posY"] = -60;
+		["script"] = "function condition(self)\
+   return self:getBBVar(\"shouldCutChip\")\
+end";
+	};
+	["node_shouldFacePlayer_00009"] = {
 		["ID"] = 9;
 		["children"] = {
-			[1] = "talkRequest";
+			[1] = "talkRequest_dummy";
 			[2] = "angleBigger10";
 		};
 		["class"] = "Sequence";
@@ -151,87 +469,39 @@ local obj1 = {
 		["posY"] = -240;
 		["script"] = "";
 	};
-	["node_00010"] = {
-		["ID"] = 10;
-		["class"] = "Action";
+	["node_shouldReequip_00075"] = {
+		["ID"] = 75;
+		["class"] = "ConditionNode";
 		["connectionsID"] = {
 		};
 		["guard"] = "";
 		["link_type"] = false;
-		["name"] = "talkToPlayer";
-		["posX"] = 1140;
-		["posY"] = 210;
-		["script"] = "{\
-   start_function = Entity.talkToPlayer_start,\
-}\
-";
+		["name"] = "shouldReequip";
+		["posX"] = 1620;
+		["posY"] = -90;
+		["script"] = "function condition(self)\
+   return self:getBBVar(\"lastEquippedWeapon\") ~= nil\
+end";
 	};
-	["node_00011"] = {
-		["ID"] = 11;
+	["node_shouldTurn_00037"] = {
+		["ID"] = 37;
 		["children"] = {
-			[1] = "skipIfFacingPlayer";
-			[2] = "talkToPlayer";
+			[1] = "orientateToPlayer";
+			[2] = "orientationNotZero";
 		};
-		["class"] = "Selector";
+		["class"] = "Sequence";
 		["connectionsID"] = {
-			[1] = 10;
-			[2] = 15;
+			[1] = 22;
+			[2] = 59;
 		};
-		["guard"] = "shouldStartDialog";
+		["guard"] = "shouldNotPatrol";
 		["link_type"] = false;
-		["name"] = "dialogInit";
-		["posX"] = 900;
-		["posY"] = 180;
+		["name"] = "shouldTurn";
+		["posX"] = 1620;
+		["posY"] = -330;
 		["script"] = "";
 	};
-	["node_00012"] = {
-		["ID"] = 12;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "isInDialog";
-		["link_type"] = false;
-		["name"] = "inDialog";
-		["posX"] = 900;
-		["posY"] = 270;
-		["script"] = "{\
-   start_function = Entity.inDialog_start,\
-   running_function = true,\
-   --finish_function = Entity.inDialog_finish,\
-}\
-";
-	};
-	["node_00013"] = {
-		["ID"] = 13;
-		["class"] = "StateCondition";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "isInDialog";
-		["posX"] = 1380;
-		["posY"] = -330;
-		["script"] = "{\
-   stateName = \"inDialog\",\
-}\
-";
-	};
-	["node_00014"] = {
-		["ID"] = 14;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "angleBigger10";
-		["link_type"] = false;
-		["name"] = "setTargetObjPlayer";
-		["posX"] = 1620;
-		["posY"] = 90;
-		["script"] = "{\
-   start_function = Entity.setTargetObjPlayer_start,\
-}\
-";
-	};
-	["node_00015"] = {
+	["node_skipIfFacingPlayer_00015"] = {
 		["ID"] = 15;
 		["child"] = "facePlayer";
 		["class"] = "ForceFailure";
@@ -242,559 +512,163 @@ local obj1 = {
 		["link_type"] = false;
 		["name"] = "skipIfFacingPlayer";
 		["posX"] = 1140;
-		["posY"] = 150;
+		["posY"] = 270;
 		["script"] = "";
 	};
-	["node_00016"] = {
-		["ID"] = 16;
+	["node_stuffDuringDialog_00081"] = {
+		["ID"] = 81;
 		["children"] = {
-			[1] = "setTargetObjPlayer";
-			[2] = "faceObject";
-			[3] = "resetTargetObj";
+			[1] = "unequipAndConsume";
+			[2] = "cutChipFinisher";
 		};
-		["class"] = "Sequence";
+		["class"] = "DynamicGuardSelector";
 		["connectionsID"] = {
-			[1] = 7;
-			[2] = 14;
-			[3] = 19;
+			[1] = 79;
+			[2] = 84;
 		};
 		["guard"] = "";
 		["link_type"] = false;
-		["name"] = "facePlayer";
-		["posX"] = 1380;
-		["posY"] = 150;
+		["name"] = "stuffDuringDialog";
+		["posX"] = 1890;
+		["posY"] = 60;
 		["script"] = "";
 	};
-	["node_00017"] = {
-		["ID"] = 17;
+	["node_talkRequest_dummy_00006"] = {
+		["ID"] = 6;
+		["class"] = "Succeeder";
+		["connectionsID"] = {
+		};
+		["guard"] = "talkRequest";
+		["link_type"] = false;
+		["name"] = "talkRequest_dummy";
+		["posX"] = 1380;
+		["posY"] = -270;
+		["script"] = "stateName = \"activate\"";
+	};
+	["node_talkToPlayer_00010"] = {
+		["ID"] = 10;
 		["class"] = "Action";
 		["connectionsID"] = {
 		};
 		["guard"] = "";
 		["link_type"] = false;
-		["name"] = "setOrientationZero";
+		["name"] = "talkToPlayer";
 		["posX"] = 1140;
-		["posY"] = 300;
-		["script"] = "{\
-   start_function = function(self)\
-      self:setBBVar(\"orientAngle\", 0)\
-   end,\
-}\
-";
+		["posY"] = 330;
+		["script"] = "start_function = Entity.talkToPlayer_start";
 	};
-	["node_00018"] = {
-		["ID"] = 18;
-		["class"] = "Action";
+	["node_tryUnequip_00072"] = {
+		["ID"] = 72;
+		["child"] = "unequipWeapon";
+		["class"] = "ForceSuccess";
+		["connectionsID"] = {
+			[1] = 69;
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "tryUnequip";
+		["posX"] = 1140;
+		["posY"] = 420;
+		["script"] = "";
+	};
+	["node_tryUnequip_00085"] = {
+		["ID"] = 85;
+		["class"] = "ForceSuccess";
 		["connectionsID"] = {
 		};
 		["guard"] = "";
 		["link_type"] = "internal";
-		["name"] = "faceObject";
-		["posX"] = 1140;
-		["posY"] = 360;
-		["script"] = "{\
-   start_function = Entity.faceObject_start,\
-   running_function = Entity.faceObject_running,\
-   finish_function = Entity.faceObject_finish,\
-}\
-";
+		["name"] = "tryUnequip";
+		["posX"] = 2640;
+		["posY"] = -30;
+		["script"] = "";
 	};
-	["node_00019"] = {
-		["ID"] = 19;
-		["class"] = "Action";
+	["node_tryUnequip_00088"] = {
+		["ID"] = 88;
+		["class"] = "ForceSuccess";
 		["connectionsID"] = {
 		};
 		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "resetTargetObj";
-		["posX"] = 1620;
+		["link_type"] = "internal";
+		["name"] = "tryUnequip";
+		["posX"] = 2640;
 		["posY"] = 210;
-		["script"] = "{\
-   start_function = function(self)\
-      self:setBBVar(\"targetObj\", nil)\
-   end,\
-}\
-";
+		["script"] = "";
 	};
-	["node_00020"] = {
-		["ID"] = 20;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "resetOrientation";
-		["posX"] = 1140;
-		["posY"] = 420;
-		["script"] = "{\
-   start_function = function(self)\
-      self:setBBVar(\"orientAngle\", nil)\
-   end,\
-}\
-";
-	};
-	["node_00021"] = {
+	["node_turnBack_00021"] = {
 		["ID"] = 21;
-		["children"] = {
-			[1] = "setOrientationZero";
-			[2] = "faceObject";
-			[3] = "resetOrientation";
-		};
-		["class"] = "Sequence";
+		["class"] = "CoroutineAction";
 		["connectionsID"] = {
-			[1] = 17;
-			[2] = 18;
-			[3] = 20;
 		};
 		["guard"] = "shouldTurn";
 		["link_type"] = false;
 		["name"] = "turnBack";
 		["posX"] = 900;
-		["posY"] = 360;
-		["script"] = "";
-	};
-	["node_00022"] = {
-		["ID"] = 22;
-		["class"] = "ConditionNode";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "orientationNotZero";
-		["posX"] = 1380;
-		["posY"] = -150;
-		["script"] = "{\
-   condition = function(self)\
-      return self:getOrientationFull() ~= 0\
-   end,\
-}\
-";
-	};
-	["node_00023"] = {
-		["ID"] = 23;
-		["class"] = "ConditionNode";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "hasNextWaypoint";
-		["posX"] = 1620;
-		["posY"] = -90;
-		["script"] = "{\
-   condition = function(self)\
-      return self.nextPatrolPoint > 0\
-   end,\
-}\
-";
-	};
-	["node_00024"] = {
-		["ID"] = 24;
-		["class"] = "EventCondition";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "enteredNextWaypoint";
-		["posX"] = 1620;
-		["posY"] = -30;
-		["script"] = "{\
-   eventName = \"OnTriggerEnter\",\
-   condition = function(self, event)\
-      if event.obj == self:getBBVar(\"nextWaypoint\") then\
-         event.consumed = false\
-         return true\
-      end\
-      return false\
-   end\
-}\
-";
-	};
-	["node_00025"] = {
-		["ID"] = 25;
-		["child"] = "enteredNextWaypoint";
-		["class"] = "Invertor";
-		["connectionsID"] = {
-			[1] = 24;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "notEnteredNextWp";
-		["posX"] = 1380;
-		["posY"] = -30;
-		["script"] = "";
-	};
-	["node_00026"] = {
-		["ID"] = 26;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "notEnteredNextWp";
-		["link_type"] = false;
-		["name"] = "runToSetWp";
-		["posX"] = 1890;
-		["posY"] = 600;
-		["script"] = "{\
-   start_function = Entity.runToSetWp_start,\
-   running_function = true,\
-   finish_function = Entity.resetTarget,\
-}\
-";
-	};
-	["node_00030"] = {
-		["ID"] = 30;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "getNextWp";
-		["posX"] = 1650;
 		["posY"] = 540;
-		["script"] = "{\
-   start_function = function(self)\
-      self:setBBVar(\"nextWaypoint\", self.patrolPoints[self.nextPatrolPoint])\
-   end,\
-}\
-";
+		["script"] = "function running_function(self)\
+   local defaultAzimuth = self:getBBVar(\"defaultAzimuth\") or 0\
+   self:setOrientationFull(defaultAzimuth)\
+   self:orientationWorker()\
+end\
+\
+finish_function = Entity.orientation_finish";
 	};
-	["node_00031"] = {
-		["ID"] = 31;
+	["node_unequipAndConsume_00070"] = {
+		["ID"] = 70;
 		["children"] = {
-			[1] = "patrolCycleCondition";
-			[2] = "resetSpeed";
+			[1] = "tryUnequip";
+			[2] = "consumeItem";
 		};
 		["class"] = "Sequence";
 		["connectionsID"] = {
-			[1] = 36;
-			[2] = 39;
+			[1] = 67;
+			[2] = 72;
 		};
-		["guard"] = "shouldPatrol";
+		["guard"] = "consumeItemNameIsSet";
 		["link_type"] = false;
-		["name"] = "patrol";
+		["name"] = "unequipAndConsume";
 		["posX"] = 900;
-		["posY"] = 630;
-		["script"] = "{\
-   finish=Entity.resetSpeed,\
-}\
-";
-	};
-	["node_00032"] = {
-		["ID"] = 32;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "advanceWp";
-		["posX"] = 1650;
-		["posY"] = 660;
-		["script"] = "{\
-   start_function = Entity.advanceWp_start,\
-}\
-";
-	};
-	["node_00034"] = {
-		["ID"] = 34;
-		["child"] = "runToSetWp";
-		["class"] = "ForceSuccess";
-		["connectionsID"] = {
-			[1] = 26;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "forceSuccessGuard";
-		["posX"] = 1650;
-		["posY"] = 600;
-		["script"] = "{\
-   -- when runToSetWp guard fails this node allows to continue to advanceWp\
-}\
-";
-	};
-	["node_00035"] = {
-		["ID"] = 35;
-		["child"] = "hasNextWaypoint";
-		["class"] = "Invertor";
-		["connectionsID"] = {
-			[1] = 23;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "noNextWaypoint";
-		["posX"] = 1380;
-		["posY"] = -90;
+		["posY"] = 450;
 		["script"] = "";
 	};
-	["node_00036"] = {
-		["ID"] = 36;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "noNextWaypoint";
-		["link_type"] = false;
-		["name"] = "resetSpeed";
-		["posX"] = 1140;
-		["posY"] = 660;
-		["script"] = "{\
-   start_function = Entity.resetSpeed,\
-}\
-";
-	};
-	["node_00037"] = {
-		["ID"] = 37;
-		["children"] = {
-			[1] = "orientationNotZero";
-			[2] = "shouldNotPatrol";
-		};
+	["node_unequipAndConsume_00079"] = {
+		["ID"] = 79;
 		["class"] = "Sequence";
-		["connectionsID"] = {
-			[1] = 45;
-			[2] = 47;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "shouldTurn";
-		["posX"] = 1620;
-		["posY"] = -330;
-		["script"] = "";
-	};
-	["node_00038"] = {
-		["ID"] = 38;
-		["children"] = {
-			[1] = "getNextWp";
-			[2] = "forceSuccessGuard";
-			[3] = "advanceWp";
-			[4] = "forceFail";
-		};
-		["class"] = "Sequence";
-		["connectionsID"] = {
-			[1] = 30;
-			[2] = 32;
-			[3] = 34;
-			[4] = 40;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "patrolCycle";
-		["posX"] = 1380;
-		["posY"] = 600;
-		["script"] = "";
-	};
-	["node_00039"] = {
-		["ID"] = 39;
-		["child"] = "patrolCycle";
-		["class"] = "UntilSuccess";
-		["connectionsID"] = {
-			[1] = 38;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "patrolCycleCondition";
-		["posX"] = 1140;
-		["posY"] = 600;
-		["script"] = "";
-	};
-	["node_00040"] = {
-		["ID"] = 40;
-		["class"] = "Failer";
 		["connectionsID"] = {
 		};
 		["guard"] = "";
 		["link_type"] = "internal";
-		["name"] = "forceFail";
-		["posX"] = 1650;
-		["posY"] = 720;
+		["name"] = "unequipAndConsume";
+		["posX"] = 2130;
+		["posY"] = 30;
 		["script"] = "";
 	};
-	["node_00041"] = {
-		["ID"] = 41;
-		["class"] = "StateCondition";
+	["node_unequipWeapon_00069"] = {
+		["ID"] = 69;
+		["class"] = "CoroutineAction";
 		["connectionsID"] = {
 		};
-		["guard"] = "";
+		["guard"] = "weaponEquipped";
 		["link_type"] = false;
-		["name"] = "patrolActive";
-		["posX"] = 2100;
-		["posY"] = -210;
-		["script"] = "{\
-   stateName = \"patrolActive\",\
-}\
-";
+		["name"] = "unequipWeapon";
+		["posX"] = 1380;
+		["posY"] = 420;
+		["script"] = "running_function = Entity.unequipWeapon_running\
+finish_function = Entity.unequipWeapon_finish";
 	};
-	["node_00042"] = {
-		["ID"] = 42;
-		["children"] = {
-			[1] = "patrolActive";
-			[2] = "hasNextWaypoint";
-		};
-		["class"] = "Sequence";
-		["connectionsID"] = {
-			[1] = 41;
-			[2] = 43;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "shouldPatrol";
-		["posX"] = 1860;
-		["posY"] = -180;
-		["script"] = "";
-	};
-	["node_00043"] = {
-		["ID"] = 43;
+	["node_weaponEquipped_00071"] = {
+		["ID"] = 71;
 		["class"] = "ConditionNode";
 		["connectionsID"] = {
 		};
 		["guard"] = "";
-		["link_type"] = "internal";
-		["name"] = "hasNextWaypoint";
-		["posX"] = 2100;
+		["link_type"] = false;
+		["name"] = "weaponEquipped";
+		["posX"] = 1620;
 		["posY"] = -150;
-		["script"] = "{\
-   condition = function(self)\
-      return self.nextPatrolPoint > 0\
-   end,\
-}\
-";
-	};
-	["node_00045"] = {
-		["ID"] = 45;
-		["class"] = "ConditionNode";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = "internal";
-		["name"] = "orientationNotZero";
-		["posX"] = 1860;
-		["posY"] = -360;
-		["script"] = "{\
-   condition = function(self)\
-      return self:getOrientationFull() ~= 0\
-   end,\
-}\
-";
-	};
-	["node_00046"] = {
-		["ID"] = 46;
-		["child"] = "shouldPatrol";
-		["class"] = "Invertor";
-		["connectionsID"] = {
-			[1] = 42;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "shouldNotPatrol";
-		["posX"] = 1620;
-		["posY"] = -180;
-		["script"] = "";
-	};
-	["node_00047"] = {
-		["ID"] = 47;
-		["class"] = "Invertor";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = "internal";
-		["name"] = "shouldNotPatrol";
-		["posX"] = 1860;
-		["posY"] = -300;
-		["script"] = "";
-	};
-	["node_00048"] = {
-		["ID"] = 48;
-		["class"] = "ConditionNode";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "isDialogInitiator";
-		["posX"] = 1380;
-		["posY"] = -450;
-		["script"] = "{\
-   condition = Entity.isDialogInitiator,\
-}\
-";
-	};
-	["node_00049"] = {
-		["ID"] = 49;
-		["class"] = "SenseCondition";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "playerDetect";
-		["posX"] = 1380;
-		["posY"] = -510;
-		["script"] = "{\
-   senseName = \"playerDetect\",\
-}\
-";
-	};
-	["node_00050"] = {
-		["ID"] = 50;
-		["children"] = {
-			[1] = "playerDetect";
-			[2] = "isDialogInitiator";
-			[3] = "playerInDialogDistance";
-		};
-		["class"] = "Sequence";
-		["connectionsID"] = {
-			[1] = 48;
-			[2] = 49;
-			[3] = 54;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "wantsToTalk";
-		["posX"] = 1140;
-		["posY"] = -450;
-		["script"] = "";
-	};
-	["node_00051"] = {
-		["ID"] = 51;
-		["class"] = "StateCondition";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = "internal";
-		["name"] = "talkRequest";
-		["posX"] = 1140;
-		["posY"] = -390;
-		["script"] = "{\
-   stateName = \"talkRequest\",\
-}\
-";
-	};
-	["node_00053"] = {
-		["ID"] = 53;
-		["children"] = {
-			[1] = "wantsToTalk";
-			[2] = "talkRequest";
-		};
-		["class"] = "Selector";
-		["connectionsID"] = {
-			[1] = 50;
-			[2] = 51;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "shouldStartDialog";
-		["posX"] = 900;
-		["posY"] = -420;
-		["script"] = "";
-	};
-	["node_00054"] = {
-		["ID"] = 54;
-		["class"] = "SenseCondition";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "playerInDialogDistance";
-		["posX"] = 1380;
-		["posY"] = -390;
-		["script"] = "{\
-   senseName = \"playerInDialogDistance\",\
-}\
-";
+		["script"] = "function condition(self)\
+   return self:getWeaponSlotItem() ~= nil\
+end";
 	};
 }
 return obj1

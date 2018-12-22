@@ -13,7 +13,7 @@ local obj1 = {
 			["event"] = "discuss";
 			["posX"] = 300;
 			["posY"] = 40;
-			["script"] = "function Condition:onCheck(obj)\
+			["script"] = "function Condition:onCheck(name, obj)\
    self:writeLog(\"In a cozy cave near Outpost 74 lives a friendly cannibal that goes by the name 'Mister Green'. This fellow's a real connosieur and loves to conduct various culinary experiments. He said that if I bring him exotic ingredients for his cooking, he will reward me with some useful stuff.\")\
    return true\
 end\
@@ -47,6 +47,7 @@ end\
 		};
 	};
 	["script"] = "function Quest:onCreate()\
+   self:start()\
 end\
 \
 function Quest:onStart()\

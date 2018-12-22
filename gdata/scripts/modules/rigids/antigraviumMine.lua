@@ -1,55 +1,50 @@
-local oo = require "loop.simple"
+local oo = require "loop.multiple"
+local CInteractable = require "mixins.interactable"
+local _rootRigid = (require "roots")._rootRigid
 
-local CAntigraviumMine = oo.class({})
+---@class CAntigraviumMine : shRigidEntity
+local CAntigraviumMine = oo.class({}, _rootRigid, CInteractable)
 
-function CAntigraviumMine:OnCreate()
+function CAntigraviumMine:OnCreate(params)
+   params = params or {}
+   CInteractable.OnCreate(self, params)
    self.initialResource = 3
    self.resource = math.floor(loadParamNumber(self, "resource", 3))
    self.fertility = math.floor(loadParamNumber(self, "fertility", 2))
    self.crystalMined = false
    self.meshRaycast = loadParam(self, "meshRaycast", true)
-   self.baseObj = loadParamObjects( self, "baseObj", nil )[1]
+   self.baseObj = loadParamObjects(self, "baseObj", nil)[1]
 
-   self.interactor = self:createAspect( "interactor" )
-   self.interactor:setObject( self )
-   self.interactor:setRaycastRadius( 150 )
-   self.interactor:getPose():setParent( self:getPose() )
-   self.interactor:getPose():resetLocalPose()
-   self.interactor:getPose():setLocalPos( {x=0,y=100,z=0} )
-   self.interactor:setRaycastActive( true )
+   self.interactor:getPose():setLocalPos({x=0,y=100,z=0})
    if self.meshRaycast then
-      self.interactor:setRaycastTarget( self:getPose() )
+      self.interactor:setRaycastTarget(self:getPose())
    end
 
-   if ( self.isMaterialHelper and not self:isMaterialHelper() ) then
-      self:addMaterial( "highlight" )
-      self:setMaterialVisible( "highlight", false )
-   end
-
-   self:playAnimation( "animate", true )
+   self:playAnimation("animate", true)
 
    if not self.omni and self:getMeshByName("main_1") then
       self.omniIntensity = 4
-      self.omni = self:createAspect( "omni" )
-      self.omni:getPose():setParent( self:getMeshByName("main_1"):getPose() )
+      self.omni = self:createAspect("omni")
+      self.omni:getPose():setParent(self:getMeshByName("main_1"):getPose())
       self.omni:getPose():resetLocalPose()
-      self.omni:getPose():setLocalPos( {x=0,y=100,z=0} )
-      self.omni:setColor( {r=0,g=0.5,b=0} )
-      self.omni:setRadius( 400 )
-      self.omni:setVisible( true )
-      self.omni:setIntensity( self.omniIntensity )
+      self.omni:getPose():setLocalPos({x=0,y=100,z=0})
+      self.omni:setColor({r=0,g=0.5,b=0})
+      self.omni:setRadius(400)
+      self.omni:setVisible(true)
+      self.omni:setIntensity(self.omniIntensity)
    end
 
    self:updateMeshes()
 end
 
-function CAntigraviumMine:activate( char )
+function CAntigraviumMine:activate(char)
+   CInteractable.activate(self, char)
    if self.resource <= 0 then
-      gameplayUI:showInfoTextEx( "There is nothing to mine here", "minor", "" )
-   elseif not hasPlayerItem("pickaxe.wpn") then
-      gameplayUI:showInfoTextEx( "I need a pickaxe to mine", "minor", "" )
+      gameplayUI:showInfoTextEx("There is nothing to mine here", "minor", "")
+   elseif not hasObjItem("pickaxe.wpn", char) then
+      gameplayUI:showInfoTextEx("I need a pickaxe to mine", "minor", "")
    else
-      char:startMining( self )
+      char:startMining(self)
       return true
    end
    return false
@@ -59,35 +54,35 @@ function CAntigraviumMine:updateMeshes()
    local depletion = self.initialResource - self.resource
    if depletion > 0 then
       for i=1,depletion do
-         self:onMiningHit( i )
+         self:onMiningHit(i)
       end
    end
 end
 
-function CAntigraviumMine:tryHideMesh( meshName )
+function CAntigraviumMine:tryHideMesh(meshName)
    local mesh = self:getMeshByName(meshName)
    if mesh then
-      mesh:setVisible( false )
+      mesh:setVisible(false)
    end
 end
 
-function CAntigraviumMine:onMiningHit( fakeDepletion )
+function CAntigraviumMine:onMiningHit(fakeDepletion)
    local stage = fakeDepletion or (self.initialResource - self.resource)
    if not fakeDepletion then
       self:omniFlash()
    end
    if stage == 1 then
       self.omniIntensity = 3
-      self:tryHideMesh( "main_1" )
+      self:tryHideMesh("main_1")
    elseif stage == 2 then
       self.omniIntensity = 2
-      self:tryHideMesh( "main_2" )
-      self:tryHideMesh( "shard_1" )
+      self:tryHideMesh("main_2")
+      self:tryHideMesh("shard_1")
    elseif stage == 3 then
       self.omniIntensity = 0
-      self:tryHideMesh( "main_3" )
-      self:tryHideMesh( "shard_2" )
-      self:tryHideMesh( "rocks_1" )
+      self:tryHideMesh("main_3")
+      self:tryHideMesh("shard_2")
+      self:tryHideMesh("rocks_1")
       if self:getMeshByName("main_4") then self:getMeshByName("main_4"):setTexture(0,"antigravium_minable_empty_dif.dds") end
       if self.baseObj and self.baseObj:getMeshByName("crystal") then
          self.baseObj:getMeshByName("crystal"):setTexture(0,"antigravium_minable_empty_dif.dds")
@@ -98,9 +93,9 @@ function CAntigraviumMine:onMiningHit( fakeDepletion )
       self:setCollisionCharacters(false, false)
    end
    if fakeDepletion then
-      self.omni:setIntensity( self.omniIntensity )
+      self.omni:setIntensity(self.omniIntensity)
       if self.omniIntensity == 0 then
-         self.omni:setVisible( false )
+         self.omni:setVisible(false)
       end
    end
 end
@@ -112,20 +107,20 @@ function CAntigraviumMine:omniFlash()
    local delta = (target - self.omni:getIntensity())/(duration/updateInterval)
    local timer
    timer = runTimer(updateInterval, nil, function()
-      self.omni:setIntensity( self.omni:getIntensity() + delta )
+      self.omni:setIntensity(self.omni:getIntensity() + delta)
       if self.omni:getIntensity() >= target then
-         self.omni:setIntensity( target )
+         self.omni:setIntensity(target)
          timer:stop()
 
          target = self.omniIntensity
          delta = (target - self.omni:getIntensity())/(duration/updateInterval)
          timer = runTimer(updateInterval, nil, function()
-            self.omni:setIntensity( self.omni:getIntensity() + delta )
+            self.omni:setIntensity(self.omni:getIntensity() + delta)
             if self.omni:getIntensity() <= target then
-               self.omni:setIntensity( target )
+               self.omni:setIntensity(target)
                timer:stop()
                if target == 0 then
-                  self.omni:setVisible( false )
+                  self.omni:setVisible(false)
                end
             end
          end, true)
@@ -133,38 +128,8 @@ function CAntigraviumMine:omniFlash()
    end, true)
 end
 
-function CAntigraviumMine:deactivate( char )
-   return true
-end
-
 function CAntigraviumMine:getActivationsLeft()
    return self.resource
-end
-
-function CAntigraviumMine:OnInteractHighlightBegin( obj )
-   if ( not self.setMaterialVisible or self.interacting ) then
-      return
-   end
-
-   self:stopHighlightTimer()
-
-   self.highlightTimer = runTimer( 2, nil, function()
-      self:setMaterialVisible( "highlight", false )
-      self.highlightTimer = nil
-   end, false )
-
-   self:setMaterialVisible( "highlight", true )
-end
-
-function CAntigraviumMine:stopHighlightTimer()
-   if ( self.highlightTimer ) then
-      self.highlightTimer:stop()
-      self.highlightTimer = nil
-   end
-end
-
-function CAntigraviumMine:getType()
-   return "activator"
 end
 
 function CAntigraviumMine:getLabel()
@@ -187,12 +152,12 @@ function CAntigraviumMine:getInteractLabel()
    return "mine"
 end
 
-function CAntigraviumMine:OnSaveState( state )
+function CAntigraviumMine:OnSaveState(state)
    state.resource = self.resource
    state.crystalMined = self.crystalMined
 end
 
-function CAntigraviumMine:OnLoadState( state )
+function CAntigraviumMine:OnLoadState(state)
    self.resource = state.resource
    self.crystalMined = state.crystalMined
    self:updateMeshes()

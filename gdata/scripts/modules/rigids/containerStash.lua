@@ -1,27 +1,24 @@
 local oo = require "loop.simple"
-local CInventory = (require "inventory").CInventory
 local CContainer = (require "rigids.container").CContainer
 
 local hlp = require "helpers"
 
+---@class CContainerStash : CContainer
 local CContainerStash = oo.class({}, CContainer)
 
 function CContainerStash:OnCreate()
-   self.inventory = CInventory{}
-   self.inventory:init( self )
-   self.inventory:setRadius( loadParamNumber ( self, "raycastRadius", 100) )
-   self.labelId = loadParam( self, "labelId", "" )
+   CContainer.OnCreate(self)
    self.gStash = hlp.CGParam("playerStash")
 end
 
-function CContainerStash:activate( obj )
-   self.inventory.itemsManager.items = {}
-   self.inventory.itemsManager:deserialize( self.gStash:get() or {} )
+function CContainerStash:activate(obj)
+   self:getInventory().items = {}
+   self:getInventory():deserialize(self.gStash:get() or {})
    return CContainer.activate(self, obj)
 end
 
-function CContainerStash:deactivate( obj )
-   self.gStash:set(self.inventory.itemsManager:serialize() or {})
+function CContainerStash:deactivate(obj)
+   self.gStash:set(self:getInventory():serialize() or {})
    return CContainer.deactivate(self, obj)
 end
 
@@ -34,12 +31,12 @@ function CContainerStash:getLabel()
    end
 end
 
-
 -- force overwrite parent save routines
 function CContainerStash:OnSaveState(state)
 end
 
 function CContainerStash:OnLoadState(state)
+   self:updateLockMeshes() --Simply hides the 'Locked' submesh
 end
 
 return {CContainerStash=CContainerStash}
