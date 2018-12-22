@@ -1,25 +1,20 @@
 local oo = require "loop.simple"
-
 local CCharacter = (require "character").CCharacter
+local CActionsScheduler = (require "actionsScheduler").CActionsScheduler
+local CAction = (require "action").CAction
+local CNode = (require "node").CNode
+local CInventory = (require "inventory").CInventory
+
 local hlp = require "helpers"
-local coro = require "coroutines.helpers"
 
-local f = require "fun"
-local partial = f.partial
-local random = require "random"
-
-local ai = require "ai"
-
----@class CKabarog : CCharacter
 local CKabarog = oo.class({}, CCharacter)
-
----@class CKabarogWeak : CKabarog
 local CKabarogWeak = oo.class({}, CKabarog)
 
-function CKabarogWeak:getDefaultParameters()
-   local parameters = CKabarog.getDefaultParameters(self)
-   parameters.healthMax = 250
-   return parameters
+function CKabarogWeak:OnCreate()
+   CKabarog.OnCreate(self)
+
+   self.stats.healthMax = {base = 250, current = 250, min = 1}
+   self:setStatCount( "health", self.stats.healthMax.current )
 end
 
 function CKabarogWeak:getLabel()
@@ -27,273 +22,647 @@ function CKabarogWeak:getLabel()
 end
 
 function CKabarogWeak:addWeapon()
-   CKabarog.addWeapon(self)
+   CKabarog.addWeapon( self )
    self.weapon:setDamage(10)
 end
 
-function CKabarog:OnCreate(params)
-   CCharacter.OnCreate(self, params)
+function CKabarog:initWithParams( params )
+   local healthMax = params.healthMax or 500
+   self.stats.healthMax = {base = healthMax, current = healthMax, min = 1}
+   self:setStatCount( "health", self.stats.healthMax.current )
 
-   self:initSenses()
-   self:initFX()
+   self.senseScheduler:setFeelRadius( loadParamNumber(self, "viewRange", 10000) )
 
-   self:setGuild("GLD_ANIMAL")
+   self.parameters.maxLandingSpeed = 1800
 
-   self:createTree("ai.trees.kabarog")
-   self.shouldPlayHurtGenerator = random.shuffledSequenceGenerator{true, false, false, false, false}
-end
+   self.parameters.viewDist        = 4000
+   self.parameters.backViewDist    = 2000
+   self.parameters.attackDist      = 800
+   self.parameters.attackAngle     = 100
 
-function CKabarog:getDefaultParameters()
-   local parameters = CCharacter.getDefaultParameters(self)
-   parameters.maxLandingSpeed  = 750
-   parameters.weaponSlotId     = 1
-   parameters.zoneSize         = 1000
+   self.parameters.defenceDist     = 200
 
-   parameters.feelRadiusCutoff = 2000
-
-   parameters.viewDist         = 1250
-   parameters.viewAngle        = 180
-   parameters.backViewDist     = 500
-   parameters.attackDist       = 250
-   parameters.attackAngle      = 100
-
-   parameters.healthMax        = 500
-
-   return parameters
-end
-
-function CKabarog:loadDynamicParameters(params)
-   CCharacter.loadDynamicParameters(self, params)
-   self.parameters.zoneSize = params.zoneSize
-   self.parameters.feelRadiusCutoff = params.feelRadiusCutoff
-   self.lootItems = params.lootItems
-end
-
-function CKabarog:loadParameters()
-   CCharacter.loadParameters(self)
-
-   self.senseScheduler:setFeelRadius(loadParamNumber(self, "feelRadiusCutoff"))
+   self.parameters.enemySpotted    = 3
 
    self.headLookingLimits = {x=10, y=30, z=0}
 
-   self.lootItems = self.lootItems or loadParamItemCounts(self, "lootItems", {})
-   if loadParam(self, "defaultLoot", true) then
-      self.lootItems["meat.itm"] = 1
-      self.lootItems["horn.itm"] = 1
-   end
+   self.standardLoot = params.standardLoot or {}
+   self.lootItems = params.lootItems or loadParamItemCounts( self, "lootItems", {} )
 
-   for name, count in pairs(self.lootItems) do
-      self:getInventory():addItem(name, count)
+   if not params.load then
+      for name, count in pairs(self.standardLoot) do
+         for i=1, count do
+            self.itemsManager:addItem(name)
+         end
+      end
+      for name, count in pairs(self.lootItems) do
+         for i=1, count do
+            self.itemsManager:addItem(name)
+         end
+      end
    end
 
    self:addWeapon()
-end
-
-function CKabarog:initFX()
-   if not self.fx then
-      self.fx = {}
-      self.fx.blood1 = self:createAspect("kab_blood1.sps")
-      self.fx.blood1:setLoop(false)
-      self.fx.blood1:getPose():setParent(self:getBonePose("item_slot1"))
-      self.fx.blood1:getPose():resetLocalPos()
-      self.fx.blood1:disable()
-
-      self.fx.blood2 = self:createAspect("kab_blood2.sps")
-      self.fx.blood2:setLoop(false)
-      self.fx.blood2:getPose():setParent(self:getBonePose("item_slot1"))
-      self.fx.blood2:getPose():resetLocalPos()
-      self.fx.blood2:disable()
-
-      self.fx.blood_death = self:createAspect("kab_blood_death.sps")
-      self.fx.blood_death:setLoop(false)
-      self.fx.blood_death:getPose():setParent(self:getBonePose("item_slot1"))
-      self.fx.blood_death:getPose():resetLocalPos()
-      self.fx.blood_death:disable()
-   end
 end
 
 function CKabarog:addWeapon()
    if not self.weapon then
       self.weapon = hlp.safeCreateItemWithoutModel("kabarog_bite.wpn", "CWeapon")
       self.weapon:setOffset(false)
-      self.weapon:setDimensions(35, 0)
-      self.weapon = self:getInventory():addItemObj(self.weapon)
-      self:getInventory():equipSlotWithItem(self:getWeaponSlot(), self.weapon:getId(), true)
+      self.weapon:setDimensions(25, 0)
+      self.weapon = self.itemsManager:addItemObj( self.weapon )
+      self.itemsManager:equipSlotWithItem( 1, self.weapon.id, true )
       self.weapon:setDamage(20)
    end
 end
 
 function CKabarog:initSenses()
+   --log("CKabarog:initSenses()")
+
    self.senseScheduler:addSense("inZone"     , false, self.senseScheduler, self.senseScheduler.checkZone)
    self.senseScheduler:addSense("enemyDetect", false, self.senseScheduler, self.senseScheduler.checkDetect)
    self.senseScheduler:addSense("enemyClose" , false, self.senseScheduler, self.senseScheduler.checkClose)
    self.senseScheduler:addSense("enemyFront" , false, self.senseScheduler, self.senseScheduler.checkFront)
+
+   --self:addSense("targetObjInZone", false, self.checkTargetObjDist, self)
+   --self:addSense("targetObjFront", false, self.checkTargetObjAngle, self)
 end
 
-function CKabarog:setupTimers(freq)
-   self:stopTimers()
+function CKabarog:OnCreate()
+   CCharacter.OnCreate(self)
+   --log("CKabarog:OnCreate()")
 
-   self.senseScheduler.timer = runTimer(freq, self.senseScheduler, self.senseScheduler.OnIdle, true)
-   self.behaviorTreeTimer    = runTimer(freq, self, ai.utils.ticker, true)
+   CKabarog.initWithParams( self, { standardLoot = {["meat.itm"] = 1,["horn.itm"] = 1} } )
+   CKabarog.initSenses( self )
+   CKabarog.initFX( self )
+
+   self.inventory = CInventory{}
+   self.inventory:init     ( self )
+   self.inventory:setActive( false )
+   self.inventory:setRadius( 300 )
+   --self.inventory:addItems( loadParamStrings( self, "items", nil ) )
+
+   self:setRole   ( ROLE_ANIMAL )
+   self:addActions()
+   self.animationsManager:stopAnimation( "death.caf" )
+
+   self:idle_run()
 end
 
-function CKabarog:stopTimers()
-   CCharacter.stopTimers(self)
+function CKabarog:initFX()
+   if not self.fx then
+      self.fx = {}
+      self.fx.blood1 = self:createAspect( "kab_blood1.sps" )
+      self.fx.blood1:setLoop( false )
+      self.fx.blood1:getPose():setParent( self:getBonePose( "item_slot1" ) )
+      self.fx.blood1:getPose():resetLocalPos()
+      self.fx.blood1:disable()
 
-   if self.behaviorTreeTimer then
-      self.behaviorTreeTimer:stop()
-      self.behaviorTreeTimer = nil
+      self.fx.blood2 = self:createAspect( "kab_blood2.sps" )
+      self.fx.blood2:setLoop( false )
+      self.fx.blood2:getPose():setParent( self:getBonePose( "item_slot1" ) )
+      self.fx.blood2:getPose():resetLocalPos()
+      self.fx.blood2:disable()
+
+      self.fx.blood_death = self:createAspect( "kab_blood_death.sps" )
+      self.fx.blood_death:setLoop( false )
+      self.fx.blood_death:getPose():setParent( self:getBonePose( "item_slot1" ) )
+      self.fx.blood_death:getPose():resetLocalPos()
+      self.fx.blood_death:disable()
    end
 end
 
-function CKabarog:OnEnemyHit(params)
-   CCharacter.OnEnemyHit(self, params)
-   params.target:pushFrom(self:getPose():getPos(), 10000, 0.5, {y=180})
+function CKabarog:OnDestroy()
+   CCharacter.OnDestroy(self)
+   if self.installer then
+      self.installer:removeInstallation(self)
+   end
 end
 
-function CKabarog:animatedEvent(eventType)
-   CCharacter.animatedEvent(self, eventType)
+function CKabarog:OnStuckIn()
+end
 
-   if self:getHealth() == 0 and eventType ~= "die" then
+function CKabarog:OnStuckOut()
+end
+
+function CKabarog:setInstaller(obj)
+   self.installer = obj
+end
+
+-- Actions
+
+function CKabarog:addActions()
+   local idle = CAction{}
+   --idle:allowRestartOnEvent("setSense")
+   idle.start = self.idle_start
+   idle.stop  = self.idle_stop
+   idle.name = "idle"
+
+   local move = CAction{}
+   move.start = self.move_start
+   move.stop  = self.move_stop
+   move.name = "move"
+
+   local chase = CAction{}
+   chase:allowRestartOnEvent("onChangeState")
+   chase.start = self.chase_start
+   chase.stop  = self.chase_stop
+   chase.name = "chase"
+
+   local attack = CAction{}
+   attack:allowRestartOnEvent("onChangeState")
+   attack.start = self.attack_start
+   attack.stop  = self.attack_stop
+   attack.name = "attack"
+
+   local defence = CAction{}
+   defence.start = self.defence_start
+   defence.stop  = self.defence_stop
+   defence.name = "defence"
+
+   local panic = CAction{}
+   panic:allowRestartOnEvent("onChangeState")
+   panic.start = self.panic_start
+   panic.stop  = self.panic_stop
+   panic.name = "panic"
+
+   local damage = CAction{}
+   damage:allowRestartOnEvent("onChangeState")
+   damage.start = self.damage_start
+   damage.stop  = self.damage_stop
+   damage.name = "damage"
+
+   local search = CAction{}
+   search.start = self.search_start
+   search.stop = self.search_stop
+   search.name = "search"
+
+   local root = CNode{}
+   root:yes (self.alive_):yes (self.search_):yes (search)
+   root:yes (self.alive_):yes (self.damage_):no  (self.defence_):no  (self.attack_):no  (self.chase_):no (self.panic_):no (self.move_):no  (idle)
+   root:yes (self.alive_):yes (self.damage_):no  (self.defence_):no  (self.attack_):no  (self.chase_):no (self.panic_):no (self.move_):yes (move)
+   root:yes (self.alive_):yes (self.damage_):no  (self.defence_):no  (self.attack_):no  (self.chase_):no (self.panic_):yes(panic)
+   root:yes (self.alive_):yes (self.damage_):no  (self.defence_):no  (self.attack_):no  (self.chase_):yes(chase)
+   root:yes (self.alive_):yes (self.damage_):no  (self.defence_):no  (self.attack_):yes (attack)
+   -- root:yes (self.alive_):yes (self.damage_):no  (self.defence_):yes (defence) --no anims yet
+   root:yes (self.alive_):yes (self.damage_):yes (damage)
+
+   self.actionsScheduler.root = root
+end
+
+
+-- Predicates
+
+function CKabarog:search_()
+   return self:getState("search")
+end
+
+function CKabarog:alive_()
+   --log( "-----------------------" )
+   --log( self.states )
+   if ( (not self.senseScheduler:getCurEnemy()) or (not objInDist(self:getPose():getPos(), self.senseScheduler:getCurEnemy():getPose():getPos(), self.parameters.backViewDist/3)) ) then
+      self:setState("panic", false)
+   end
+
+   return not self:getState( "dead" )
+end
+
+function CKabarog:move_()
+   return self:getState( "move" )
+end
+
+function CKabarog:chase_()
+   if ( self:getState("blockAttack") or self:getState("panic") ) then
+      return false
+   end
+
+   if ( self.senseScheduler:getSense("enemyDetect") ) then
+      self:setState("chase", true)
+      return true
+   end
+
+   return false
+end
+
+function CKabarog:attack_()
+   if ( self:getState("blockAttack") or self:getState("panic") ) then
+      return false
+   end
+
+   if ( self.senseScheduler:getSense("enemyClose") ) then
+      self:setState("attack", true)
+      return true
+   end
+
+   return false
+end
+
+function CKabarog:defence_()
+   if ( self:getState("blockAttack") or self:getState("panic") ) then
+      return false
+   end
+
+   if ( not self.senseScheduler:getCurEnemy() ) then
+      return false
+   end
+
+   if ( self.senseScheduler:getSense("enemyFront") and objInDist(self:getPose():getPos(), self.senseScheduler:getCurEnemy():getPose():getPos(), self.parameters.defenceDist) ) then
+      self:setState("defence", true)
+      return true
+   end
+
+   return false
+end
+
+function CKabarog:panic_()
+   if ( self:getState("panic") ) then
+      return true
+   end
+
+   if ( not self.senseScheduler:getCurEnemy() ) then
+      return false
+   end
+
+   if ( (not self.senseScheduler:getSense("enemyFront")) and objInDist(self:getPose():getPos(), self.senseScheduler:getCurEnemy():getPose():getPos(), self.parameters.defenceDist) ) then
+      self:setState("panic", true)
+      return true
+   end
+
+   return false
+end
+
+function CKabarog:damage_()
+   return self:getState( "damage" )
+end
+
+
+-- Callbacks
+-- ----------------------------- IDLE ----------------------------------------------------
+function CKabarog:idle_run()
+   if ( self:getState("chase") or self:getState("panic") ) then
       return
    end
 
-   if eventType == "hit" then
-      self.fx.blood1:play()
-      self:setState("damage", true)
+   self:setState( "idle"  , true )
+   self:setState( "move"  , false )
+end
+
+function CKabarog:idle_start()
+   self.animationsManager:loopAnimation( "idle.caf" )
+
+   runTimer( rand(2), self, self.move_run, false )
+
+   --log( "-----------------------" )
+   --log( self.states )
+end
+
+function CKabarog:idle_stop()
+   self:setState("idle" , false)
+end
+
+-- ----------------------------- MOVE ----------------------------------------------------
+function CKabarog:move_run()
+   if ( self:getState("chase") or self:getState("panic") or self:getState("blockAttack") ) then
+      return
    end
+
+   self:setState("move" , true)
+   self:setState("idle" , false)
 end
 
-function CKabarog:shouldPlayHurt_condition()
-   return self.shouldPlayHurtGenerator()
-end
-
-function CKabarog:damaged_running()
-   local anim = "hurt"
-   self.animationsManager:playAction(anim, nil, nil, false, 2)
-   coro.waitAnimationEnd(self, anim)
-end
-
-function CKabarog:damaged_finish()
-end
-
-local chaseSpeed = 1.5
-function CKabarog:chase_start()
-   local enemy = self.senseScheduler:getCurEnemy()
-   self:setOrientationSpeed(200)
-   self:setMoveSpeed(400 * chaseSpeed)
-   self:setAnimSpeed(chaseSpeed)
-   self.animationsManager:playCycle("run")
-   self:setTarget(enemy, {y=100})
-end
-
-function CKabarog:chase_finish()
-   self:OnItemDeactivateSafe(self.weapon)
-   self:setMoveSpeed(0)
-   self:setOrientationSpeed(0)
-   self:setStrafeSpeed(0)
-   self:setAnimSpeed(1)
-   self:resetTarget()
-end
-
-function CKabarog:playIdle_start()
-   local enemy = self.senseScheduler:getCurEnemy()
-   self:setOrientationSpeed(100)
-   self:setTarget(enemy)
-   self.animationsManager:playCycle("idle")
-end
-
-function CKabarog:attack_running()
-   local enemy = self.senseScheduler:getCurEnemy()
-   self:setOrientationSpeed(250)
-   self:setOrientation(getTargetAngleDir(self, enemy:getPose():getPos()))
-   local anims = {
-      "attack",
-      "attack_2",
-   }
-   local anim = random.choice(anims)
-   self.animationsManager:playCycle("idle")
-   coro.wait(0.1)
-   self.animationsManager:playAction(anim)
-   coro.wait(0.1)
-   local angle = getTargetAngleDir(self, enemy:getPose():getPos())
-   if math.abs(angle) <= 15 then
-      self:push(self:getDir(), 5000, 1)
-   end
-   coro.waitAnimationEventIn(self, anim, "attack")
-   self:OnItemActivateSafe(self.weapon)
-   coro.waitAnimationEventOut(self, anim, "attack")
-   self:OnItemDeactivateSafe(self.weapon)
-   coro.waitAnimationEnd(self, anim)
-end
-
-function CKabarog:attack_finish()
-   self:OnItemDeactivateSafe(self.weapon)
-   self:setMoveSpeed(0)
-   self:setOrientationSpeed(0)
-   self:setStrafeSpeed(0)
-end
-
-function CKabarog:idle_running()
-   self.animationsManager:playCycle("idle")
-   coro.wait(random.random(1, 3))
-end
-
-function CKabarog:longIdle_running()
-   self.animationsManager:playCycle("idle")
-   self.animationsManager:playAction("idle_2")
-   coro.waitAnimationEnd(self, "idle_2")
-end
-
-function CKabarog:longIdle_finish()
-   self.animationsManager:stopAction("idle_2")
-end
-
-function CKabarog:walk_start()
-   self:setMoveSpeed(175)
-   self:setOrientationSpeed(100)
-
-   self.animationsManager:playCycle("walk")
-
-   if not self.senseScheduler:getSense("inZone") then
-      self:setOrientation(getTargetAngleDir(self, self.senseScheduler:getCurZone()))
+function CKabarog:move_start()
+   if self:getState("swimming") then
+      self:setOrientationSpeed( 40 )
+      self:setMoveSpeed       ( 125 )
    else
-      self:setOrientation(random.normal(-180, 180))
+      self:setOrientationSpeed( 80 )
+      self:setMoveSpeed       ( 250 )
+   end
+
+   self.animationsManager:loopAnimation( "walk.caf" )
+
+   runTimer( rand(4), self, self.idle_run, false )
+
+   if ( not self.senseScheduler:getSense("inZone") ) then
+      --log( "outzone" )
+      self:setOrientation( getTargetAngleDir(self, self.senseScheduler:getCurZone()) )
+   else
+      self:setOrientationFull( rand(360) )
    end
 end
 
-function CKabarog:walk_finish()
-   self:setMoveSpeed(0)
+function CKabarog:move_stop()
+   self:setMoveSpeed( 0 )
+   self:setOrientationSpeed( 0 )
+
+   self:setState("move" , false)
+end
+
+-- ----------------------------- ROAR ----------------------------------------------------
+function CKabarog:roar_start()
+   --log("roar_start")
+   self:setState( "blockAttack", true )
+
+   self:chase_stop()
+
+   -- local animation = "cry.caf"
+   local animation = "attack_2.caf" --temp since no animatino
+
+   --if ( rand(2) > 1 ) then
+   --animation = "roar.caf"
+   --end
+
+   self.animationsManager:playAnimation( animation, false )
+   self.animationsManager:subscribeAnimationEnd( animation, self, self.animStopRoar )
+end
+
+function CKabarog:animStopRoar()
+   --log("----------------")
+   --log(self.states)
+   self:setState( "blockAttack", false )
+   self:setState( "move", not self:getState("move") )
+   --log("----------------")
+   --log(self.states)
+end
+
+-- ----------------------------- CHASE ----------------------------------------------------
+function CKabarog:chase_start()
+   if ( self.senseScheduler:getSense("enemyFront") ) then
+      self.parameters.enemySpotted = self.parameters.enemySpotted + 1
+      if ( self.parameters.enemySpotted >= 3 ) then
+         self:roar_start()
+         self.parameters.enemySpotted = 0
+         return
+      end
+   end
+
+   if self:getState("swimming") then
+      self:setOrientationSpeed( 200 )
+      self:setMoveSpeed       ( 300 )
+   else
+      self:setOrientationSpeed( 400 )
+      self:setMoveSpeed       ( 600 )
+   end
+
+   self.animationsManager:loopAnimation( "run.caf" )
+
+
+   if ( self.senseScheduler:getCurEnemy() ) then
+      self:setTarget( self.senseScheduler:getCurEnemy(), {y=100} )
+   end
+   --self:setOrientation     ( getTargetAngleDir(self, self.senseScheduler:getCurEnemy():getPose():getPos()) )
+end
+
+function CKabarog:chase_stop()
+   self:setMoveSpeed( 0 )
+   self:setOrientationSpeed( 0 )
+   self:resetTarget()
+
+   self:setState( "chase", false )
+end
+
+-- ----------------------------- ATTACK ----------------------------------------------------
+function CKabarog:attack_start()
+   if ( not self.senseScheduler:getCurEnemy() ) then
+      return
+   end
+
+   if self:getState("swimming") then
+      self:setOrientationSpeed( 100 )
+   else
+      self:setOrientationSpeed( 200 )
+   end
+   self:setOrientation     ( getTargetAngleDir(self, self.senseScheduler:getCurEnemy():getPose():getPos()) )
+
+   local pushPos = self.senseScheduler:getCurEnemy():getPose():getPos()
+   local selfPos = self:getPose():getPos()
+   pushPos.x = (pushPos.x - selfPos.x)
+   pushPos.y = (pushPos.y - selfPos.y)
+   pushPos.z = (pushPos.z - selfPos.z)
+   self:push( pushPos, 10000, 1.0 )
+
+   self.animationsManager:loopAnimation("run.caf")
+   runTimer(0.05, self, self.attackTimer, false)
+
+   --self.animationsManager:subscribeAnimationEventOut( "attack.caf", "attack", self, self.attackAnimStop )
+
+   self.weapon:OnActivate()
+end
+
+function CKabarog:attackTimer()
+   animation = "attack.caf"
+   if ( rand(2) > 1) then
+      animation = "attack_2.caf"
+   end
+   self.animationsManager:playAnimation        ( animation, false )
+   self.animationsManager:subscribeAnimationEnd( animation, self, self.attackAnimStop )
+end
+
+function CKabarog:attack_stop()
+   self:setOrientationSpeed( 0 )
+end
+
+function CKabarog:attackAnimStop()
+   self:setState( "attack", false )
+   self:setState( "blockAttack", true )
+
+   self.weapon:OnDeactivate()
+
+   runTimer( 1, self, self.coolDown, false )
+end
+
+function CKabarog:coolDown()
+   self:setState("blockAttack", false)
+end
+
+-- ----------------------------- DEFENCE ----------------------------------------------------
+function CKabarog:defence_start()
+   --self:setOrientationSpeed( 200 )
+   --self:setOrientation     ( getTargetAngleDir(self, self.senseScheduler:getCurEnemy():getPose():getPos()) )
+
+   self.animationsManager:playAnimation        ( "eat_play.caf", false )
+   self.animationsManager:subscribeAnimationEnd( "eat_play.caf", self, self.defenceAnimStop )
+
+   self.weapon:OnActivate()
+end
+
+function CKabarog:defence_stop()
+end
+
+function CKabarog:defenceAnimStop()
+   self:setState( "defence", false )
+   self:setState( "blockAttack", true )
+
+   self.weapon:OnDeactivate()
+
+   runTimer( 1, self, self.coolDown, false )
+end
+
+-- ----------------------------- PANIC ----------------------------------------------------
+function CKabarog:panic_start()
+   self:setOrientation( getTargetAngle(self, self.senseScheduler:getCurEnemy():getPose():getPos())+180 )
+
+   if self:getState("swimming") then
+      self:setMoveSpeed       ( 600 )
+   else
+      self:setMoveSpeed       ( 1200 )
+   end
+   self.animationsManager:loopAnimation( "run.caf" )
+end
+
+function CKabarog:panic_stop()
+   self:setMoveSpeed( 0 )
+end
+
+-- ----------------------------- DAMAGE ----------------------------------------------------
+function CKabarog:damage_start()
+   local animation = "hurt.caf"
+
+   self.fx.blood1:play()
+   self.fx.blood2:play()
+
+   if self.animationsManager.currentAnimations[animation] then return end
+
+   if rand(5) > 4 then
+      self.animationsManager:playAnimation        ( animation, false )
+      self.animationsManager:subscribeAnimationEnd( animation, self, self.damage_stop )
+   else
+      self:callAnimEvent("hurt")
+
+      runTimer(0, self, CKabarog.damage_stop, false)
+   end
+
+   if ( self.senseScheduler:getCurEnemy() ~= nil ) then
+      local pushPos = self.senseScheduler:getCurEnemy():getPose():getPos()
+      local selfPos = self:getPose():getPos()
+      pushPos.x = -(pushPos.x - selfPos.x)
+      pushPos.y =  (pushPos.y - selfPos.y) + 180
+      pushPos.z = -(pushPos.z - selfPos.z)
+      self:push( pushPos, 3000, 0.5 )
+   else
+      self:setState("search", true)
+   end
+end
+
+function CKabarog:damage_stop()
+   self:setState( "damage", false )
+   --log( "-----------------------" )
+   --log( self.states )
+end
+
+-- ----------------------------- SEARCH ----------------------------------------------------
+function CKabarog:search_start()
+   -- log("search start")
+   -- self:setOrientation( -90 )
+   self:setOrientation( 180 )
+
+   if self:getState("swimming") then
+      self:setOrientationSpeed( 200 )
+   else
+      self:setOrientationSpeed( 400 )
+   end
+   self.animationsManager:loopAnimation( "run.caf" )
+   runTimer(0.5, self, self.searchAnimStop, false)
+   --self:setOrientationFull( rand(360) )
+end
+
+function CKabarog:search_stop()
+   self:setMoveSpeed( 0 )
+end
+
+function CKabarog:searchAnimStop()
    self:setOrientationSpeed(0)
-   self:setStrafeSpeed(0)
+   self:setState("search", false)
 end
 
-function CKabarog:die__()
-   CCharacter.die__(self)
+-- ----------------------------- ANIM EVENTS ----------------------------------------------------
+function CKabarog:animatedEvent(eventType)
+   CCharacter.animatedEvent(self, eventType)
 
-   self:playDeathAnimation("death")
+   if ( self:getHealth() == 0 and eventType ~= "die" ) then
+      return
+   end
+
+   --log( "animatedEvent = " .. eventType )
+
+   if ( eventType == "hit" ) then
+      self:setState( "damage", true )
+   end
+
+   if ( eventType == "die" ) then
+      self:OnDie()
+   end
 end
 
-function CKabarog:die()
-   CCharacter.die(self)
+function CKabarog:OnEnemyHit( params )
+   local char = params.target
+   local pushPos = self:getPose():getPos()
+   local selfPos = char:getPose():getPos()
+   pushPos.x = -(pushPos.x - selfPos.x)
+   pushPos.y =  (pushPos.y - selfPos.y) + 180
+   pushPos.z = -(pushPos.z - selfPos.z)
+   char:push( pushPos, 15000, 1.0 )
+end
+
+function CKabarog:OnDie()
+   self:stopMove()
+   self.animationsManager:stopAnimations()
+   self.animationsManager:playAnimationWithLock( "death.caf" )
 
    self.fx.blood2:play()
    self.fx.blood_death:play()
 
-   self:getInventory():destroyItem(self.weapon, -1, true, true)
-
-   if self:getInventory():getItemsCount() ~= 0 then
-      self.interactor:setRaycastActive(true)
+   if ( self.senseScheduler:getLastEnemy() ~= nil ) then
+      log( "die enemy = " .. tostring(self.senseScheduler:getLastEnemy()) )
+      local pushPos = self.senseScheduler:getLastEnemy():getPose():getPos()
+      local selfPos = self:getPose():getPos()
+      pushPos.x = -(pushPos.x - selfPos.x)
+      pushPos.y =  (pushPos.y - selfPos.y) + 180
+      pushPos.z = -(pushPos.z - selfPos.z)
+      self:push( pushPos, 3000, 0.5 )
    end
+
+   self.itemsManager:destroyItemByName(self:getWeaponSlotItem().name)
+   self.inventory.itemsManager.items = self.itemsManager.items
+   self.inventory.itemsManager.idGenerator = self.itemsManager.idGenerator --FIXME: Hack that fixes wrong IDs for newly placed items double inventory system
+   self.inventory:setActive( true )
 end
 
-function CKabarog:OnInventoryChange(event)
-   if self:getInventory():getItemsCount() == 0 then
+function CKabarog:OnLostItem()
+   if ( self.inventory:getItemsCount() == 0 ) then
       self:showGibs()
    end
 end
 
-CKabarog.showGibs = hlp.showGibs
+function CKabarog:showGibs()
+   if ( not self.gibs ) then
+      self.gibs = self:createAspect( "kabarog_carcass.sbg" )
+   end
+
+   self.gibs:setPose       ( self:getPose() )
+   self.gibs:setVisible    ( true )
+   self:setVisible         ( false )
+   self.inventory:setActive( false )
+
+   if ( not self.gibsFlies ) then
+      self.gibsFlies = self:createAspect( "flies.sps" )
+   end
+
+   self.gibsFlies:setPose    ( self.gibs:getPose() )
+   self.gibsFlies:getPose():setParent( self:getPose() )
+   self.gibsFlies:play()
+
+   if ( not self.gibsFliesSound ) then
+      self.gibsFliesSound = self:createAspect( "flies.wav" )
+   end
+
+   self.gibsFliesSound:setPose    ( self:getPose() )
+   self.gibsFliesSound:setLoop    ( true )
+   self.gibsFliesSound:setDistance( 500 )
+   self.gibsFliesSound:setFadeIn  ( 1 )
+   self.gibsFliesSound:setFadeOut ( 1 )
+   self.gibsFliesSound:play       ()
+end
 
 function CKabarog:getLabel()
    return "Hornhog"
@@ -305,36 +674,46 @@ function CKabarog:getInteractLabel()
    end
 end
 
-function CKabarog:OnSaveState(state)
+function CKabarog:OnSaveState( state )
    CCharacter.OnSaveState(self, state)
 
    state.gibsVisible = self.gibs ~= nil
+   state.dead = self:getState( "dead" )
    if self.installer then
-      state.pos = self:getSafePos()
-      state.orientationGlobal = self:getOrientationGlobal()
+      local pos = self:getPose():getPos()
+      state.pos = {x=pos.x, y=pos.y, z=pos.z}
    end
+   state.items = self.itemsManager:serialize()
 end
 
-function CKabarog:OnLoadState(state)
+function CKabarog:OnLoadState( state )
    if self.installer then
       if state.pos then
          self:getPose():setPos(state.pos)
       end
-      if state.orientationGlobal then
-         self:setOrientationGlobal(state.orientationGlobal)
-      end
+      local params = {}
+      params.load = true
+      params.lootItems = {}
+      self:initWithParams( params )
    end
 
    CCharacter.OnLoadState(self, state)
 
+   self.itemsManager:removeAllItems()
+   self.itemsManager:deserialize(state.items)
    self.weapon = nil
-   if not state.dead then
-      self:addWeapon()
+   self:addWeapon()
+
+   if ( state.dead ) then
+      self:die__()
+      self:stopSounds()
    end
 
-   if state.gibsVisible then
+   if ( state.gibsVisible ) then
       self:showGibs()
    end
+
+   self.lootItems = state.lootItems
 end
 
 return {

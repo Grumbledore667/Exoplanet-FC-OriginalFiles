@@ -1,6 +1,6 @@
+local pprint = require "pprint"
 local tablex = require "pl.tablex"
 local keyCodes = require "global.keyCodes"
-local deb = require "global.debug"
 
 local keys = {}
 
@@ -50,18 +50,13 @@ local keysMap = {
 
    --ETC
    CONTROL            = {default = 17}, --PC_CTRL
-   ALT                = {default = 18}, --PC_ALT
    CAPSLOCK           = {default = 20}, --PC_CAPSLOCK
    PREVIOUS           = {default = 90}, --PC_Z
    RESTING            = {default = 89}, --PC_Y
    GODMODE            = {default = 78}, --PC_N
-   STYLESEDITOR       = {default = 66}, --PC_B
+   STYLES             = {default = 66}, --PC_B
    ESCAPE             = {default = 27}, --PC_ESC
-   ENTER              = {default = 13}, --PC_ENTER
 }
-
-local bannedList = { 91, 92, 93, 63, 67, 88 } -- lwim, rwin, select, f5, f9 and f12
-local systemKeysList = { "GODMODE", "CAPSLOCK", "STYLESEDITOR", "RESTING", "PREVIOUS", "CONTROL", "ESCAPE", "ENTER", "ALT" }
 
 function keys.init()
    for _,v in pairs(keysMap) do
@@ -70,46 +65,38 @@ function keys.init()
       v.waitDouble = false
    end
 
-   local env = {}
-   local status = deb.loadTableFromFile(getDocumentsFolder() .. "\\keysMap.lua", env)
-   if not status then
-      log("Loading: no keysMap.lua file, keys set to default")
+   local chunk, err = loadfile(getDocumentsFolder() .. "\\keysMap.lua")
+   if err then
+      log(err)
       return
    end
 
-   --Supports old keysMap format
-   local sourceTable = env.keysMap or env
-   if sourceTable ~= nil then
-      for name in pairs(keysMap) do
-         if type(sourceTable[name]) == "table" then
-            keysMap[name].code = sourceTable[name].code
-         elseif type(sourceTable[name]) == "number" then
-            keysMap[name].code = sourceTable[name]
-         elseif sourceTable[name] == "nil" then
-            keysMap[name].code = nil
+   local env = {}
+   setfenv(chunk, env)
+   local status
+   status, err = pcall(chunk)
+   if not status then
+      log(err)
+      return
+   end
+
+   if env.keysMap and type(env.keysMap) == "table" then
+      for name, v in pairs(env.keysMap) do
+         if keysMap[name] == nil then
+            log(string.format("WARNING: unrecognized button '%s' in keysMap.lua", name))
+         else
+            keysMap[name].code = v.code
          end
       end
    end
 end
 
-function keys.isButtonSystem(buttonName)
-   if tablex.search(systemKeysList, buttonName) then
-      return true
-   end
-end
-
-function keys.isKeyBanned(buttonName)
-   if tablex.search(bannedList, buttonName) then
-      return true
-   end
-end
-
-function keys.setButtonCode(button, code)
+function keys.setButtonCode( button, code )
    if button and code then
-      --Nullify occupied buttons except system and inventory ones, cause they can be same
-      for _,buttonName in pairs(keys.getButtonsNamesByCode(code)) do
-         if not keys.isButtonSystem(buttonName)
-            and not (button == "INVENTORY" and buttonName == "INVENTORYALT")
+      --Nullify occupied buttons except inventory ones, cause they can be same
+
+      for _,buttonName in pairs( keys.getButtonsNamesByCode( code ) ) do
+         if not (button == "INVENTORY" and buttonName == "INVENTORYALT")
             and not (button == "INVENTORYALT" and buttonName == "INVENTORY") then
             keysMap[buttonName].code = nil
          end
@@ -117,18 +104,18 @@ function keys.setButtonCode(button, code)
 
       keysMap[button].code = code
       --Softly restore defaults
-      keys.restoreDefaultKeys(false)
+      restoreDefaultKeys( false )
    end
 end
 
-function keys.getButtonCode(button)
+function keys.getButtonCode( button )
    if button and keysMap[button] then
       return keysMap[button].code
    end
    return nil
 end
 
-function keys.getButtonsNamesByCode(code)
+function keys.getButtonsNamesByCode( code )
    local buttonsNames = {}
    for buttonName,v in pairs(keysMap) do
       if v.code == code then
@@ -138,49 +125,46 @@ function keys.getButtonsNamesByCode(code)
    return buttonsNames
 end
 
-function keys.setButton(button, value)
-   local buttons = {button}
+function keys.setButton( button, value )
    if type(button) == "number" then
-      buttons = keys.getButtonsNamesByCode(button)
+      button = keys.getButtonsNamesByCode( button )[1]
    end
-   for _,button in ipairs(buttons) do
-      if button and keysMap[button] then
-         if value ~= keysMap[button].state then
-            getPlayer().notificationCenter:postNotification("onChangeButtonState")
-         end
-         keysMap[button].state = value
+   if button and keysMap[button] then
+      if value ~= keysMap[button].state then
+         getPlayer().notificationCenter:postNotification( "onChangeButtonState" )
       end
+      keysMap[button].state = value
    end
 end
 
-function keys.getButton(button)
+function keys.getButton( button )
    if type(button) == "number" then
-      button = keys.getButtonsNamesByCode(button)[1]
+      button = keys.getButtonsNamesByCode( button )[1]
    end
    if button and keysMap[button] then
       return keysMap[button].state
    end
 end
 
-function keys.setButtonWaitDouble(button, value)
+function keys.setButtonWaitDouble( button, value )
    if type(button) == "number" then
-      button = keys.getButtonsNamesByCode(button)[1]
+      button = keys.getButtonsNamesByCode( button )[1]
    end
    if button and keysMap[button] then
       keysMap[button].waitDouble = value
    end
 end
 
-function keys.getButtonWaitDouble(button)
+function keys.getButtonWaitDouble( button )
    if type(button) == "number" then
-      button = keys.getButtonsNamesByCode(button)[1]
+      button = keys.getButtonsNamesByCode( button )[1]
    end
    if button and keysMap[button] then
       return keysMap[button].waitDouble
    end
 end
 
-function keys.resetButtonsWaitDouble(exceptCode)
+function keys.resetButtonsWaitDouble( exceptCode )
    for buttonName,v in pairs(keysMap) do
       if exceptCode ~= v.code then
          keysMap[buttonName].waitDouble = false
@@ -188,24 +172,19 @@ function keys.resetButtonsWaitDouble(exceptCode)
    end
 end
 
-function keys.restoreDefaultKeys(force)
+function keys.restoreDefaultKeys( force )
    for _,v in pairs(keysMap) do
       if force then
          v.code = v.default
-      --softly restore defaults of unassigned buttons if their defaults are not occupied by gameplay keys
-      elseif not v.code then
-         local defaultOccupiedBy = tablex.pairmap(function(_, buttonName)
-            if not keys.isButtonSystem(buttonName) then return buttonName end
-         end, keys.getButtonsNamesByCode(v.default))
-         if #defaultOccupiedBy == 0 then
-            v.code = v.default
-         end
+      --softly restore defaults of unassigned buttons if their defaults are not occupied
+      elseif not v.code and #keys.getButtonsNamesByCode( v.default ) == 0 then
+         v.code = v.default
       end
    end
 end
 
-function keys.getButtonCurrentKeyName(button)
-   return tablex.search(keyCodes, keys.getButtonCode(button)) or "UNASSIGNED"
+function keys.getButtonCurrentKeyName( button )
+   return tablex.search( keyCodes, keys.getButtonCode( button ) ) or ""
 end
 
 function keys.getKeysMap()
@@ -215,9 +194,17 @@ end
 function keys.saveKeysMap()
    local t = {}
    for k,v in pairs(keysMap) do
-      t[k] = v.code or "nil" --allows to distinguish whether the key was removed by player or wasn't added to the keysMap yet
+      t[k] = { code = v.code }
    end
-   deb.dumpTableToFile(t, getDocumentsFolder() .. "\\keysMap.lua", false)
+   t = pprint.pformat( t )
+
+   local file, err = io.open(getDocumentsFolder() .. "\\keysMap.lua", "w")
+   if file then
+      file:write("keysMap = ", t)
+      file:close()
+   else
+      log(err)
+   end
 end
 
 return keys

@@ -20,9 +20,8 @@ local obj1 = {
 		["connectID"] = 27;
 		["posX"] = 780;
 		["posY"] = -120;
-		["script"] = "local random = require \"random\"\
-function message:onStart()\
-   self:setParam(\"random\", random.random(4))\
+		["script"] = "function message:onStart()\
+   self:setParam(\"random\", math.random(4))\
 end\
 \
 function message:onStop()\
@@ -131,8 +130,8 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "Big Hat, the old asshole, who thinks he's some kind of Elder in our little cozy \"village\". See that big rock with a hole at the back of the camp? Up there, in his cave he spends most of his days, watching how we crawl in the dirt below.";
-		["time"] = 25.5;
+		["text"] = "Big Hat, the old asshole, who thinks he's some kind of Elder in our little cozy \"village\". You can find him in his cave behind that container wall.";
+		["time"] = 12;
 		["type"] = "message";
 	};
 	["message_00013"] = {
@@ -153,7 +152,7 @@ end\
 		["posX"] = 1320;
 		["posY"] = 480;
 		["script"] = "";
-		["text"] = "The bastard probably ate a full pot of bitebug porridge and is sleeping as always in his chair, while we starve and freeze every night.";
+		["text"] = "The bastard probably ate a full pot of bitebug porridge and is sleeping as always in his chair, while we starve and freeze here every night.";
 		["time"] = 14;
 		["type"] = "message";
 	};
@@ -196,8 +195,8 @@ end\
 		["posX"] = 1050;
 		["posY"] = -450;
 		["script"] = "";
-		["text"] = "See that big rock at the back of the camp? We're supposed to hide there when the scalphunters come to raid us. Instead, he made the place his private quarters!";
-		["time"] = 16;
+		["text"] = "In his cave, behind the container wall. That's where we hide when the scalphunters come to raid us.";
+		["time"] = 10;
 		["type"] = "message";
 	};
 	["message_00026"] = {
@@ -306,11 +305,9 @@ end\
 			[6] = 6;
 			[7] = 7;
 		};
-		["h"] = 180;
 		["posX"] = 600;
 		["posY"] = 300;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00027"] = {
 		["ID"] = 27;
@@ -320,11 +317,9 @@ end\
 			[3] = 30;
 			[4] = 31;
 		};
-		["h"] = 120;
 		["posX"] = 1020;
 		["posY"] = -120;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 }
 return obj1

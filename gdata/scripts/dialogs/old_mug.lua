@@ -211,7 +211,6 @@ end\
 	["message_00014"] = {
 		["ID"] = 14;
 		["actor"] = 2;
-		["animation"] = "dl_stop_onehand";
 		["connectID"] = 38;
 		["posX"] = 3960;
 		["posY"] = 210;
@@ -430,7 +429,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return getMC().skillsManager:get(\"mining\") <= 55\
+   return getPlayer().skillsManager:get( \"mining\" ) <= 55\
 end\
 \
 ";
@@ -454,7 +453,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return getMC().skillsManager:get(\"mining\") <= 55\
+   return getPlayer().skillsManager:get( \"mining\" ) <= 55\
 end\
 \
 ";
@@ -478,7 +477,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return getMC().skillsManager:get(\"mining\") < 60\
+   return getPlayer().skillsManager:get( \"mining\" ) < 60\
 end\
 \
 ";
@@ -489,7 +488,6 @@ end\
 	["message_00033"] = {
 		["ID"] = 33;
 		["actor"] = 2;
-		["animation"] = "dl_talk_1";
 		["connectID"] = 58;
 		["posX"] = 3960;
 		["posY"] = 630;
@@ -511,7 +509,6 @@ end\
 	["message_00034"] = {
 		["ID"] = 34;
 		["actor"] = 2;
-		["animation"] = "dl_raisedfinger_right";
 		["connectID"] = 47;
 		["posX"] = 3960;
 		["posY"] = 750;
@@ -554,7 +551,6 @@ end\
 	["message_00036"] = {
 		["ID"] = 36;
 		["actor"] = 2;
-		["animation"] = "dl_shrug_long";
 		["connectID"] = 62;
 		["posX"] = 3960;
 		["posY"] = 990;
@@ -577,7 +573,6 @@ end\
 	["message_00042"] = {
 		["ID"] = 42;
 		["actor"] = 2;
-		["animation"] = "dl_look_down_long";
 		["connectID"] = 9;
 		["posX"] = 2070;
 		["posY"] = 210;
@@ -589,7 +584,6 @@ end\
 	["message_00043"] = {
 		["ID"] = 43;
 		["actor"] = 2;
-		["animation"] = "dl_talk_2";
 		["connectID"] = 11;
 		["posX"] = 2880;
 		["posY"] = 210;
@@ -733,7 +727,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return getMC().skillsManager:get(\"mining\") <= 55\
+   return getPlayer().skillsManager:get( \"mining\" ) <= 55\
 end\
 \
 ";
@@ -747,14 +741,13 @@ end\
 		["connectID"] = 83;
 		["posX"] = 3480;
 		["posY"] = 1020;
-		["script"] = "local random = require \"random\"\
-function message:onStart()\
-   giveItemFromPlayerTo(self:getParam(\"takeitem\"), getObj(\"old_mug\"), self:getParam(\"takecount\"))\
+		["script"] = "function message:onStart()\
+   removeItemFromPlayer(self:getParam(\"takeitem\"), self:getParam(\"takecount\"))\
    \
-   local cur = getMC().skillsManager:get(\"mining\")\
+   local cur = getPlayer().skillsManager:get( \"mining\" )\
    local up = self:getParam(\"skillup\")\
 \
-   getMC().skillsManager:inc(\"mining\", up)\
+   getPlayer().skillsManager:inc( \"mining\", up )\
 \
    if cur < 20 and cur + up >= 20 then\
       self:setParam(\"say20\", true)\
@@ -763,14 +756,14 @@ function message:onStart()\
    elseif cur < 60 and cur + up >= 60 then\
       self:setParam(\"say60\", true)\
    end\
-   self:setParam(\"sayRandom\", random.random(5))\
+   self:setParam(\"sayRandom\", math.random(5))\
 end\
 \
 function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return hasPlayerItem(self:getParam(\"takeitem\"), self:getParam(\"takecount\"))\
+   return hasPlayerItemCount(self:getParam(\"takeitem\"), self:getParam(\"takecount\"))\
 end\
 \
 ";
@@ -839,7 +832,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return getMC().skillsManager:get(\"mining\") >= 60\
+   return getPlayer().skillsManager:get( \"mining\" ) >= 60\
 end\
 \
 ";
@@ -884,7 +877,6 @@ end\
 	["message_00070"] = {
 		["ID"] = 70;
 		["actor"] = 2;
-		["animation"] = "dl_head_shake";
 		["connectID"] = 40;
 		["posX"] = 3480;
 		["posY"] = 1200;
@@ -1049,11 +1041,9 @@ end\
 			[4] = 54;
 			[5] = 52;
 		};
-		["h"] = 140;
 		["posX"] = 1320;
 		["posY"] = 420;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00039"] = {
 		["ID"] = 39;
@@ -1074,11 +1064,9 @@ end\
 			[4] = 56;
 			[5] = 55;
 		};
-		["h"] = 140;
 		["posX"] = 2820;
 		["posY"] = 1050;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00050"] = {
 		["ID"] = 50;
@@ -1154,16 +1142,9 @@ end\
 			[8] = 81;
 			[9] = 82;
 		};
-		["h"] = 220;
 		["posX"] = 3750;
 		["posY"] = 960;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 }
-local obj2 = {
-	["actor_prefab"] = {
-		[2] = "abori";
-	};
-}
-return obj1 ,obj2
+return obj1

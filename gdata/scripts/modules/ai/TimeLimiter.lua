@@ -1,14 +1,9 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
 local Decorator = require "ai.Decorator"
 local NodeState = require "ai.NodeState"
 
----@class ai.TimeLimiter : ai.Decorator
 local TimeLimiter = oo.class({
    seconds = nil,
-   className = className,
 }, Decorator)
 
 function TimeLimiter:__init()
@@ -26,6 +21,7 @@ function TimeLimiter:running()
    if self.timer:getTimeLeft() > 0 then
       return self.child:update()
    end
+   self.child:finish()
    return NodeState.SUCCESS
 end
 

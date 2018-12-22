@@ -1,11 +1,9 @@
 local oo = require "loop.simple"
-local _rootRigid = (require "roots")._rootRigid
 
----@class CRigid : shRigidEntity
 local CRigid = oo.class({
    activated = false,
    item = nil,
-}, _rootRigid)
+})
 
 function CRigid:OnCreate()
 end
@@ -13,10 +11,31 @@ end
 function CRigid:OnDestroy()
 end
 
-function CRigid:OnTouchCharacter(obj)
+function CRigid:OnTouchCharacter( obj )
+--[[
+   if ( self.activated ) then
+      --return
+   end
+   
+   self.activated = true
+   
+   log( "OnTouchCharacter: " .. obj:getName() )
+   
+   if ( not self.sound ) then
+      self.sound = self:createAspect( "waterfall_big.wav" )
+   end
+   
+   self.sound:play()
+   self.sound:setPose( self:getPose() )
+   ]]
 end
 
-function CRigid:OnUntouchCharacter(obj)
+function CRigid:OnUntouchCharacter( obj )
+--[[
+   log( "OnUntouchCharacter: " .. obj:getName() )
+   
+   self.sound:stop()
+   ]]
 end
 
 function CRigid:OnHit(params)
@@ -32,16 +51,12 @@ end
 
 function CRigid:OnSaveState(state)
    state.pos = self:getPose():getPos()
-   state.collisionOnbjects = self:getCollisionObjects()
-   state.collisionCharacters = self:getCollisionCharacters()
 end
 
 function CRigid:OnLoadState(state)
    if state.pos then
       self:getPose():setPos(state.pos)
    end
-   self:setCollisionObjects(state.collisionOnbjects)
-   self:setCollisionCharacters(state.collisionCharacters, state.collisionCharacters)
 end
 
 return {CRigid=CRigid}

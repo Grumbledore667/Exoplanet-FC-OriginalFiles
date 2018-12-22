@@ -1,38 +1,65 @@
-local oo = require "loop.multiple"
-local _rootRigid = (require "roots")._rootRigid
-local CInteractable = require "mixins.interactable"
+local oo = require "loop.simple"
+local ItemsData = (require "itemsData")
 
----@class CBed : shRigidEntity
-local CBed = oo.class({}, _rootRigid, CInteractable)
+local CBed = oo.class({})
 
 function CBed:OnCreate()
-   CInteractable.OnCreate(self)
-   self.owner = loadParam(self, "owner", "")
+   self:initWithParams( nil )
 end
 
-function CBed:activate(obj)
-   if self:isActivated() then return false end
+function CBed:initWithParams( params )
+   if ( not params ) then
+      self.interactor = self:createAspect( "interactor" )
+      self.interactor:setObject( self )
+      self.interactor:setRaycastRadius( 100.0 )
+      self.interactor:getPose():setParent( self:getPose() )
+      self.interactor:getPose():resetLocalPose()
+      self.interactor:getPose():setLocalPos( {x=0,y=0,z=0} )
+      self.interactor:setRaycastActive( true )
+
+      self.owner = loadParam(self, "owner", "")
+   end
+
+   self.activated = false
+end
+
+function CBed:isActivated()
+   return self.activated
+end
+
+function CBed:activate( obj )
+   if ( self.activated ) then
+      return false
+   end
    if self.owner == "" or self.owner == "player" then
-      if obj:restAtBed(self) then
+      if ( obj:restAtBed(self) ) then
+         --save interactTarget from interactStop
+         runTimer(0, self, function(self) obj.interactTarget = self end, false)
          self.activated = true
          self:setCollisionCharacters(false, false)
          return true
       end
    else
-      gameplayUI:showInfoTextEx("It's not your bed", "minor", "")
+      gameplayUI:showInfoTextEx( "It's not your bed", "minor", "" )
    end
    return false
 end
 
-function CBed:deactivate(obj)
-   if not self:isActivated() then return false end
+function CBed:deactivate( obj )
+   if ( not self.activated ) then
+      return false
+   end
 
-   if obj:leaveBed(self) then
+   if ( obj:leaveBed(self) ) then
       self.activated = false
       self:setCollisionCharacters(true, true)
       return true
    end
    return false
+end
+
+function CBed:getType()
+   return "activator"
 end
 
 function CBed:getLabel()

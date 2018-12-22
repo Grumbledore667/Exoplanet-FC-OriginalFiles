@@ -30,9 +30,8 @@ end\
 		["connectID"] = 31;
 		["posX"] = 780;
 		["posY"] = 0;
-		["script"] = "local random = require \"random\"\
-function message:onStart()\
-   self:setParam(\"random\", random.random(2))\
+		["script"] = "function message:onStart()\
+   self:setParam(\"random\", math.random(2))\
 end\
 \
 function message:onStop()\
@@ -141,8 +140,8 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "Big Hat, our Elder lives in his cave in that big rock, there, on the far side of the camp. Show the old one some respect! If it weren't for him, we all would be living like beasts, always at each other's throats.";
-		["time"] = 22.5;
+		["text"] = "Big Hat, our Elder lives in the cave behind that container wall. And show the old one some respect! If it weren't for him, we all would be living like beasts, always at each other's throats.";
+		["time"] = 19;
 		["type"] = "message";
 	};
 	["message_00013"] = {
@@ -163,7 +162,7 @@ end\
 		["posX"] = 1260;
 		["posY"] = 510;
 		["script"] = "";
-		["text"] = "Ahm, and if he asks what do we need, could you ask him to send some leftovers to the gate guards, please!";
+		["text"] = "Ahm, and if he asks what do we need, could you ask him to send some leftowers to the gate guards, please!";
 		["time"] = 12;
 		["type"] = "message";
 	};
@@ -207,8 +206,8 @@ end\
 		["posX"] = 1020;
 		["posY"] = -240;
 		["script"] = "";
-		["text"] = "Our wise Elder lives in his cave, in that big rock, at the back of our camp.";
-		["time"] = 7;
+		["text"] = "In his cave, behind the container wall. That's where we hide when the scalphunters come to raid us.";
+		["time"] = 10;
 		["type"] = "message";
 	};
 	["message_00029"] = {
@@ -256,7 +255,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return not isQuestFinished(\"angry_bugs\") and  self:getParam(\"random\") == 1\
+   return not isQuestFinished( \"angry_bugs\" ) and  self:getParam(\"random\") == 1\
 end\
 \
 ";
@@ -277,7 +276,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return isQuestFinished(\"angry_bugs\") and  self:getParam(\"random\") == 1\
+   return isQuestFinished( \"angry_bugs\" ) and  self:getParam(\"random\") == 1\
 end\
 \
 ";
@@ -328,11 +327,9 @@ end\
 			[6] = 6;
 			[7] = 7;
 		};
-		["h"] = 180;
 		["posX"] = 600;
 		["posY"] = 300;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00026"] = {
 		["ID"] = 26;

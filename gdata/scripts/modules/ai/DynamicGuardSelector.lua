@@ -1,14 +1,8 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
 local Composite = require "ai.Composite"
 local NodeState = require "ai.NodeState"
 
----@class ai.DynamicGuardSelector : ai.Composite
-local DynamicGuardSelector = oo.class({
-   className = className,
-}, Composite)
+local DynamicGuardSelector = oo.class({}, Composite)
 
 function DynamicGuardSelector:start()
    self.currentIndex = 0
@@ -17,9 +11,12 @@ end
 function DynamicGuardSelector:running()
    local childToRun = 0
    for i, child in ipairs(self.children) do
-      if child:checkGuard() then
-         childToRun = i
-         break
+      if child.guard ~= nil then
+         child.guard:reset()
+         if child.guard:update() == NodeState.SUCCESS then
+            childToRun = i
+            break
+         end
       end
    end
 

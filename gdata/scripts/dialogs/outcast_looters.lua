@@ -152,7 +152,7 @@ end\
 		["posX"] = 2010;
 		["posY"] = 210;
 		["script"] = "";
-		["text"] = "[t_my_clothes:bandits_scared]... Alright huma. You win. I don't know why you even care about this old gongo, but you can jaga bahamadron with him for all I care. Let's get out of here, bro.";
+		["text"] = "[t_my_clothes:bandits_scared]... Alright huma. You win. I don't know why you even care about this old gongo, but you can jaga bahamadron with him for all I care.  Let's get out of here, bro.";
 		["time"] = 18;
 		["type"] = "message";
 	};
@@ -214,7 +214,7 @@ function message:onStop()\
    --Have to give the hat after the step change\
    --or the quest will be finished if player already has clothes.\
    local bandit = self:getActor(3)\
-   bandit:getInventory():giveItemToByName(\"hat_jack.itm\", getMC():getInventory(), 1)\
+   bandit:giveItemByName( \"hat_jack.itm\", getPlayer(), 1 )\
    bandit:setupAppearance(\"q_my_clothes_bandit_2\")\
 end\
 \
@@ -267,11 +267,11 @@ end\
 end\
 \
 function message:onStop()\
-   runTimer(0, nil, function()\
+   runTimer( 0, nil, function()\
       for i=1,2 do\
          getObj(\"q_my_clothes_bandit_\"..i):changeStatCount(\"health\",-500)\
       end\
-   end, false)\
+   end, false )\
 end\
 \
 function message:isVisible()\

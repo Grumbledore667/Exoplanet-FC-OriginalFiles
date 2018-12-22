@@ -301,8 +301,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return self:getNPC():getTradeInventory():getItemByName(\"windscream_canyon_map.itm\")\
-      and self:isFirstTime()\
+   return self:isFirstTime()\
 end\
 \
 ";
@@ -335,7 +334,6 @@ end\
 \
 function message:isVisible()\
    return self:getParam(\"asked_map\")\
-      and self:getNPC():getTradeInventory():getItemByName(\"windscream_canyon_map.itm\")\
 end\
 \
 ";
@@ -354,14 +352,14 @@ end\
 \
 function message:onStop()\
    local waga = self:getNPC()\
-   local player = getMC()\
-   player:getInventory():giveItemToByName(\"antigravium_shards.itm\", waga:getTradeInventory(), 200)\
-   giveTradeItemFromObjTo(\"windscream_canyon_map.itm\", waga, player, 1)\
+   local player = getPlayer()\
+   waga:giveItemByName(\"windscream_canyon_map.itm\", player, 1)\
+   player:giveItemByName(\"antigravium_shards.itm\", waga, 200)\
    self:setParam(\"asked_map\", false)\
 end\
 \
 function message:isVisible()\
-   return hasPlayerItem(\"antigravium_shards.itm\", 200)\
+   return hasPlayerItemCount(\"antigravium_shards.itm\", 200)\
 end\
 \
 ";
@@ -496,7 +494,7 @@ end\
 		["posX"] = 1410;
 		["posY"] = 630;
 		["script"] = "";
-		["text"] = "May the desert be kind to you.";
+		["text"] = "Let the desert be kind to you.";
 		["time"] = 4.5;
 		["type"] = "message";
 	};

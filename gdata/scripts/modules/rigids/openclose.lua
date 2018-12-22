@@ -1,26 +1,26 @@
 local oo = require "loop.simple"
-local _rootRigid = (require "roots")._rootRigid
+-- local CAnimationsManager = (require "animationsManager").CAnimationsManager
+-- local CNotificationCenter = (require "notificationCenter").CNotificationCenter
 
----@class COpenClose : shRigidEntity
-local COpenClose = oo.class({}, _rootRigid)
+local COpenClose = oo.class({})
 
 function COpenClose:OnCreate()
-   self.interactor = self:createAspect("interactor")
-   self.interactor:setObject(self)
-   self.interactor:setRaycastRadius(100.0)
-   self.interactor:getPose():setParent(self:getPose())
+   self.interactor = self:createAspect( "interactor" )
+   self.interactor:setObject( self )
+   self.interactor:setRaycastRadius( 100.0 )
+   self.interactor:getPose():setParent( self:getPose() )
    self.interactor:getPose():resetLocalPose()
-   self.interactor:setRaycastActive(true)
+   self.interactor:setRaycastActive( true )
 
    self.sounds = {}
-   self.sounds.open = self:createAspect("door_slide_open.wav")
-   self.sounds.open:getPose():setParent(self:getPose())
+   self.sounds.open = self:createAspect( "door_slide_open.wav" )
+   self.sounds.open:getPose():setParent( self:getPose() )
    self.sounds.open:getPose():resetLocalPose()
-   self.sounds.open:setLoop(false)
+   self.sounds.open:setLoop( false )
 
-   self.visibleLabel = loadParam(self, "visibleLabel", "Togglable Object")
+   self.visibleLabel = loadParam( self, "visibleLabel", "Togglable Object" )
 
-   self:subscribeAnimationStop(self.animStop, self)
+   self:subscribeAnimationStop( self.animStop, self )
 
    self.opened    = false
    self.animating = false
@@ -30,20 +30,20 @@ function COpenClose:animStop()
    self.animating = false
 end
 
-function COpenClose:activate(obj)
-   if self.animating then
+function COpenClose:activate( obj )
+   if ( self.animating ) then
       return false
    end
 
    self.animating = true
-   if not self.opened then
-      self:playAnimation("open", false)
+   if ( not self.opened ) then
+      self:playAnimation( "open", false )
       -- TODO: FIXME: WORKAROUND: bug with some rigids not calling subscribeAnimationStop
       -- function after the animation stops!
       runTimer(3, self, self.animStop, false)
       self.opened = true
    else
-      self:playAnimation("close", false)
+      self:playAnimation( "close", false )
       runTimer(3, self, self.animStop, false)
       self.opened = false
    end
@@ -54,17 +54,17 @@ function COpenClose:activate(obj)
    return true
 end
 
-function COpenClose:deactivate(obj)
+function COpenClose:deactivate( obj )
    return true
 end
 
 function COpenClose:closeDoor()
-   if not self.opened or self.animating then
+   if ( not self.opened or self.animating ) then
       return false
    end
 
    self.animating = true
-   self:playAnimation("close", false)
+   self:playAnimation( "close", false )
    runTimer(3, self, self.animStop, false)
 
    self.sounds.open:play()
@@ -86,7 +86,7 @@ function COpenClose:getLabelPos()
 end
 
 function COpenClose:getInteractLabel()
-   if self.opened then
+   if (self.opened) then
       return "close"
    else
       return "open"
@@ -100,7 +100,7 @@ end
 function COpenClose:OnLoadState(state)
    if state.opened then
       self.opened = true
-      self:playAnimation("open", false)
+      self:playAnimation( "open", false )
    end
 end
 

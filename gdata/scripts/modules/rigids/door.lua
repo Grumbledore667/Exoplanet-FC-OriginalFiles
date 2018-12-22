@@ -1,46 +1,56 @@
-local oo = require "loop.multiple"
-local _rootRigid = (require "roots")._rootRigid
-local CLockable = require "mixins.lockable"
-local CDestroyable = require "mixins.destroyable"
+local oo = require "loop.simple"
 
----@class CDoor : shRigidEntity
-local CDoor = oo.class({}, _rootRigid, CLockable, CDestroyable)
+local CDoor = oo.class({})
 
 function CDoor:OnCreate()
-   CLockable.OnCreate(self)
-   CDestroyable.OnCreate(self)
+   self.interactor = self:createAspect( "interactor" )
+   self.interactor:setObject( self )
+   self.interactor:setTriggerRadius( 200.0 )
+   self.interactor:setRaycastRadius( 100.0 )
+   self.interactor:getPose():setParent( self:getPose() )
+   self.interactor:getPose():resetLocalPose()
+   self.interactor:getPose():setLocalPos( {x=0,y=150,z=-150} )
+   self.interactor:setTriggerActive( true )
+   self.interactor:setRaycastActive( true )
+
+   self.sounds = {}
+   self.sounds.open = self:createAspect( "door_slide_open.wav" )
+   self.sounds.open:getPose():setParent( self:getPose() )
+   self.sounds.open:getPose():setLocalPos( {x=0,y=0,z=-150} )
+   self.sounds.open:getPose():resetLocalPose()
+   self.sounds.open:setLoop( false )
 
    self.opened    = false
    self.animating = false
 
-   self.interactor:getPose():setLocalPos({x=0,y=150,z=-150})
-   self.interactor:setTriggerRadius(200.0)
-   self.interactor:setRaycastRadius(100.0)
-   self.interactor:setTriggerActive(true)
-   self.interactor:setRaycastActive(true)
+   self:subscribeAnimationStop( self.animStop, self )
 
-   self.sounds = {}
-   self.sounds.open = self:createAspect("door_slide_open.wav")
-   self.sounds.open:getPose():setParent(self:getPose())
-   self.sounds.open:getPose():setLocalPos({x=0,y=0,z=-150})
-   self.sounds.open:getPose():resetLocalPose()
-   self.sounds.open:setLoop(false)
+   self.disableOnOpen = loadParam( self, "disableOnOpen", false )
 
-   self:subscribeAnimationStop(self.animStop, self)
-
-   self.disableOnOpen = loadParam(self, "disableOnOpen", false)
-end
-
-function CDoor:OnInteractTriggerEnd(obj)
-   if self.disableOnOpen then
-      return
-   elseif not self:closeDoor() then
-      runTimer(1, self, self.closeDoor, false)
+   if ( self.isMaterialHelper and not self:isMaterialHelper() ) then
+      self:addMaterial( "highlight" )
+      self:setMaterialVisible( "highlight", false )
    end
 end
 
-function CDoor:OnFocusEnd(obj)
-   CLockable.OnFocusEnd(self, obj)
+function CDoor:OnInteractTriggerEnd( obj )
+   if self.disableOnOpen then
+      return
+   elseif ( not self:closeDoor() ) then
+      runTimer( 1, self, self.closeDoor, false )
+   end
+end
+
+function CDoor:OnFocusBegin( obj )
+   if ( self.setMaterialVisible ) then
+      self:setMaterialVisible( "highlight", true )
+   end
+end
+
+function CDoor:OnFocusEnd( obj )
+   if ( self.setMaterialVisible ) then
+      self:setMaterialVisible( "highlight", false )
+   end
    if self.opened and not objInDist(obj:getPose():getPos(), self:getPose():getPos(), self.interactor:getTriggerRadius()) then
       self:OnInteractTriggerEnd(obj)
    end
@@ -50,55 +60,52 @@ function CDoor:animStop()
    self.animating = false
 end
 
-function CDoor:activate(obj)
-   if self.animating then return false end
-
-   if self:isLocked() then
-      CLockable.activate(self, obj)
-   elseif self.opened then
-      self:closeDoor()
-   else
-      self.opened = true
-      self.animating = true
-      self:playAnimation("open", false)
-      self.sounds.open:play()
-      if self.disableOnOpen then
-         self.interactor:setTriggerActive(false)
-      end
+function CDoor:activate( obj )
+   if ( self.opened or self.animating ) then
+      return false
    end
 
-   return true
-end
-
-function CDoor:deactivate(obj)
-   if self.locked then
-      CLockable.deactivate(self, obj)
-   end
-   return true
-end
-
-function CDoor:closeDoor()
-   if not self.opened or self.animating then return false end
-
-   self.opened = false
    self.animating = true
-   self:playAnimation("close", false)
+   self:playAnimation( "open", false )
 
    self.sounds.open:play()
 
+   self.opened = true
+   if self.disableOnOpen then
+      self.interactor:setTriggerActive(false)
+   end
    return true
 end
 
-function CDoor:tryCode(strCode)
-   if CLockable.tryCode(self, strCode) then
-      self:activate()
+function CDoor:deactivate( obj )
+   return true
+      --self:closeDoor()
+end
+
+function CDoor:closeDoor()
+   if ( not self.opened or self.animating ) then
+      return false
    end
+
+   self.animating = true
+   self:playAnimation( "close", false )
+
+   self.sounds.open:play()
+
+   self.opened = false
+   return true
+end
+
+function CDoor:getType()
+   return "activator"
 end
 
 function CDoor:getLabel()
-   local label = "Door"
-   label = CLockable.getLabel(self) .. label
-   return label
+   return "Door"
+end
+
+function CDoor:getLabelPos()
+   return self.interactor:getPose():getPos()
 end
 
 function CDoor:getInteractLabel()
@@ -106,13 +113,11 @@ function CDoor:getInteractLabel()
 end
 
 function CDoor:OnSaveState(state)
-   CLockable.OnSaveState(self, state)
    state.opened = self.opened
    state.interactor = self.interactor:getTriggerActive()
 end
 
 function CDoor:OnLoadState(state)
-   CLockable.OnLoadState(self, state)
    if state.opened then
       self.opened = state.opened
       self:playAnimation("open", false)

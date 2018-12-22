@@ -1,286 +1,299 @@
 local oo = require "loop.simple"
 
 local CCharacter = (require "character").CCharacter
-
-local stringx = require "pl.stringx"
-local random = require "random"
-local f = require "fun"
-local partial = f.partial
+local CInventory = (require "inventory").CInventory
+local CEventManager = (require "notificationCenter2").CNotificationCenter
 
 local hlp = require "helpers"
 
 local ai = require "ai"
-local coro = require "coroutines.helpers"
 
----@class CCrucas : CCharacter
-local CCrucas = oo.class({}, CCharacter)
-local CCrucasEating = oo.class({}, CCrucas)
----@class CCrucasWeak : CCrucas
-local CCrucasWeak = oo.class({}, CCrucas)
+local CCrat = oo.class({}, CCharacter)
+local CCratEating = oo.class({}, CCrat)
+local CCratWeak = oo.class({}, CCrat)
 
-local IDLE_ANIMATIONS = {"idle_2", "idle_3"}
+local IDLE_ANIMATIONS = {"idle_2.caf", "idle_3.caf"}
 
-function CCrucasWeak:getDefaultParameters()
-   local parameters = CCrucas.getDefaultParameters(self)
-   parameters.healthMax = 100
-   return parameters
+function CCratWeak:OnCreate()
+   CCrat.OnCreate(self)
+
+   self.stats.healthMax = {base = 100, current = 100, min = 1}
+   self:setStatCount( "health", self.stats.healthMax.current )
 end
 
-function CCrucasWeak:getLabel()
+function CCratWeak:getLabel()
    return "Juvenile Crucass"
 end
 
-function CCrucasWeak:addWeapon()
-   CCrucas.addWeapon(self)
+function CCratWeak:addWeapon()
+   CCrat.addWeapon( self )
    self.weapon:setDamage(6)
 end
 
-function CCrucas:addWeapon()
-   if not self.weapon then
-      self.weapon = hlp.safeCreateItemWithoutModel("crucass_bite.wpn", "CWeapon")
-      self.weapon:setOffset(false)
-      self.weapon:setDimensions(28, 0)
-      self.weapon = self:getInventory():addItemObj(self.weapon)
-      self:getInventory():equipSlotWithItem(self:getWeaponSlot(), self.weapon:getId(), true)
-      self.weapon:setDamage(20)
-   end
-end
+function CCrat:initWithParams( params )
+   local healthMax = params.healthMax or 200
+   self.stats.healthMax = {base = healthMax, current = healthMax, min = 1}
+   self:setStatCount( "health", self.stats.healthMax.current )
 
-function CCrucas:initSenses()
-   self.senseScheduler:addSense("inZone"     , false, self.senseScheduler, self.senseScheduler.checkZone)
-   self.senseScheduler:addSense("enemyDetect", false, self.senseScheduler, self.senseScheduler.checkDetect)
-   self.senseScheduler:addSense("enemyClose" , false, self.senseScheduler, self.senseScheduler.checkClose)
-   self.senseScheduler:addSense("enemyFront" , false, self.senseScheduler, self.senseScheduler.checkFront)
-   self.senseScheduler:addSense("enemyWarn"  , false, self.senseScheduler, self.senseScheduler.checkWarn)
-   self.senseScheduler:addSense("seesCorpses", false, self.senseScheduler, self.senseScheduler.seesCorpses)
-end
+   self.senseScheduler:setFeelRadius( loadParamNumber(self, "viewRange", 10000) )
 
-function CCrucas:OnCreate(params)
-   CCharacter.OnCreate(self, params)
+   self.parameters.maxLandingSpeed = 1800
 
-   self:initSenses()
+   self.parameters.viewDist        = 2000
+   self.parameters.viewAngle       = 180
+   self.parameters.backViewDist    = 400
+   self.parameters.warnDist        = 600
+   self.parameters.attackDist      = 250
+   self.parameters.attackAngle     = 100
 
-   self:initFX()
+   self.parameters.zoneSize         = 1000 -- 10 meter
 
-   self:setGuild("GLD_ANIMAL")
+   self.parameters.defenceDist     = 200
 
-   self:createTree("ai.trees.crucas")
-end
-
-function CCrucas:initFX()
-   if not self.fx then
-      self.fx = {}
-      self.fx.blood = self:createAspect("abori_damage.sps")
-      self.fx.blood:setLoop(false)
-      self.fx.blood:getPose():setParent(self:getBonePose("item_slot1"))
-      self.fx.blood:getPose():resetLocalPos()
-      self.fx.blood:disable()
-   end
-end
-
-function CCrucas:getDefaultParameters()
-   local parameters = CCharacter.getDefaultParameters(self)
-   parameters.maxLandingSpeed  = 750
-   parameters.weaponSlotId     = 1
-   parameters.zoneSize         = 1000
-
-   parameters.feelRadiusCutoff = 2000
-
-   parameters.viewDist         = 1000
-   parameters.viewAngle        = 180
-   parameters.backViewDist     = 400
-   parameters.warnDist         = 600
-
-   parameters.attackDist       = 250
-   parameters.attackAngle      = 100
-
-   parameters.healthMax        = 200
-
-   return parameters
-end
-
-function CCrucas:loadDynamicParameters(params)
-   CCharacter.loadDynamicParameters(self, params)
-   self.parameters.zoneSize = params.zoneSize
-   self.parameters.feelRadiusCutoff = params.feelRadiusCutoff
-   self.lootItems = params.lootItems
-end
-
-function CCrucas:loadParameters()
-   CCharacter.loadParameters(self)
-
-   self.senseScheduler:setFeelRadius(loadParamNumber(self, "feelRadiusCutoff"))
+   self.parameters.enemySpotted    = 0
 
    self.headLookingLimits = {x=10, y=45, z=0}
 
-   self.lootItems = self.lootItems or loadParamItemCounts(self, "lootItems", {})
-   if loadParam(self, "defaultLoot", true) then
-      self.lootItems["meat.itm"] = 1
-   end
+   self.standardLoot = params.standardLoot or {}
+   self.lootItems = params.lootItems or loadParamItemCounts( self, "lootItems", {} )
 
-   for name, count in pairs(self.lootItems) do
-      self:getInventory():addItem(name, count)
+   if not params.load then
+      for name, count in pairs(self.standardLoot) do
+         for _=1, count do
+            self.itemsManager:addItem(name)
+         end
+      end
+      for name, count in pairs(self.lootItems) do
+         for _=1, count do
+            self.itemsManager:addItem(name)
+         end
+      end
    end
 
    self:addWeapon()
 end
 
-function CCrucas:setupTimers(freq)
-   self:stopTimers()
-
-   self.senseScheduler.timer = runTimer(freq, self.senseScheduler, self.senseScheduler.OnIdle, true)
-   self.behaviorTreeTimer    = runTimer(freq, self, ai.utils.ticker, true)
+function CCrat:addWeapon()
+   if not self.weapon then
+      self.weapon = hlp.safeCreateItemWithoutModel("crucass_bite.wpn", "CWeapon")
+      self.weapon:setOffset(false)
+      self.weapon:setDimensions(25, 0)
+      self.weapon = self.itemsManager:addItemObj( self.weapon )
+      self.itemsManager:equipSlotWithItem( 1, self.weapon.id, true )
+      self.weapon:setDamage(20)
+   end
 end
 
-function CCrucas:stopTimers()
+function CCrat:initSenses()
+   self.senseScheduler:addSense("inZone"     , false, self.senseScheduler, self.senseScheduler.checkZone)
+   self.senseScheduler:addSense("enemyDetect", false, self.senseScheduler, self.senseScheduler.checkDetect)
+   self.senseScheduler:addSense("enemyClose" , false, self.senseScheduler, self.senseScheduler.checkClose)
+   self.senseScheduler:addSense("enemyFront" , false, self.senseScheduler, self.senseScheduler.checkFront)
+   self.senseScheduler:addSense("enemyWarn"  , false, self.senseScheduler, self.senseScheduler.checkWarn)
+end
+
+function CCrat:OnCreate()
+   CCharacter.OnCreate(self)
+
+   CCrat.initWithParams( self, { standardLoot = {["meat.itm"] = 1} } )
+   CCrat.initSenses    ( self )
+
+   self.inventory = CInventory{}
+   self.inventory:init     ( self )
+   self.inventory:setActive( false )
+   self.inventory:setRadius( 300 )
+   --self.inventory:addItems( loadParamStrings( self, "items", nil ) )
+
+   self:setRole   ( ROLE_ANIMAL )
+   self.animationsManager:stopAnimation( "die.caf" )
+
+   self.eventManager = CEventManager{owner=self}
+   self.eventManager:init()
+   self:CreateTree()
+end
+
+function CCrat:setupTimers( freq )
+   self:stopTimers()
+
+   self.senseScheduler.timer = runTimer( freq, self.senseScheduler, self.senseScheduler.OnIdle, true )
+   self.behaviorTreeTimer    = runTimer( freq, nil, function ()
+      if(self.BT) then
+         self.BT:tick()
+         self.eventManager:removeNotifications()
+      end
+   end, true )
+end
+
+function CCrat:stopTimers()
    CCharacter.stopTimers(self)
 
-   if self.behaviorTreeTimer then
+   if ( self.behaviorTreeTimer ) then
       self.behaviorTreeTimer:stop()
       self.behaviorTreeTimer = nil
    end
 end
 
-function CCrucas:animatedEvent(eventType)
-   CCharacter.animatedEvent(self, eventType)
+function CCrat:CreateTree()
+   self.BT = ai.utils.loadTree("ai.trees.crucas", self)
+   self.BT:setBlackboard(self.blackboard)
+end
 
-   if self:getHealth() == 0 and eventType ~= "die" then
-      return
-   end
-
-   if eventType == "hit" then
-      self:setState("damage", true)
+function CCrat:OnDestroy()
+   CCharacter.OnDestroy(self)
+   if self.installer then
+      self.installer:removeInstallation(self)
    end
 end
 
-function CCrucas:warn_start()
+function CCrat:hit(damage, charAttacker)
+   CCharacter.hit(self, damage, charAttacker)
+   self:setState("damage", true)
+end
+
+function CCrat:OnStuckIn()
+end
+
+function CCrat:OnStuckOut()
+end
+
+function CCrat:warn_start()
    self:setThreatFlag(false)
-   self.animationsManager:playCycle(self.animations.idle.default[1])
-   self.animationsManager:playAction(self.animations.threat.default)
+   self.animationsManager:loopAnimation("idle_1.caf")
+   self.animationsManager:playAnimation("threat.caf")
+   self:playSound("crat_threat.wav")
 end
 
-function CCrucas:warn_stop()
+function CCrat:warn_stop()
 end
 
-function CCrucas:setThreatFlag(value)
+function CCrat:setThreatFlag(value)
    self.canUseThreat = value
 end
 
-function CCrucas:walk_start()
+function CCrat:walk_start()
    self:setThreatFlag(true)
-   self:setOrientationSpeed(500)
-   self:setMoveSpeed(200)
-   self.animationsManager:playCycle(self.animations.walk.front.default)
+   self:setOrientationSpeed( 500 )
+   self:setMoveSpeed( 200 )
+   self.animationsManager:loopAnimation( "walk.caf" )
 
-   if not self.senseScheduler:getSense("inZone") then
-      self:setOrientation(getTargetAngleDir(self, self.senseScheduler:getCurZone()))
+   if ( not self.senseScheduler:getSense("inZone") ) then
+      self:setOrientation( getTargetAngleDir(self, self.senseScheduler:getCurZone()) )
    else
-      self:setOrientation(random.normal(-180, 180))
+      self:setOrientation( rand(360) )
    end
-   self.timer = runTimer(random.normal(1, 5), nil,nil,false)
+   self.timer = runTimer(rand(5), nil,nil,false)
 end
 
-function CCrucas:walk_running()
+function CCrat:walk_running()
    return self.timer:getTimeLeft() > 0
 end
 
-function CCrucas:walk_stop()
-   self:stopLastLoopedSound()
+function CCrat:walk_stop()
+-- self.animationsManager:stopAnimations()
    self:stopMove()
 end
 
-function CCrucas:idle_running()
+function CCrat:idle_start()
    self:setThreatFlag(true)
    self:stopMove()
-   self.animationsManager:playCycle(self.animations.idle.default[1])
-   coro.wait(random.normal(3))
+   self.animationsManager:loopAnimation( "idle_1.caf" )
+   self.timer = runTimer(rand(5), nil,nil,false)
 end
 
-function CCrucas:idle_finish()
-   local sound = self:getBBVar("idle_sound")
-   if hlp.isOperable(sound) then
-      sound:stop()
-   end
+function CCrat:idle_running()
+   return self.timer:getTimeLeft() > 0
 end
 
-function CCrucas:eat_dead_start()
+function CCrat:idle_stop()
+-- self.animationsManager:stopAnimations()
+end
+
+function CCrat:eat_dead_start()
    self:setThreatFlag(true)
-   self.animationsManager:playCycle(self.animations.eat.default)
+   self.animationsManager:loopAnimation("idle_1.caf")
+   self.animationsManager:playAnimation("eat.caf")
 end
 
-function CCrucas:shortIdle_running()
+function CCrat:eat_dead_stop()
+   self.animationsManager:stopAnimations()
+end
+
+function CCrat:shortIdle_start()
    self:setThreatFlag(true)
    self:stopMove()
-   self.animationsManager:playCycle(self.animations.idle.default[1])
-   local animation = random.choice(self.animations.idle.default)
-   self.animationsManager:playAction(animation)
-   coro.waitAnimationEnd(self, animation)
+   local animation = randChoice(IDLE_ANIMATIONS)
+   self.animationsManager:loopAnimation( animation)
+   self.timer = runTimer(rand(1.5), nil,nil,false)
 end
 
-function CCrucas:shortIdle_finish()
+function CCrat:shortIdle_running()
+   return self.timer:getTimeLeft() > 0
+end
+
+function CCrat:shortIdle_stop()
+--  self.animationsManager:stopAnimations()
 end
 
 -- -- ----------------------------- CHASE ----------------------------------------------------
-function CCrucas:chase_start()
+function CCrat:chase_start()
    self:setThreatFlag(false)
-   self:setOrientationSpeed(400)
-   self:setMoveSpeed       (400)
-   self.animationsManager:playCycle(self.animations.run.front.default)
-   self:setTarget(self.senseScheduler:getCurEnemy(), {y=100})
+   self:setOrientationSpeed( 400 )
+   self:setMoveSpeed       ( 400 )
+   self.animationsManager:loopAnimation( "run.caf" )
+   self:setTarget( self.senseScheduler:getCurEnemy(), {y=100} )
 end
 
-function CCrucas:chaseSwim_start()
+function CCrat:chaseSwim_start()
    self:setThreatFlag(false)
-   self:setOrientationSpeed(400/3)
-   self:setMoveSpeed       (400/3)
-   self.animationsManager:playCycle(self.animations.walk.front.default)
-   self:setTarget(self.senseScheduler:getCurEnemy(), {y=100})
+   self:setOrientationSpeed( 400/3 )
+   self:setMoveSpeed       ( 400/3 )
+   self.animationsManager:loopAnimation( "walk.caf" )
+   self:setTarget( self.senseScheduler:getCurEnemy(), {y=100} )
 end
 
-function CCrucas:chase_stop()
+function CCrat:chase_stop()
    self:stopMove()
    self:resetTarget()
-   self:stopLastLoopedSound()
 end
 
-function CCrucas:chase_dead_start()
+function CCrat:chase_dead_start()
    self:setThreatFlag(false)
-   self:setOrientationSpeed(400)
-   self:setMoveSpeed       (400)
-   self.animationsManager:playCycle(self.animations.run.front.default)
-   self:setTarget(self:getBBVar("corpse"), {y=100})
+   self:setOrientationSpeed( 400 )
+   self:setMoveSpeed       ( 400 )
+   self.animationsManager:loopAnimation( "run.caf" )
+   self:setTarget( self.senseScheduler:getClosestCorpse(), {y=100} )
 end
 
-function CCrucas:chase_dead_stop()
+function CCrat:chase_dead_stop()
    self:stopMove()
    self:resetTarget()
-   self:stopLastLoopedSound()
 end
 
-function CCrucas:face_enemy_start()
+function CCrat:face_enemy_start()
    -- the manual setOrientation instead of setTarget is deliberate, just to test
    -- an alternative approach. TODO:FIXME: should probably replace with setTarget
    self:setOrientationSpeed(100)
-   self:setOrientation(getTargetAngleDir(self, self.senseScheduler:getCurEnemy():getPose():getPos()))
-   local targetAngle = getTargetAngleFlat(self, self.senseScheduler:getCurEnemy():getPose():getPos())
+   self:setOrientation( getTargetAngleDir(self, self.senseScheduler:getCurEnemy():getPose():getPos()) )
+   local targetAngle = getTargetAngle(self, self.senseScheduler:getCurEnemy():getPose():getPos())
    if targetAngle < 0 then
-      self.animationsManager:playCycle(self.animations.turn.right.step)
+      self.animationsManager:loopAnimation("turn_left.caf")
    else
-      self.animationsManager:playCycle(self.animations.turn.left.step)
+      self.animationsManager:loopAnimation("turn_right.caf")
    end
 end
 
-function CCrucas:face_enemy_running()
+function CCrat:face_enemy_running()
    local enemy = self.senseScheduler:getCurEnemy()
    if enemy then
       local enemyPos = enemy:getPose():getPos()
       self:setOrientation(getTargetAngleDir(self, enemyPos))
 
-      local targetAngle = getTargetAngleFlat(self, enemyPos)
+      --TODO:FIXME: refactor into getTargetAngleFlat
+      local targetAngle = getTargetAngle(self, vec3Add(vec3Mul(enemyPos, {x=1,y=0,z=1}), {y=self:getPose():getPos().y}))
       if targetAngle < 0 then
-         self.animationsManager:playCycle(self.animations.turn.left.step)
+         self.animationsManager:loopAnimation("turn_left.caf")
       else
-         self.animationsManager:playCycle(self.animations.turn.right.step)
+         self.animationsManager:loopAnimation("turn_right.caf")
       end
       if math.abs(targetAngle) > 10 then
          return true
@@ -289,115 +302,171 @@ function CCrucas:face_enemy_running()
    return false
 end
 
-function CCrucas:face_enemy_stop()
+function CCrat:face_enemy_stop()
    self:setOrientationSpeed(0)
-   self.animationsManager:playCycle(self.animations.idle.default[1])
+   self.animationsManager:loopAnimation("idle_1.caf")
 end
 
 -- -- ----------------------------- ATTACK ----------------------------------------------------
-function CCrucas:attack_start()
+function CCrat:attack_start()
    self:setThreatFlag(false)
    self:stopMove()
-   self:setOrientationSpeed(200)
-   self:setOrientation(getTargetAngleDir(self, self.senseScheduler:getCurEnemy():getPose():getPos()))
+   self:setOrientationSpeed( 200 )
+   self:setOrientation     ( getTargetAngleDir(self, self.senseScheduler:getCurEnemy():getPose():getPos()) )
 
-   local attackAnim = random.choice(self.animations.idle.attack.default)
-   self.animationsManager:playAction(attackAnim)
-   self.animationsManager:subscribeAnimationEventIn(attackAnim, "attack", self.onAttackAnimationIn, self)
-   self.animationsManager:subscribeAnimationEventOut(attackAnim, "attack", self.attack_stop, self)
+   local pushPos = self.senseScheduler:getCurEnemy():getPose():getPos()
+   local selfPos = self:getPose():getPos()
+   pushPos.x = (pushPos.x - selfPos.x)
+   pushPos.y = (pushPos.y - selfPos.y)
+   pushPos.z = (pushPos.z - selfPos.z)
+   --self:push( pushPos, 15000, 1.0 )
+
+   local attackAnim = "attack.caf"
+
+   self.animationsManager:playAnimation( attackAnim )
+   self.animationsManager:subscribeAnimationEventIn(attackAnim, "attack", self, self.onAttackAnimationIn)
+   self.animationsManager:subscribeAnimationEventOut(attackAnim, "attack", self, self.attack_stop)
+   self:playSound("crat_attack.wav")
 end
 
-function CCrucas:onAttackAnimationIn()
-   self:OnItemActivateSafe(self.weapon)
+function CCrat:onAttackAnimationIn()
+   self.weapon:OnActivate()
 end
 
-function CCrucas:attack_stop()
-   self:OnItemDeactivateSafe(self.weapon)
+function CCrat:attack_stop()
+   self.weapon:OnDeactivate()
 end
 
-function CCrucas:damaged_start()
+function CCrat:damaged_start()
    self:setThreatFlag(false)
-   self.animationsManager:playCycle(self.animations.idle.default[1])
-   self.animationsManager:playAction(self.animations.hurt.default, false)
-   self.fx.blood:play()
+   self.animationsManager:loopAnimation("idle_1.caf")
+   self.animationsManager:playAnimation("hit__hurt.caf", false)
 end
 
-function CCrucas:damaged_stop()
+function CCrat:damaged_stop()
    self:setState("damage", false)
 end
 
-function CCrucas:die__()
-   CCharacter.die__(self)
+function CCrat:death_start()
+   self:stopMove()
+   self.animationsManager:stopAnimations()
+   self.animationsManager:playAnimationWithLock( "die.caf" )
 
-   self:playDeathAnimation(self.animations.death.default)
-end
-
-function CCrucas:die()
-   CCharacter.die(self)
-
-   self.fx.blood:play()
-
-   self:getInventory():destroyItem(self.weapon, -1, true, true)
-
-   if self:getInventory():getItemsCount() ~= 0 then
-      self.interactor:setRaycastActive(true)
+   if ( self.senseScheduler:getLastEnemy() ~= nil ) then
+      local pushPos = self.senseScheduler:getLastEnemy():getPose():getPos()
+      local selfPos = self:getPose():getPos()
+      pushPos.x = -(pushPos.x - selfPos.x)
+      pushPos.y =  (pushPos.y - selfPos.y) + 180
+      pushPos.z = -(pushPos.z - selfPos.z)
+      self:push( pushPos, 3000, 0.5 )
    end
+
+   self.itemsManager:destroyItemByName(self:getWeaponSlotItem().name)
+   self.inventory.itemsManager.items = self.itemsManager.items
+   self.inventory.itemsManager.idGenerator = self.itemsManager.idGenerator --FIXME: Hack that fixes wrong IDs for newly placed items double inventory system
+   self.inventory:setActive( true )
+
+   self.BT = nil
+   self:stopTimers()
 end
 
-function CCrucas:OnInventoryChange(event)
-   if self:getInventory():getItemsCount() == 0 then
+function CCrat:death_stop()
+end
+
+function CCrat:OnLostItem()
+   if ( self.inventory:getItemsCount() == 0 ) then
       self:showGibs()
    end
 end
 
-CCrucas.showGibs = hlp.showGibs
+function CCrat:showGibs()
+   if ( not self.gibs ) then
+      self.gibs = self:createAspect( "kabarog_carcass.sbg" )
+   end
 
-function CCrucas:getLabel()
+   self.gibs:setPose       ( self:getPose() )
+   self.gibs:setVisible    ( true )
+   self:setVisible         ( false )
+   self.inventory:setActive( false )
+
+   if ( not self.gibsFlies ) then
+      self.gibsFlies = self:createAspect( "flies.sps" )
+   end
+
+   self.gibsFlies:setPose    ( self.gibs:getPose() )
+   self.gibsFlies:play()
+
+   if ( not self.gibsFliesSound ) then
+      self.gibsFliesSound = self:createAspect( "flies.wav" )
+   end
+
+   self.gibsFliesSound:setPose    ( self:getPose() )
+   self.gibsFliesSound:setLoop    ( true )
+   self.gibsFliesSound:setDistance( 500 )
+   self.gibsFliesSound:setFadeIn  ( 1 )
+   self.gibsFliesSound:setFadeOut ( 1 )
+   self.gibsFliesSound:play       ()
+end
+
+function CCrat:getLabel()
    return "Crucass"
 end
 
-function CCrucas:getInteractLabel()
+function CCrat:getInteractLabel()
    if self:getState("dead") then
       return "loot"
    end
 end
 
-function CCrucas:OnSaveState(state)
+function CCrat:setInstaller(obj)
+   self.installer = obj
+end
+
+function CCrat:OnSaveState( state )
    CCharacter.OnSaveState(self, state)
 
    state.gibsVisible = self.gibs ~= nil
+   state.dead = self:getState( "dead" )
    -- dynamic object spawned by installer
    if self.installer then
-      state.pos = self:getSafePos()
-      state.orientationGlobal = self:getOrientationGlobal()
+      local pos = self:getPose():getPos()
+      state.pos = {x=pos.x, y=pos.y, z=pos.z}
    end
+   state.items = self.itemsManager:serialize()
 end
 
-function CCrucas:OnLoadState(state)
+function CCrat:OnLoadState( state )
+   local params = {}
+   params.load = true
+
    if self.installer then
       if state.pos then
          self:getPose():setPos(state.pos)
       end
 
-      if state.orientationGlobal then
-         self:setOrientationGlobal(state.orientationGlobal)
-      end
+      params.lootItems = {}
+      self:initWithParams( params )
    end
 
    CCharacter.OnLoadState(self, state)
 
+   self.itemsManager:removeAllItems()
+   self.itemsManager:deserialize(state.items)
    self.weapon = nil
-   if not state.dead then
-      self:addWeapon()
+   self:addWeapon()
+
+   if ( state.dead ) then
+      self:die__()
+      self:stopSounds()
    end
 
-   if state.gibsVisible then
+   if ( state.gibsVisible ) then
       self:showGibs()
    end
 end
 
 return {
-   CCrucas=CCrucas,
-   CCrucasWeak=CCrucasWeak,
-   CCrucasEating=CCrucasEating,
+   CCrat=CCrat,
+   CCratWeak=CCratWeak,
+   CCratEating=CCratEating,
 }

@@ -42,10 +42,10 @@ local obj1 = {
 			["event"] = "discuss";
 			["posX"] = 120;
 			["posY"] = 90;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setParam(\"discount\", self:getParam(\"discount\") + 1)\
-   removeBoozeFromPlayer(1)\
-   getMC():addExp(100)\
+   removeBoozeFromPlayer( 1 )\
+   getPlayer():addExp(100)\
    self.q:setParam(\"gave_booze\", true)\
    self:setTopicVisible(\"vasily_give_drink\", false)\
    return false\
@@ -65,7 +65,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = -150;
 			["posY"] = 240;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setTopicVisible(\"vasily_give_drink\", true)\
    return false\
 end\
@@ -83,10 +83,10 @@ end\
 			["event"] = "discuss";
 			["posX"] = 120;
 			["posY"] = -60;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setParam(\"discount\", self:getParam(\"discount\") + 1)\
-   removeBoozeFromPlayer(1)\
-   getMC():addExp(100)\
+   removeBoozeFromPlayer( 1 )\
+   getPlayer():addExp(100)\
    self.q:setParam(\"gave_booze\", true)\
    self:setTopicVisible(\"vasily_give_drink\", false)\
    return false\
@@ -105,7 +105,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = -150;
 			["posY"] = 90;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setTopicVisible(\"vasily_give_drink\", true)\
    return false\
 end\
@@ -159,25 +159,25 @@ function Quest:onFinish()\
    if price > 0 then\
       removeItemFromPlayer(\"antigravium_shards.itm\", price)\
    end\
-   addItemToPlayer(\"shotgun.gun\", 1, 2)\
+   addItemToPlayer(\"shotgun.gun\")\
 end\
 \
 function Quest:getTopicVisible_vasily_give_drink()\
-   return hasPlayerBooze(1)\
+   return hasPlayerBooze( 1 )\
 end\
 \
 function Quest:getTopicVisible_vasily_ask_shotgun()\
-   return hasPlayerItem(\"broken_shotgun.itm\")\
+   return hasPlayerItem( \"broken_shotgun.itm\" )\
 end\
 \
 function Quest:getTopicVisible_vasily_can_fix_shotgun()\
-   return hasPlayerItem(\"broken_shotgun.itm\")\
+   return hasPlayerItem( \"broken_shotgun.itm\" )\
 end\
 \
 function Quest:getTopicVisible_finish()\
    local price = self.shotgun_fix_price - self:getParam(\"discount\") * 150\
    if price > 0 then\
-      if hasPlayerItem(\"antigravium_shards.itm\", price) then\
+      if hasPlayerItemCount(\"antigravium_shards.itm\", price) then\
          return true\
       end\
    else\

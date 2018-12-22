@@ -1,15 +1,8 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
-local Node = require "ai.Node"
 local Composite = require "ai.Composite"
 local NodeState = require "ai.NodeState"
 
----@class ai.Parallel : ai.Composite
-local Parallel = oo.class({
-   className = className,
-}, Composite)
+local Parallel = oo.class({}, Composite)
 
 function Parallel:start()
    self.currentIndex = 0
@@ -102,15 +95,6 @@ function Parallel:onChildFailure()
       end
       return nil
    end
-end
-
-function Parallel:finish()
-   for _, child in ipairs(self.children) do
-      if child.status == NodeState.RUNNING then
-         child:finish()
-      end
-   end
-   Node.finish(self)
 end
 
 function Parallel:reset()

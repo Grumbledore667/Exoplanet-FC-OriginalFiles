@@ -96,7 +96,7 @@ end\
 		["posX"] = 2220;
 		["posY"] = -90;
 		["script"] = "";
-		["text"] = "\\[Provoke]Try to stop me from taking my shit back! I'll beat you up if I have to.";
+		["text"] = "\\[Provoke]Try to stop me from taking my shit back! I'll beat you up if i have to.";
 		["time"] = 9.5;
 		["type"] = "message";
 	};
@@ -139,7 +139,7 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "[t_my_clothes:ragpicker_buy_all]\\[Give 400 Antigravium Shards] I'll take everything.";
+		["text"] = "[t_my_clothes:ragpicker_buy_all]\\[Give 400 Antigravium Shards] I'll take everything";
 		["time"] = 4.5;
 		["type"] = "message";
 	};
@@ -217,11 +217,7 @@ end\
 \
 function message:onStop()\
    --Lets ragpicker go into angry mode at the end of the dialog\
-   --TODO:FIXME: Timer allows stopDialog in banditTalker:activate() to not be executed\
-   --in the middle of another stopDialog that called this onStop event\
-   runTimer(0, nil, function()\
-      getQuest(\"my_clothes\"):provokeTrader(\"talk\")\
-   end, false)\
+   getQuest(\"my_clothes\"):provokeTrader( \"talk\" )\
 end\
 \
 function message:isVisible()\
@@ -452,7 +448,7 @@ end\
 		["posX"] = 2190;
 		["posY"] = 360;
 		["script"] = "";
-		["text"] = "How about some broken ribs and lost teeth? Is it worth covering some filtly coward who only steals from helpless victims?";
+		["text"] = "How about some broken ribs and lost teeth? Is it worth covering some filtly coward who only steals from helpless wictims?";
 		["time"] = 11.5;
 		["type"] = "message";
 	};
@@ -463,7 +459,7 @@ end\
 		["posX"] = 2190;
 		["posY"] = 480;
 		["script"] = "";
-		["text"] = "I will complain to your elder and we'll see what he thinks of your little stinking business.";
+		["text"] = "I will coimplain to your elder. Let's see what he thinks of your little stinking business. ";
 		["time"] = 9.5;
 		["type"] = "message";
 	};
@@ -606,11 +602,9 @@ end\
 			[4] = 31;
 			[5] = 18;
 		};
-		["h"] = 140;
 		["posX"] = 2460;
 		["posY"] = -510;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00027"] = {
 		["ID"] = 27;
@@ -641,11 +635,9 @@ end\
 			[4] = 44;
 			[5] = 38;
 		};
-		["h"] = 140;
 		["posX"] = 870;
 		["posY"] = 210;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00049"] = {
 		["ID"] = 49;

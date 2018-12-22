@@ -28,7 +28,6 @@ end\
 	["message_00001"] = {
 		["ID"] = 1;
 		["actor"] = 2;
-		["animation"] = "dl_point_right";
 		["connectID"] = 2;
 		["posX"] = 480;
 		["posY"] = 840;
@@ -204,7 +203,6 @@ end\
 	["message_00023"] = {
 		["ID"] = 23;
 		["actor"] = 2;
-		["animation"] = "dl_talk_2";
 		["connectID"] = 24;
 		["posX"] = 2610;
 		["posY"] = 120;
@@ -221,7 +219,7 @@ end\
 		["posY"] = 120;
 		["script"] = "";
 		["text"] = "I also have a bunch of apprentices, whom I sent away on errands. They still ain't here.";
-		["time"] = 9.5;
+		["time"] = 1;
 		["type"] = "message";
 	};
 	["message_00026"] = {
@@ -260,7 +258,6 @@ end\
 	["message_00029"] = {
 		["ID"] = 29;
 		["actor"] = 1;
-		["animation"] = "dl_hand_showforward";
 		["connectID"] = 30;
 		["posX"] = 3090;
 		["posY"] = -120;
@@ -369,7 +366,6 @@ end\
 	["message_00039"] = {
 		["ID"] = 39;
 		["actor"] = 2;
-		["animation"] = "dl_talk_1";
 		["connectID"] = 40;
 		["posX"] = 2370;
 		["posY"] = 600;
@@ -424,7 +420,6 @@ end\
 	["message_00043"] = {
 		["ID"] = 43;
 		["actor"] = 2;
-		["animation"] = "dl_point_forward";
 		["connectID"] = 65;
 		["posX"] = 3480;
 		["posY"] = 450;
@@ -436,7 +431,6 @@ end\
 	["message_00047"] = {
 		["ID"] = 47;
 		["actor"] = 1;
-		["animation"] = "dl_talk_3";
 		["connectID"] = 48;
 		["posX"] = 4830;
 		["posY"] = 390;
@@ -448,7 +442,6 @@ end\
 	["message_00048"] = {
 		["ID"] = 48;
 		["actor"] = 2;
-		["animation"] = "dl_righthand_wave_med";
 		["connectID"] = 49;
 		["posX"] = 5070;
 		["posY"] = 390;
@@ -460,7 +453,6 @@ end\
 	["message_00049"] = {
 		["ID"] = 49;
 		["actor"] = 1;
-		["connectID"] = 89;
 		["posX"] = 5310;
 		["posY"] = 390;
 		["script"] = "";
@@ -503,7 +495,6 @@ end\
 	["message_00053"] = {
 		["ID"] = 53;
 		["actor"] = 1;
-		["animation"] = "dl_righthand_wave_short";
 		["connectID"] = 54;
 		["posX"] = 1620;
 		["posY"] = 1740;
@@ -515,8 +506,6 @@ end\
 	["message_00054"] = {
 		["ID"] = 54;
 		["actor"] = 2;
-		["animation"] = "dl_chuckle";
-		["connectID"] = 89;
 		["posX"] = 1860;
 		["posY"] = 1740;
 		["script"] = "";
@@ -580,8 +569,6 @@ end\
 	["message_00059"] = {
 		["ID"] = 59;
 		["actor"] = 2;
-		["animation"] = "dl_hand_showforward";
-		["connectID"] = 89;
 		["posX"] = 3480;
 		["posY"] = 600;
 		["script"] = "";
@@ -645,7 +632,6 @@ end\
 	["message_00066"] = {
 		["ID"] = 66;
 		["actor"] = 1;
-		["animation"] = "dl_head_nod";
 		["connectID"] = 67;
 		["posX"] = 3870;
 		["posY"] = 510;
@@ -678,7 +664,6 @@ end\
 	["message_00068"] = {
 		["ID"] = 68;
 		["actor"] = 2;
-		["animation"] = "dl_point_back";
 		["connectID"] = 47;
 		["posX"] = 4590;
 		["posY"] = 390;
@@ -712,7 +697,6 @@ end\
 	["message_00071"] = {
 		["ID"] = 71;
 		["actor"] = 2;
-		["animation"] = "dl_hand_showforward";
 		["connectID"] = 68;
 		["posX"] = 4350;
 		["posY"] = 390;
@@ -756,7 +740,6 @@ end\
 	["message_00074"] = {
 		["ID"] = 74;
 		["actor"] = 1;
-		["animation"] = "dl_point_back";
 		["connectID"] = 117;
 		["posX"] = 1140;
 		["posY"] = 960;
@@ -799,7 +782,6 @@ end\
 	["message_00080"] = {
 		["ID"] = 80;
 		["actor"] = 1;
-		["animation"] = "dl_hand_showforward";
 		["connectID"] = 112;
 		["posX"] = 1770;
 		["posY"] = 1560;
@@ -863,7 +845,6 @@ end\
 	["message_00086"] = {
 		["ID"] = 86;
 		["actor"] = 2;
-		["animation"] = "dl_point_left";
 		["connectID"] = 89;
 		["posX"] = 2730;
 		["posY"] = 1500;
@@ -908,8 +889,8 @@ end\
 		["ID"] = 89;
 		["actor"] = 2;
 		["connectID"] = 2;
-		["posX"] = 4410;
-		["posY"] = 1170;
+		["posX"] = 3810;
+		["posY"] = 1230;
 		["script"] = "";
 		["text"] = "";
 		["time"] = 0;
@@ -932,7 +913,7 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "[t_find_terminal:msasi_returned_battery_before]Here, that's the one you found for me earlier.";
+		["text"] = "[t_find_terminal:msasi_done_little_helpers]Here, that's the one you found for me earlier.";
 		["time"] = 5.5;
 		["type"] = "message";
 	};
@@ -1060,7 +1041,6 @@ end\
 	["message_00108"] = {
 		["ID"] = 108;
 		["actor"] = 2;
-		["animation"] = "dl_chuckle";
 		["connectID"] = 89;
 		["posX"] = 2580;
 		["posY"] = 960;
@@ -1116,7 +1096,6 @@ end\
 	["message_00113"] = {
 		["ID"] = 113;
 		["actor"] = 2;
-		["animation"] = "dl_head_nod";
 		["connectID"] = 86;
 		["posX"] = 2250;
 		["posY"] = 1560;
@@ -1161,7 +1140,6 @@ end\
 	["message_00118"] = {
 		["ID"] = 118;
 		["actor"] = 1;
-		["animation"] = "dl_hands_dontknow";
 		["connectID"] = 73;
 		["posX"] = 1380;
 		["posY"] = 810;
@@ -1218,7 +1196,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 124;
 		["posX"] = 1890;
-		["posY"] = -270;
+		["posY"] = -240;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -1237,24 +1215,23 @@ end\
 	["message_00124"] = {
 		["ID"] = 124;
 		["actor"] = 2;
-		["animation"] = "dl_head_2nods";
 		["connectID"] = 125;
 		["posX"] = 2130;
-		["posY"] = -270;
+		["posY"] = -240;
 		["script"] = "";
-		["text"] = "[t_to_fort:start]Well, yes. Head north from this camp and follow the river. You'll see it.";
-		["time"] = 8;
+		["text"] = "[t_to_fort:start]Yeah there is a fort there.";
+		["time"] = 4;
 		["type"] = "message";
 	};
 	["message_00125"] = {
 		["ID"] = 125;
-		["actor"] = 2;
+		["actor"] = 1;
 		["connectID"] = 126;
 		["posX"] = 2370;
-		["posY"] = -270;
+		["posY"] = -240;
 		["script"] = "";
-		["text"] = "I think you'll manage to find a way in.";
-		["time"] = 5.5;
+		["text"] = "Gotta find it.";
+		["time"] = 2.5;
 		["type"] = "message";
 	};
 	["message_00126"] = {
@@ -1282,11 +1259,9 @@ end\
 			[9] = 87;
 			[10] = 8;
 		};
-		["h"] = 240;
 		["posX"] = 780;
 		["posY"] = 810;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00034"] = {
 		["ID"] = 34;
@@ -1298,11 +1273,9 @@ end\
 			[5] = 7;
 			[6] = 36;
 		};
-		["h"] = 160;
 		["posX"] = 1440;
 		["posY"] = 150;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00056"] = {
 		["ID"] = 56;
@@ -1343,11 +1316,9 @@ end\
 			[3] = 91;
 			[4] = 80;
 		};
-		["h"] = 120;
 		["posX"] = 1620;
 		["posY"] = 1380;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00094"] = {
 		["ID"] = 94;
@@ -1361,10 +1332,4 @@ end\
 		["type"] = "switch";
 	};
 }
-local obj2 = {
-	["actor_prefab"] = {
-		[1] = "human_male";
-		[2] = "abori";
-	};
-}
-return obj1 ,obj2
+return obj1

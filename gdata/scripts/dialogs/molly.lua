@@ -6,8 +6,8 @@ local obj1 = {
 	["message_00003"] = {
 		["ID"] = 3;
 		["actor"] = 1;
-		["posX"] = 750;
-		["posY"] = -60;
+		["posX"] = 810;
+		["posY"] = 90;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -26,8 +26,8 @@ end\
 	["message_00004"] = {
 		["ID"] = 4;
 		["actor"] = 1;
-		["posX"] = 750;
-		["posY"] = 420;
+		["posX"] = 825.249694824;
+		["posY"] = 635.74987793;
 		["script"] = "";
 		["text"] = "END";
 		["time"] = 1.5;
@@ -36,8 +36,8 @@ end\
 	["message_00008"] = {
 		["ID"] = 8;
 		["actor"] = 1;
-		["posX"] = 750;
-		["posY"] = 60;
+		["posX"] = 810;
+		["posY"] = 210;
 		["script"] = "function message:onStart()\
    getObj(\"arphant_molly\"):die()\
    removeItemFromPlayer(\"poisoned_melon.itm\")\
@@ -71,8 +71,8 @@ end\
 	["message_00217"] = {
 		["ID"] = 217;
 		["actor"] = 1;
-		["posX"] = 750;
-		["posY"] = 180;
+		["posX"] = 821.24987793;
+		["posY"] = 346.624755859;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -91,8 +91,8 @@ end\
 	["message_00218"] = {
 		["ID"] = 218;
 		["actor"] = 1;
-		["posX"] = 750;
-		["posY"] = 300;
+		["posX"] = 810;
+		["posY"] = 480;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -112,8 +112,8 @@ end\
 		["ID"] = 398;
 		["actor"] = 1;
 		["connectID"] = 2;
-		["posX"] = 180;
-		["posY"] = 180;
+		["posX"] = 235.499603271;
+		["posY"] = 322.24987793;
 		["script"] = "";
 		["text"] = "debug";
 		["time"] = 1.5;
@@ -123,11 +123,31 @@ end\
 		["ID"] = 399;
 		["actor"] = 1;
 		["connectID"] = 410;
-		["posX"] = 120;
-		["posY"] = 990;
+		["posX"] = 97.74949646;
+		["posY"] = 823.750244141;
 		["script"] = "";
 		["text"] = "dialog";
 		["time"] = 1.5;
+		["type"] = "message";
+	};
+	["message_00401"] = {
+		["ID"] = 401;
+		["actor"] = 1;
+		["posX"] = 780;
+		["posY"] = 870;
+		["script"] = "function message:onStart()\
+end\
+\
+function message:onStop()\
+end\
+\
+function message:isVisible()\
+   return self:isTopicVisible()\
+end\
+\
+";
+		["text"] = "[t_lost_arphant:molly_give_melon]\\[Give melon] Let's go to Zak, stripy!";
+		["time"] = 4.5;
 		["type"] = "message";
 	};
 	["message_00403"] = {
@@ -154,7 +174,7 @@ end\
 		["ID"] = 405;
 		["actor"] = 1;
 		["posX"] = 780;
-		["posY"] = 1140;
+		["posY"] = 1230;
 		["script"] = "";
 		["text"] = "END";
 		["time"] = 1.5;
@@ -164,162 +184,85 @@ end\
 		["ID"] = 410;
 		["actor"] = 2;
 		["connectID"] = 414;
-		["posX"] = 360;
-		["posY"] = 990;
+		["posX"] = 340.249511719;
+		["posY"] = 848.250244141;
 		["script"] = "";
 		["text"] = "";
 		["time"] = 1;
 		["type"] = "message";
 	};
+	["message_00411"] = {
+		["ID"] = 411;
+		["actor"] = 1;
+		["connectID"] = 412;
+		["posX"] = 780;
+		["posY"] = 750;
+		["script"] = "function message:onStart()\
+end\
+\
+function message:onStop()\
+end\
+\
+function message:isVisible()\
+   return self:isTopicVisible()\
+end\
+\
+";
+		["text"] = "[t_lost_arphant:molly_give_melon_stuck]\\[Give melon] Let's go to Zak, stripy!";
+		["time"] = 4.5;
+		["type"] = "message";
+	};
+	["message_00412"] = {
+		["ID"] = 412;
+		["actor"] = 2;
+		["connectID"] = 413;
+		["posX"] = 1020;
+		["posY"] = 750;
+		["script"] = "";
+		["text"] = "...";
+		["time"] = 1.5;
+		["type"] = "message";
+	};
+	["message_00413"] = {
+		["ID"] = 413;
+		["actor"] = 1;
+		["posX"] = 1260;
+		["posY"] = 750;
+		["script"] = "";
+		["text"] = "Oh, right... You can't get out.";
+		["time"] = 4;
+		["type"] = "message";
+	};
 	["message_00415"] = {
 		["ID"] = 415;
 		["actor"] = 1;
-		["connectID"] = 429;
-		["posX"] = 1410;
-		["posY"] = 720;
-		["script"] = "";
-		["text"] = "So... You're stuck...";
+		["connectID"] = 416;
+		["posX"] = 780;
+		["posY"] = 1110;
+		["script"] = "function message:onStart()\
+end\
+\
+function message:onStop()\
+end\
+\
+function message:isVisible()\
+   return self:isTopicVisible()\
+end\
+\
+";
+		["text"] = "[t_lost_arphant:molly_stuck]So... You're stuck...";
 		["time"] = 2.5;
 		["type"] = "message";
 	};
-	["message_00417"] = {
-		["ID"] = 417;
-		["actor"] = 1;
-		["connectID"] = 419;
-		["posX"] = 780;
-		["posY"] = 840;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return self:isTopicVisible()\
-end\
-\
-";
-		["text"] = "[t_lost_arphant:molly_go_to_zak]Let's go to Zak, stripy!\
-";
-		["time"] = 3.5;
-		["type"] = "message";
-	};
-	["message_00420"] = {
-		["ID"] = 420;
-		["actor"] = 2;
-		["connectID"] = 415;
-		["posX"] = 1170;
-		["posY"] = 720;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return getQuestTopicVisible(\"lost_arphant\", \"molly_stuck\")\
-end\
-\
-";
-		["text"] = "...";
-		["time"] = 1.5;
-		["type"] = "message";
-	};
-	["message_00421"] = {
-		["ID"] = 421;
-		["actor"] = 2;
-		["connectID"] = 422;
-		["posX"] = 1170;
-		["posY"] = 960;
-		["script"] = "";
-		["text"] = "...";
-		["time"] = 1.5;
-		["type"] = "message";
-	};
-	["message_00423"] = {
-		["ID"] = 423;
-		["actor"] = 1;
-		["connectID"] = 425;
-		["posX"] = 1560;
-		["posY"] = 900;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return self:isTopicVisible()\
-end\
-\
-";
-		["text"] = "[t_lost_arphant:molly_give_melon]Alright, how about now? \\[Give melon]";
-		["time"] = 4;
-		["type"] = "message";
-	};
-	["message_00424"] = {
-		["ID"] = 424;
-		["actor"] = 1;
-		["connectID"] = 428;
-		["posX"] = 1560;
-		["posY"] = 1020;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return not getQuestTopicVisible(\"lost_arphant\", \"molly_give_melon\")\
-end\
-\
-";
-		["text"] = "Hmm. What can I do to make you follow the command...";
-		["time"] = 6.5;
-		["type"] = "message";
-	};
-	["message_00425"] = {
-		["ID"] = 425;
-		["actor"] = 1;
-		["posX"] = 1800;
-		["posY"] = 900;
-		["script"] = "";
-		["text"] = "Let's go to Zak, stripy!\
-";
-		["time"] = 3.5;
-		["type"] = "message";
-	};
-	["message_00426"] = {
-		["ID"] = 426;
-		["actor"] = 1;
-		["connectID"] = 429;
-		["posX"] = 1560;
-		["posY"] = 1140;
-		["script"] = "";
-		["text"] = "BACK";
-		["time"] = 1.5;
-		["type"] = "message";
-	};
-	["message_00428"] = {
-		["ID"] = 428;
-		["actor"] = 1;
-		["connectID"] = 429;
-		["posX"] = 1800;
-		["posY"] = 1020;
-		["script"] = "";
-		["text"] = "Maybe some treat... A melon, right!";
-		["time"] = 4;
-		["type"] = "message";
-	};
-	["message_00429"] = {
-		["ID"] = 429;
+	["message_00416"] = {
+		["ID"] = 416;
 		["actor"] = 2;
 		["connectID"] = 414;
-		["posX"] = 2550;
-		["posY"] = 960;
+		["posX"] = 1020;
+		["posY"] = 1110;
 		["script"] = "";
-		["text"] = "";
-		["time"] = 0;
+		["text"] = "...";
+		["time"] = 1.5;
 		["type"] = "message";
 	};
 	["switch_00002"] = {
@@ -331,11 +274,9 @@ end\
 			[4] = 218;
 			[5] = 4;
 		};
-		["h"] = 140;
-		["posX"] = 480;
-		["posY"] = 150;
+		["posX"] = 538.499938965;
+		["posY"] = 306.5;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00397"] = {
 		["ID"] = 397;
@@ -350,33 +291,14 @@ end\
 	["switch_00414"] = {
 		["ID"] = 414;
 		["connectionsID"] = {
-			[1] = 417;
-			[2] = 403;
-			[3] = 405;
+			[1] = 411;
+			[2] = 401;
+			[3] = 403;
+			[4] = 415;
+			[5] = 405;
 		};
-		["posX"] = 600;
-		["posY"] = 990;
-		["type"] = "switch";
-	};
-	["switch_00419"] = {
-		["ID"] = 419;
-		["connectionsID"] = {
-			[1] = 420;
-			[2] = 421;
-		};
-		["posX"] = 1020;
+		["posX"] = 570;
 		["posY"] = 840;
-		["type"] = "switch";
-	};
-	["switch_00422"] = {
-		["ID"] = 422;
-		["connectionsID"] = {
-			[1] = 423;
-			[2] = 424;
-			[3] = 426;
-		};
-		["posX"] = 1410;
-		["posY"] = 960;
 		["type"] = "switch";
 	};
 }

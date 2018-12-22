@@ -1,7 +1,6 @@
 local oo = require "loop.simple"
 local CTrigger = (require "trigger").CTrigger
 
----@class CTriggerMetalSteps : CTrigger
 local CTriggerMetalSteps = oo.class({}, CTrigger)
 
 function CTriggerMetalSteps:loadParameters()

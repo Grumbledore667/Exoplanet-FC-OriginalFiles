@@ -43,11 +43,11 @@ local obj1 = {
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_axe_equip.wav";
+				["name"] = "abori_axe_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_axe_unequip.wav";
+				["name"] = "abori_axe_hide.wav";
 			};
 		};
 		["value"] = 35;
@@ -80,11 +80,11 @@ local obj1 = {
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_bat_equip.wav";
+				["name"] = "abori_bat_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_bat_unequip.wav";
+				["name"] = "abori_bat_hide.wav";
 			};
 		};
 		["value"] = 35;
@@ -110,15 +110,19 @@ local obj1 = {
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_gun_mortar_equip.wav";
+				["name"] = "abori_gun_mortar_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "abori_gun_mortar_empty.wav";
 			};
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
+			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_gun_mortar_unequip.wav";
+				["name"] = "abori_gun_mortar_hide.wav";
 			};
 		};
 		["value"] = 350;
@@ -144,15 +148,19 @@ local obj1 = {
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_gun_pistol_equip.wav";
+				["name"] = "abori_gun_pistol_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "abori_gun_pistol_empty.wav";
 			};
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
+			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_gun_pistol_unequip.wav";
+				["name"] = "abori_gun_pistol_hide.wav";
 			};
 		};
 		["value"] = 100;
@@ -178,15 +186,19 @@ local obj1 = {
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_gun_rifle_equip.wav";
+				["name"] = "abori_gun_rifle_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "abori_gun_rifle_empty.wav";
 			};
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
+			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_gun_rifle_unequip.wav";
+				["name"] = "abori_gun_rifle_hide.wav";
 			};
 		};
 		["value"] = 300;
@@ -219,11 +231,11 @@ local obj1 = {
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_knife_equip.wav";
+				["name"] = "abori_knife_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "abori_knife_unequip.wav";
+				["name"] = "abori_knife_hide.wav";
 			};
 		};
 		["value"] = 35;
@@ -292,11 +304,11 @@ Poison damage: 30 over 5 seconds";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "alien_cactus_bat_equip.wav";
+				["name"] = "alien_cactus_bat_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "alien_cactus_bat_unequip.wav";
+				["name"] = "alien_cactus_bat_hide.wav";
 			};
 		};
 		["value"] = 10;
@@ -334,17 +346,6 @@ Poison damage: 30 over 5 seconds";
 			["eng"] = "Antigravium shards";
 		};
 		["value"] = 1;
-	};
-	["arphant_dung.itm"] = {
-		["desc"] = {
-			["eng"] = "This fragrant substance contains many partially digested weeds.";
-		};
-		["icon"] = "ArphantDung";
-		["invCategory"] = "misc";
-		["label"] = {
-			["eng"] = "Arphant Dung";
-		};
-		["value"] = 0;
 	};
 	["arphant_tranquilizer_weed.itm"] = {
 		["desc"] = {
@@ -385,29 +386,14 @@ Poison damage: 30 over 5 seconds";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "axe_equip.wav";
+				["name"] = "axe_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "axe_unequip.wav";
+				["name"] = "axe_hide.wav";
 			};
 		};
 		["value"] = 35;
-	};
-	["bag_hat.itm"] = {
-		["attireType"] = "hat";
-		["desc"] = {
-			["eng"] = "Make two holes in a bag, and you've got yourself a perfect desert raider's mask! It won't protect you from headshots though.";
-		};
-		["equipable"] = true;
-		["icon"] = "BagHat";
-		["invCategory"] = "accessory";
-		["isFaceCover"] = true;
-		["label"] = {
-			["eng"] = "Bag Hat";
-		};
-		["meshes"] = Appearance.Body.male_human.scarecrow.mask;
-		["value"] = 20;
 	};
 	["bandana_black.itm"] = {
 		["attachments"] = {
@@ -438,7 +424,6 @@ Poison damage: 30 over 5 seconds";
 		["equipable"] = true;
 		["icon"] = "BandanaBlack";
 		["invCategory"] = "accessory";
-		["isFaceCover"] = true;
 		["label"] = {
 			["eng"] = "Black Bandana";
 		};
@@ -448,7 +433,7 @@ Poison damage: 30 over 5 seconds";
 		["attachments"] = {
 			[1] = {
 				["bone"] = "head_slot";
-				["name"] = "bandana_1.sbg";
+				["name"] = "bandana_2.sbg";
 				["pos"] = {
 					["x"] = 0;
 					["y"] = 0;
@@ -464,7 +449,6 @@ Poison damage: 30 over 5 seconds";
 					["y"] = 1;
 					["z"] = 1;
 				};
-				["texture"] = "bandana_dif_2.dds";
 			};
 		};
 		["attireType"] = "mask";
@@ -474,7 +458,6 @@ Poison damage: 30 over 5 seconds";
 		["equipable"] = true;
 		["icon"] = "BandanaGrey";
 		["invCategory"] = "accessory";
-		["isFaceCover"] = true;
 		["label"] = {
 			["eng"] = "Grey Bandana";
 		};
@@ -484,7 +467,7 @@ Poison damage: 30 over 5 seconds";
 		["attachments"] = {
 			[1] = {
 				["bone"] = "head_slot";
-				["name"] = "bandana_1.sbg";
+				["name"] = "bandana_3.sbg";
 				["pos"] = {
 					["x"] = 0;
 					["y"] = 0;
@@ -500,7 +483,6 @@ Poison damage: 30 over 5 seconds";
 					["y"] = 1;
 					["z"] = 1;
 				};
-				["texture"] = "bandana_dif_3.dds";
 			};
 		};
 		["attireType"] = "mask";
@@ -510,7 +492,6 @@ Poison damage: 30 over 5 seconds";
 		["equipable"] = true;
 		["icon"] = "BandanaRed";
 		["invCategory"] = "accessory";
-		["isFaceCover"] = true;
 		["label"] = {
 			["eng"] = "Red Bandana";
 		};
@@ -534,11 +515,10 @@ Poison damage: 30 over 5 seconds";
 			};
 		};
 		["questItem"] = true;
-		["value"] = 10;
 	};
 	["barnabas_code.itm"] = {
 		["desc"] = {
-			["eng"] = "The diary is filed with almost illegible scrawl and many pages are torn off. One of the last entries contains some interesting passages.";
+			["eng"] = "The diary is filed with almost illegible scrawl and many pages are torn off. One of the last entries contines some interesting passages.";
 		};
 		["icon"] = "LeatherJournal";
 		["invCategory"] = "quest";
@@ -556,7 +536,6 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 			};
 		};
 		["questItem"] = true;
-		["value"] = 10;
 	};
 	["beacon.itm"] = {
 		["animations"] = "melee_low";
@@ -574,7 +553,7 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		["sounds"] = {
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "revolver_equip.wav";
+				["name"] = "revolver_take.wav";
 			};
 		};
 		["value"] = 100;
@@ -631,7 +610,7 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "revolver_equip.wav";
+				["name"] = "revolver_take.wav";
 			};
 		};
 		["value"] = 40;
@@ -699,7 +678,6 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		["equipable"] = true;
 		["icon"] = "BikerHelmet";
 		["invCategory"] = "accessory";
-		["isFaceCover"] = true;
 		["label"] = {
 			["eng"] = "Biker Helmet";
 		};
@@ -734,7 +712,6 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		["equipable"] = true;
 		["icon"] = "BikerHelmet2";
 		["invCategory"] = "accessory";
-		["isFaceCover"] = true;
 		["label"] = {
 			["eng"] = "Biker Helmet";
 		};
@@ -769,7 +746,6 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		["equipable"] = true;
 		["icon"] = "BikerMask";
 		["invCategory"] = "accessory";
-		["isFaceCover"] = true;
 		["label"] = {
 			["eng"] = "Biker Mask";
 		};
@@ -804,7 +780,6 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		["equipable"] = true;
 		["icon"] = "BikerMask2";
 		["invCategory"] = "accessory";
-		["isFaceCover"] = true;
 		["label"] = {
 			["eng"] = "Biker Mask";
 		};
@@ -812,7 +787,6 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 	};
 	["blood_root.itm"] = {
 		["consumableType"] = "food";
-		["consumeModel"] = "anim_bloodroot.sbg";
 		["desc"] = {
 			["eng"] = "Medium healing plant";
 		};
@@ -839,8 +813,7 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		["value"] = 20;
 	};
 	["bluethorn_leaf.itm"] = {
-		["consumableType"] = "food";
-		["consumeModel"] = "anim_bluethorn.sbg";
+		["consumableType"] = "bandage";
 		["desc"] = {
 			["eng"] = "Local anaesthetic and minor disinfectant.";
 		};
@@ -849,7 +822,6 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		["label"] = {
 			["eng"] = "Bluethorn leaf";
 		};
-		["model"] = "fruit_bluethorn.sbg";
 		["useEffects"] = {
 			["medicineBuff"] = {
 				["changeStats"] = {
@@ -1038,6 +1010,7 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		["value"] = 70;
 	};
 	["bug.itm"] = {
+		["alive"] = true;
 		["animations"] = "melee_low";
 		["desc"] = {
 			["eng"] = "Huge bug with terrifying mandibles. You can throw it at the opponents to create distraction or use it as a scout, but handle it with care - this little bugger can bite your fingers in an instant!";
@@ -1048,10 +1021,10 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		["label"] = {
 			["eng"] = "Bitebug";
 		};
-		["limitCategory"] = "alive";
 		["value"] = 5;
 	};
 	["bug_chipped.itm"] = {
+		["alive"] = true;
 		["animations"] = "melee_low";
 		["desc"] = {
 			["eng"] = "Huge bug with terrifying mandibles. You can throw it at the opponents to create distraction or use it as a scout, but handle it with care - this little bugger can bite your fingers in an instant!\
@@ -1065,7 +1038,6 @@ Neurochip (allows remote control)";
 		["label"] = {
 			["eng"] = "Chipped Bitebug";
 		};
-		["limitCategory"] = "alive";
 		["value"] = 55;
 	};
 	["bug_dead.itm"] = {
@@ -1086,9 +1058,11 @@ Neurochip (allows remote control)";
 		["value"] = 5;
 	};
 	["bug_green.itm"] = {
+		["animations"] = "melee_low";
 		["desc"] = {
 			["eng"] = "This bitebug seems to be a rare mutant affected by antigravium.";
 		};
+		["equipable"] = true;
 		["icon"] = "BugGreen";
 		["invCategory"] = "quest";
 		["label"] = {
@@ -1105,18 +1079,6 @@ Neurochip (allows remote control)";
 		["invCategory"] = "quest";
 		["label"] = {
 			["eng"] = "Dead green bitebug";
-		};
-		["questItem"] = true;
-		["value"] = 15;
-	};
-	["bug_poison.itm"] = {
-		["desc"] = {
-			["eng"] = "Some very strong insecticide.";
-		};
-		["icon"] = "BugPoison";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Bug Poison";
 		};
 		["questItem"] = true;
 		["value"] = 15;
@@ -1188,17 +1150,6 @@ Neurochip (allows remote control)";
 			["eng"] = "Bullet Hat";
 		};
 		["value"] = 50;
-	};
-	["cactus_head.itm"] = {
-		["desc"] = {
-			["eng"] = "A torn off alien cactus with poisonous spikes.";
-		};
-		["icon"] = "AlienCactusSpikes";
-		["invCategory"] = "misc";
-		["label"] = {
-			["eng"] = "Alien Cactus";
-		};
-		["value"] = 4;
 	};
 	["camera_basic.itm"] = {
 		["desc"] = {
@@ -1321,37 +1272,14 @@ Neurochip (allows remote control)";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "revolver_equip.wav";
+				["name"] = "revolver_take.wav";
 			};
 		};
 		["value"] = 50;
 	};
-	["capsule_health.itm"] = {
-		["consumableType"] = "injector";
-		["consumeModel"] = "red";
-		["desc"] = {
-			["eng"] = "A military grade enhanced blood capsule designed to greatly boost health regeneration and replenish blood loss.";
-		};
-		["icon"] = "InjectorRefillRed";
-		["invCategory"] = "meds";
-		["label"] = {
-			["eng"] = "Health Capsule";
-		};
-		["model"] = "jet_injector.sbg";
-		["useEffects"] = {
-			["medicineBuff"] = {
-				["changeStats"] = {
-					["healthPercentage"] = 25;
-				};
-				["duration"] = 2;
-				["refresh"] = true;
-			};
-		};
-		["value"] = 150;
-	};
 	["carbine.gun"] = {
 		["animations"] = "carbine";
-		["cooldown"] = 1;
+		["cooldown"] = 2;
 		["damage"] = 70;
 		["desc"] = {
 			["eng"] = "A high-accuracy lever-action repeating rifle.";
@@ -1370,37 +1298,22 @@ Neurochip (allows remote control)";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "carbine_equip.wav";
+				["name"] = "carbine_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "carbine_empty.wav";
 			};
-			["reload_out"] = {
-				["distance"] = 1700;
-				["name"] = "carbine_lever.wav";
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "carbine_unequip.wav";
+				["name"] = "carbine_hide.wav";
 			};
 		};
 		["value"] = 250;
-	};
-	["carry_lunchbox.itm"] = {
-		["containedItems"] = "tasty_sandwich.itm";
-		["containerCode"] = "3141";
-		["desc"] = {
-			["eng"] = "A small metal box with surprisingly complex electronic lock on it. Found in anomaly near the Dead Lake.";
-		};
-		["icon"] = "Lunchbox";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Strange small metal box";
-		};
-		["model"] = "lunch_box.sbg";
-		["questItem"] = true;
-		["value"] = 60;
 	};
 	["cleaver.wpn"] = {
 		["animations"] = "melee_low";
@@ -1430,7 +1343,7 @@ Neurochip (allows remote control)";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "revolver_equip.wav";
+				["name"] = "revolver_take.wav";
 			};
 		};
 		["value"] = 30;
@@ -1572,8 +1485,7 @@ Neurochip (allows remote control)";
 		["value"] = 150;
 	};
 	["energy_implant.itm"] = {
-		["consumableType"] = "injector";
-		["consumeModel"] = "blue";
+		["consumableType"] = "implant";
 		["desc"] = {
 			["eng"] = "Energy-boosting skin implant";
 		};
@@ -1582,7 +1494,6 @@ Neurochip (allows remote control)";
 		["label"] = {
 			["eng"] = "Energy implant";
 		};
-		["model"] = "jet_injector.sbg";
 		["permaBuffInfo"] = {
 			["energyMaxFlat"] = 25;
 		};
@@ -1590,6 +1501,7 @@ Neurochip (allows remote control)";
 	};
 	["energy_shield_1.itm"] = {
 		["attireType"] = "shield";
+		["createModel"] = true;
 		["desc"] = {
 			["eng"] = "Rough Environment energy shield for civil use. Device that creates a force field and draws energy from external source to protect the user.";
 		};
@@ -1637,11 +1549,11 @@ Neurochip (allows remote control)";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "axe_equip.wav";
+				["name"] = "axe_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "axe_unequip.wav";
+				["name"] = "axe_hide.wav";
 			};
 		};
 		["value"] = 20;
@@ -1687,7 +1599,7 @@ Neurochip (allows remote control)";
 			["eng"] = "Farmer's jacket.";
 		};
 		["equipable"] = true;
-		["icon"] = "FarmerJacket";
+		["icon"] = "NoteAbori";
 		["invCategory"] = "attire";
 		["label"] = {
 			["eng"] = "Farmer's Jacket";
@@ -1702,7 +1614,7 @@ Neurochip (allows remote control)";
 			["eng"] = "Farmer's pants.";
 		};
 		["equipable"] = true;
-		["icon"] = "FarmerPants";
+		["icon"] = "NoteAbori";
 		["invCategory"] = "attire";
 		["label"] = {
 			["eng"] = "Farmer's Pants";
@@ -1753,22 +1665,25 @@ Neurochip (allows remote control)";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "flaregun_equip.wav";
+				["name"] = "flaregun_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "flaregun_empty.wav";
 			};
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
+			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "flaregun_unequip.wav";
+				["name"] = "flaregun_hide.wav";
 			};
 		};
 		["value"] = 150;
 	};
 	["fried_bug.itm"] = {
 		["consumableType"] = "food";
-		["consumeModel"] = "anim_friedbug.sbg";
 		["desc"] = {
 			["eng"] = "Just close your eyes and bite in.";
 		};
@@ -1795,7 +1710,6 @@ Neurochip (allows remote control)";
 	};
 	["fried_meat.itm"] = {
 		["consumableType"] = "food";
-		["consumeModel"] = "anim_meat_cooked.sbg";
 		["desc"] = {
 			["eng"] = "All real men like it. Especially with some booze.";
 		};
@@ -1809,6 +1723,7 @@ Neurochip (allows remote control)";
 			["eng"] = "Roasted meat";
 		};
 		["model"] = "fried_meat.sbg";
+		["texture"] = "meat_fried_dif.dds";
 		["useEffects"] = {
 			["foodBuff"] = {
 				["duration"] = 120;
@@ -1825,6 +1740,7 @@ Neurochip (allows remote control)";
 		["colliderLength"] = 0;
 		["colliderOffset"] = false;
 		["colliderRadius"] = 60;
+		["createModel"] = false;
 		["damage"] = 10;
 		["desc"] = {
 			["eng"] = "Don't have any other way to prove your point? Equip these.";
@@ -1960,15 +1876,19 @@ Neurochip (allows remote control)";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "howdah_equip.wav";
+				["name"] = "howdah_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "howdah_empty.wav";
 			};
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
+			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "howdah_unequip.wav";
+				["name"] = "howdah_hide.wav";
 			};
 		};
 		["value"] = 250;
@@ -2190,22 +2110,25 @@ Neurochip (allows remote control)";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "kabarog_hsg_equip.wav";
+				["name"] = "kabarog_hsg_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "kabarog_hsg_empty.wav";
 			};
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
+			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "kabarog_hsg_unequip.wav";
+				["name"] = "kabarog_hsg_hide.wav";
 			};
 		};
 		["value"] = 300;
 	};
 	["ktharsian_aloe.itm"] = {
 		["consumableType"] = "food";
-		["consumeModel"] = "anim_aloe.sbg";
 		["desc"] = {
 			["eng"] = "Small healing plant";
 		};
@@ -2230,37 +2153,6 @@ Neurochip (allows remote control)";
 			};
 		};
 		["value"] = 10;
-	};
-	["kwagga_special.itm"] = {
-		["attachInfo"] = {
-			["pos"] = {
-				["x"] = 0;
-				["y"] = -28;
-				["z"] = 0;
-			};
-		};
-		["boozeInfo"] = "strong";
-		["consumableType"] = "drink";
-		["consumeModel"] = "bottle_booze.sbg";
-		["desc"] = {
-			["eng"] = "If people like it - don't tell them what it's made of. You might lose some friends if you do.";
-		};
-		["icon"] = "KwaggasSpecial";
-		["invCategory"] = "drink";
-		["label"] = {
-			["eng"] = "Kwagga's Special";
-		};
-		["useEffects"] = {
-			["alcoholBuff"] = {
-				["duration"] = 200;
-				["refresh"] = true;
-				["statBonuses"] = {
-					["staminaMaxFlat"] = 100;
-					["waterRegenFlat"] = -15;
-				};
-			};
-		};
-		["value"] = 25;
 	};
 	["lager.itm"] = {
 		["attachInfo"] = {
@@ -2296,49 +2188,16 @@ Neurochip (allows remote control)";
 		};
 		["value"] = 15;
 	};
-	["lemonade_wade_bug_message.itm"] = {
+	["lem_hard_drive_broken.itm"] = {
 		["desc"] = {
-			["eng"] = "Short message written by Lemonade Wade. The slaver has a surprisingly elegant handwriting.";
+			["eng"] = "This strange device contains something that seems to be a fragment of cerebral cortex floating in blue protective fluid.";
 		};
-		["icon"] = "NoteHuman";
+		["icon"] = "LemHardDriveBroken";
 		["invCategory"] = "quest";
 		["label"] = {
-			["eng"] = "Bug Problem Message";
+			["eng"] = "Brain module";
 		};
-		["message"] = {
-			["eng"] = {
-				["contents"] = "If you brought those pests here - you are the one who's gonna get rid of 'em! W.";
-				["title"] = "Hey dumbass!";
-			};
-		};
-		["value"] = 0;
-	};
-	["lemonade_wade_code.itm"] = {
-		["desc"] = {
-			["eng"] = "A dirty scrap of paper.";
-		};
-		["icon"] = "NoteHuman";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Lemonade Wade's Lock Code";
-		};
-		["message"] = {
-			["eng"] = {
-				["contents"] = "The code to the Warehouse door is *125, and the * stands for the number of times I kicked your ass on the arena last night before you started to cry. You are welcome to get some more any time, wimp!";
-				["title"] = "Code";
-			};
-		};
-		["value"] = 0;
-	};
-	["lemonade_wade_key.itm"] = {
-		["desc"] = {
-			["eng"] = "This special key opens several doors in Lemonade Wade's stronghold. Obviously was made for slaver leader's convenience but it's quite impractical in terms of security.";
-		};
-		["icon"] = "MasterKey";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Lemonade Wade's Master Key";
-		};
+		["questItem"] = true;
 		["value"] = 50;
 	};
 	["machete.wpn"] = {
@@ -2369,18 +2228,17 @@ Neurochip (allows remote control)";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "machete_equip.wav";
+				["name"] = "machete_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "machete_unequip.wav";
+				["name"] = "machete_hide.wav";
 			};
 		};
 		["value"] = 40;
 	};
 	["meat.itm"] = {
 		["consumableType"] = "food";
-		["consumeModel"] = "anim_meat_raw.sbg";
 		["cookInfo"] = {
 			["item"] = "fried_meat.itm";
 			["model"] = "fried_meat_bent.sbg";
@@ -2401,6 +2259,7 @@ Neurochip (allows remote control)";
 			["eng"] = "Raw meat";
 		};
 		["model"] = "fried_meat.sbg";
+		["texture"] = "meat_raw_dif.dds";
 		["useEffects"] = {
 			["foodBuff"] = {
 				["duration"] = 60;
@@ -2442,7 +2301,6 @@ Neurochip (allows remote control)";
 	};
 	["melon.itm"] = {
 		["consumableType"] = "food";
-		["consumeModel"] = "anim_melon.sbg";
 		["desc"] = {
 			["eng"] = "Surprisingly sweet and juicy fruit of the desert";
 		};
@@ -2456,7 +2314,7 @@ Neurochip (allows remote control)";
 		["label"] = {
 			["eng"] = "Desert melon";
 		};
-		["model"] = "fruit_melon.sbg";
+		["model"] = "melon_fruit.sbg";
 		["useEffects"] = {
 			["foodBuff"] = {
 				["duration"] = 60;
@@ -2575,20 +2433,6 @@ Mining +5 if already 20 or above";
 		["model"] = "nanogreaze_tube.sbg";
 		["value"] = 10;
 	};
-	["neocortex_cartridge.itm"] = {
-		["desc"] = {
-			["eng"] = "This strange device contains something that seems to be a fragment of cerebral cortex floating in blue protective fluid.";
-		};
-		["icon"] = "NeocortexCartridge";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Neocortex Cartridge\
-";
-		};
-		["model"] = "neocortex_cartridge.sbg";
-		["questItem"] = true;
-		["value"] = 300;
-	};
 	["neurochip.itm"] = {
 		["animations"] = "melee_low";
 		["desc"] = {
@@ -2684,11 +2528,11 @@ Mining +5 if already 20 or above";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "pickaxe_equip.wav";
+				["name"] = "pickaxe_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "pickaxe_unequip.wav";
+				["name"] = "pickaxe_hide.wav";
 			};
 		};
 		["value"] = 20;
@@ -2721,11 +2565,11 @@ Mining +5 if already 20 or above";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "pipe_equip.wav";
+				["name"] = "pipe_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "pipe_unequip.wav";
+				["name"] = "pipe_hide.wav";
 			};
 		};
 		["value"] = 20;
@@ -2842,19 +2686,19 @@ Mining +5 if already 20 or above";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "revolver_equip.wav";
+				["name"] = "revolver_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "revolver_empty.wav";
 			};
-			["reload"] = {
-				["distance"] = 1400;
-				["name"] = "revolver_reloading.wav";
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "revolver_unequip.wav";
+				["name"] = "revolver_hide.wav";
 			};
 		};
 		["value"] = 150;
@@ -2906,7 +2750,6 @@ Mining +5 if already 20 or above";
 	};
 	["rotten_meat.itm"] = {
 		["consumableType"] = "food";
-		["consumeModel"] = "anim_meat_rotten.sbg";
 		["desc"] = {
 			["eng"] = "A piece of rotten meat.";
 		};
@@ -2932,20 +2775,6 @@ Mining +5 if already 20 or above";
 		};
 		["value"] = 2;
 	};
-	["rotten_melon.itm"] = {
-		["desc"] = {
-			["eng"] = "Rotten desert melon, found in anomaly near the Dead Lake.";
-		};
-		["icon"] = "RottenMellon";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Rotten melon";
-		};
-		["model"] = "fruit_melon.sbg";
-		["questItem"] = true;
-		["texture"] = "alien_melon_rotten_dif.dds";
-		["value"] = 1;
-	};
 	["scamp_22.gun"] = {
 		["animations"] = "pistol";
 		["cooldown"] = 0.2;
@@ -2967,19 +2796,19 @@ Mining +5 if already 20 or above";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "scamp_22_equip.wav";
+				["name"] = "scamp_22_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "scamp_22_empty.wav";
 			};
-			["reload"] = {
-				["distance"] = 1400;
-				["name"] = "scamp_22_reloading.wav";
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "scamp_22_unequip.wav";
+				["name"] = "scamp_22_hide.wav";
 			};
 		};
 		["value"] = 90;
@@ -3006,15 +2835,19 @@ Uses energy.";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "scamp_22_shock_equip.wav";
+				["name"] = "scamp_22_shock_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "scamp_22_shock_empty.wav";
 			};
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
+			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "scamp_22_shock_unequip.wav";
+				["name"] = "scamp_22_shock_hide.wav";
 			};
 		};
 		["texture"] = "scamp_22_yellow_dif.dds";
@@ -3022,52 +2855,31 @@ Uses energy.";
 		["weaponType"] = "energy";
 	};
 	["scanner.itm"] = {
-		["attireType"] = "gadget";
+		["attireType"] = "scanner";
 		["desc"] = {
 			["eng"] = "Allows to scan surroundings.";
 		};
 		["equipable"] = true;
 		["icon"] = "HandScanner";
-		["invCategory"] = "gadget";
+		["invCategory"] = "attire";
 		["label"] = {
 			["eng"] = "Scanner";
 		};
 		["meshes"] = Appearance.Body.male_human.jack.scanner;
-		["questItem"] = true;
 		["usable"] = true;
 		["value"] = 50;
 	};
 	["scanner_broken.itm"] = {
-		["attireType"] = "gadget";
 		["desc"] = {
 			["eng"] = "Allows to scan surroundings. Broken.";
 		};
-		["equipable"] = true;
 		["icon"] = "BrokenScanner";
-		["invCategory"] = "gadget";
+		["invCategory"] = "quest";
 		["label"] = {
 			["eng"] = "Scanner (broken)";
 		};
-		["meshes"] = Appearance.Body.male_human.jack.scanner;
 		["questItem"] = true;
-		["usable"] = true;
 		["value"] = 30;
-	};
-	["scarecrow_mask.itm"] = {
-		["armor"] = 5;
-		["attireType"] = "hat";
-		["desc"] = {
-			["eng"] = "This terrifying mask belonged to the infamous desert raider known as  the Scarecrow. Still emanates a deep primal fear.";
-		};
-		["equipable"] = true;
-		["icon"] = "BagHat";
-		["invCategory"] = "accessory";
-		["isFaceCover"] = true;
-		["label"] = {
-			["eng"] = "Scarecrow's Mask";
-		};
-		["meshes"] = Appearance.Body.male_human.scarecrow.mask;
-		["value"] = 50;
 	};
 	["scrap_electric.itm"] = {
 		["desc"] = {
@@ -3178,19 +2990,19 @@ Uses energy.";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "shotgun_equip.wav";
+				["name"] = "shotgun_take.wav";
 			};
 			["inactive"] = {
 				["distance"] = 2000;
 				["name"] = "shotgun_empty.wav";
 			};
-			["reload_out"] = {
-				["distance"] = 1700;
-				["name"] = "shotgun_pump.wav";
+			["target"] = {
+				["distance"] = 500;
+				["name"] = "body_damage1.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "shotgun_unequip.wav";
+				["name"] = "shotgun_hide.wav";
 			};
 		};
 		["value"] = 200;
@@ -3234,11 +3046,11 @@ Uses energy.";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "shovel_equip.wav";
+				["name"] = "shovel_take.wav";
 			};
 			["unequip"] = {
 				["distance"] = 2000;
-				["name"] = "shovel_unequip.wav";
+				["name"] = "shovel_hide.wav";
 			};
 		};
 		["value"] = 20;
@@ -3257,7 +3069,6 @@ Uses energy.";
 	};
 	["slime_meat.itm"] = {
 		["consumableType"] = "food";
-		["consumeModel"] = "anim_slimemeat.sbg";
 		["desc"] = {
 			["eng"] = "The slimiest meat you ever ate!";
 		};
@@ -3346,64 +3157,8 @@ Uses energy.";
 		["meshes"] = Appearance.Body.male_human.jack.bottom;
 		["value"] = 100;
 	};
-	["strange_absinthe.itm"] = {
-		["desc"] = {
-			["eng"] = "Absinthe bottle with only half of the liquid remaining. Found in anomaly near the Dead Lake.";
-		};
-		["icon"] = "StrangeAbsinthe";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Strange Absinthe";
-		};
-		["model"] = "bottle_absinth.sbg";
-		["questItem"] = true;
-		["value"] = 5;
-	};
-	["strange_detector.itm"] = {
-		["animations"] = "detect";
-		["desc"] = {
-			["eng"] = "Exotic Particle Detector addon for my scanner made by Carry the Stone. When activated near anomalies, should give sound signals that help locate samples with high concentration of said particles.";
-		};
-		["equipable"] = true;
-		["icon"] = "StrangeDetector";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Exotic Particle Detector";
-		};
-		["movementRestriction"] = "walk";
-		["questItem"] = true;
-		["sounds"] = {
-			["nosignal"] = {
-				["distance"] = 1500;
-				["name"] = "scan_detection_nosignal.wav";
-			};
-			["pulse"] = {
-				["distance"] = 500;
-				["name"] = "scan_detection_pulse.wav";
-			};
-			["pulse_critical"] = {
-				["distance"] = 500;
-				["name"] = "scan_detection_pulse_critical.wav";
-			};
-		};
-		["value"] = 150;
-	};
-	["strange_knife.itm"] = {
-		["desc"] = {
-			["eng"] = "A knife cut in half. The surface of the cut is mirror-like. Found in one of anomalies around the Dead Lake.";
-		};
-		["icon"] = "AKnifeCutInHalf";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Knife cut in half";
-		};
-		["model"] = "cleaver.sbg";
-		["questItem"] = true;
-		["value"] = 5;
-	};
 	["stygmyan_golden_apple.itm"] = {
 		["consumableType"] = "food";
-		["consumeModel"] = "anim_apple.sbg";
 		["desc"] = {
 			["eng"] = "Plentiful healing plant with permanent health boost effect";
 		};
@@ -3422,27 +3177,6 @@ Uses energy.";
 			["healthMaxFlat"] = 10;
 		};
 		["value"] = 1500;
-	};
-	["tasty_sandwich.itm"] = {
-		["consumableType"] = "food";
-		["consumeModel"] = "slime_sandwich.sbg";
-		["desc"] = {
-			["eng"] = "A tasty sandwich. No idea what it’s made of but smells good and will satiate your hunger.";
-		};
-		["foodInfo"] = {
-			["food"] = 500;
-			["health"] = 10;
-		};
-		["icon"] = "TastySandwich";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Tasty sandwich";
-		};
-		["permaBuffInfo"] = {
-			["staminaMaxFlat"] = 5;
-		};
-		["questItem"] = true;
-		["value"] = 50;
 	};
 	["thug_1_hat.itm"] = {
 		["attachments"] = {
@@ -3504,18 +3238,6 @@ Uses energy.";
 		["questItem"] = true;
 		["value"] = 10;
 	};
-	["token_scarecrow.itm"] = {
-		["desc"] = {
-			["eng"] = "An outdated ID implant with traces of Scarecrow's DNA.";
-		};
-		["icon"] = "ScarecrowChip";
-		["invCategory"] = "quest";
-		["label"] = {
-			["eng"] = "Scarecrow's ID Chip";
-		};
-		["questItem"] = true;
-		["value"] = 10;
-	};
 	["turret.itm"] = {
 		["animations"] = "melee_low";
 		["createModel"] = true;
@@ -3532,7 +3254,7 @@ Uses energy.";
 		["sounds"] = {
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "revolver_equip.wav";
+				["name"] = "revolver_take.wav";
 			};
 		};
 		["value"] = 400;
@@ -3635,7 +3357,7 @@ Uses energy.";
 			};
 			["equip"] = {
 				["distance"] = 2000;
-				["name"] = "revolver_equip.wav";
+				["name"] = "revolver_take.wav";
 			};
 		};
 		["value"] = 5;

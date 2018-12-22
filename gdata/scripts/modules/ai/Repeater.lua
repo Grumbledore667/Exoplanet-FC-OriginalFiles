@@ -1,14 +1,9 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
 local Decorator = require "ai.Decorator"
 local NodeState = require "ai.NodeState"
 
----@class ai.Repeater : ai.Decorator
 local Repeater = oo.class({
    times = nil,
-   className = className,
 }, Decorator)
 
 function Repeater:__init()

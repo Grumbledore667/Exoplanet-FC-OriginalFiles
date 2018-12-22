@@ -1,28 +1,24 @@
-local ItemsInfo = require "itemsData_generated"
-local ItemsLists = require "itemsLists"
-local TemplateInfo = require "itemsTemplates"
-local stringx = require "pl.stringx"
-local tablex = require "pl.tablex"
+local Appearance = (require "appearance")
 
---Quality is an integer from 1 to 4 - the bigger the better
-local ItemQualityBonuses =
+local ItemsInfo = require "itemsData_generated"
+
+local ItemsDecompose =
 {
-   valueMul       = { 0.6, 1, 1.4, 3 },
-   damageMul      = { 0.8, 1, 1.2, 1.5 },
-   accuracyFlat   = { -0.015, 0, 0.005, 0.01 },
-   bulletSpeedMul = { 0.9, 1, 1.1, 1.2 },
-   cooldownMul    = { 1.1, 1, 0.9, 0.8 },
+   ["beacon.itm"] = {"beacon_base.itm", "beacon_leaf.itm", "beacon_light.wpn"},
+   ["alien_cactus_bat.wpn"] = {"firewood.itm", "firewood.itm"},
+   ["wooden_bat.wpn"] = {"firewood.itm"},
 }
 
-local DefaultQuality = {
-   ["CItem"]       = 2,
-   ["CWeapon"]     = 1,
-   ["CGun"]        = 1,
-   ["CGunShock"]   = 1,
-   ["CGunFlare"]   = 1,
-   ["CHandToHand"] = 2,
-   ["CStrangeDetector"] = 2,
-   ["CItemContainer"] = 2,
+local ItemsCompose =
+{
+   { item = "beacon.itm", recipe = { ["beacon_base.itm"] = 1, ["beacon_leaf.itm"] = 1, ["beacon_light.wpn"] = 1} },
+   { item = "antigravium_bait.itm", recipe = { ["antigravium.itm"] = 1, ["melon.itm"] = 1 } },
+   { item = "joint.itm", recipe = { ["bluethorn_leaf.itm"] = 3 } },
+   { item = "pure_water_bottle.itm", recipe = { ["dirty_water_bottle.itm"] = 1, ["bluethorn_leaf.itm"] = 3 } },
+   { item = "turret.itm", recipe = { ["beacon_base.itm"] = 1, ["camera_basic.itm"] = 1, ["turret_ammo_box.itm"] = 1 } },
+   -- { item = "turret.itm", recipe = { ["beacon_base.itm"] = 1, ["camera_strong.itm"] = 1, ["turret_ammo_box.itm"] = 1 } },
+   { item = "energy_fence.itm", recipe = { ["beacon_base.itm"] = 1, ["scrap_electric.itm"] = 1, ["scrap_mechanical.itm"] = 1 } },
+   { item = "bug_chipped.itm", recipe = { ["bug.itm"] = 1, ["neurochip.itm"] = 1 } },
 }
 
 local ItemsClasses =
@@ -46,29 +42,17 @@ local ItemsClasses =
          accuracy = 0.99,
          bulletsInShot = 1,
          bulletSpeed = 7000,
-         hitEffects = {
-            { name = "flareFire", damageType = "fire",
-              changeStats = {health = -60}, duration = 10, removeOnDeath = false,
-              particles = {
-              {name = "flare_hit_black.sps", bones = { "Spine", "Bone002" }, offset = "impactPos"},
-              {name = "flare_hit_red.sps", bones = { "Spine", "Bone002" }, offset = "impactPos"},
-              {name = "flare_hit_sparks.sps", bones = { "Spine", "Bone002" }, offset = "impactPos"},
-              {name = "omni", light = {color = {r=0.9,g=0.3,b=0.3}, radius = 3500, intensity = 2}, bones = { "Spine", "Bone002" }, offset = "impactPos"}
-            }
-         }
+         hitEffect = { name = "flareFire", label = "Flare fire",
+                       changeStats = { health = -60}, duration = 10, removeOnDeath = false,
+                       particles = {
+                       {name = "flare_hit_black.sps", bones = { "Spine", "Bone002" }, offset = "impactPos"},
+                       {name = "flare_hit_red.sps", bones = { "Spine", "Bone002" }, offset = "impactPos"},
+                       {name = "flare_hit_sparks.sps", bones = { "Spine", "Bone002" }, offset = "impactPos"},
+                       {name = "omni", light = {color = {r=0.9,g=0.3,b=0.3}, radius = 3500, intensity = 2}, bones = { "Spine", "Bone002" }, offset = "impactPos"}
+                     }
 
          },
       }
-   },
-
-   ["strange_detector.itm"] =
-   {
-      class  = "CStrangeDetector",
-   },
-
-   ["carry_lunchbox.itm"] =
-   {
-      class  = "CItemContainer",
    },
 
    ["energy_boots.itm"] =
@@ -95,6 +79,12 @@ local ItemsClasses =
       params = { imposters = { hand = "killerbug.cfg", handClass = "CBug", control = "killerbug.pfg", holster = "" } },
    },
 
+   ["bug_green.itm"] =
+   {
+      class  = "CBugItem",
+      params = { imposters = { hand = "greenbug.cfg", handClass = "CBugGreen", control = "greenbug.pfg", holster = "" } },
+   },
+
    ["hand_to_hand.wpn"] =
    {
       class  = "CHandToHand",
@@ -117,7 +107,7 @@ local ItemsClasses =
       class  = "CWeapon",
       params =
       {
-         hitEffects = {{name = "cactusPoison", damageType = "poison", changeStats = {health = -30}, duration = 5, refresh = true}},
+         hitEffect = {name = "cactusPoison", label = "Cactus poison", changeStats = {health = -30}, duration = 5, refresh = true},
       }
    },
 
@@ -161,12 +151,10 @@ local ItemsClasses =
          impactFX = {"impact1.sps", "impact2.sps"},
          accuracy = 0.95,
          bulletSpeed = 10000,
-         hitEffects = {
-            { name = "scampShock", damageType = "energy",
-               changeStats = {health = -10}, duration = 20, refresh = true,
-               sounds = {{name = "scamp_22_shock_discharge.wav", distance = 1500, looped = true}},
-               particles = {  {name = "electro_touch.sps", bones = { "Spine", "Bone002" } } },
-            }
+         hitEffect = {  name = "scampShock", label = "Electric shock",
+                        changeStats = {health = -10}, duration = 20, refresh = true,
+                        particles = {  {name = "electro_touch.sps", bones = { "Spine", "Bone002" } }
+                     },
          },
       }
    },
@@ -277,18 +265,7 @@ local ItemsClasses =
    },
 }
 
----@type ItemsData
 local api = {}
-
-local ERROR_BAD_TEMPLATE_ITEM_NAME = "ERROR: template '%s' points to an invalid item '%s'"
-
-function api.validateItemsTemplates()
-   for templateName, template in pairs(TemplateInfo) do
-      if not api.getItemsInfo(template.itemName) then
-         log(string.format(ERROR_BAD_TEMPLATE_ITEM_NAME, templateName, tostring(template.itemName)))
-      end
-   end
-end
 
 function api.getItemsInfo(itemName)
    return ItemsInfo[itemName]
@@ -299,94 +276,58 @@ function api.hasItemsInfo(itemName)
 end
 
 function api.isCorrectItemName(itemName)
-   if string.find(itemName, "%.tmpl") == nil and string.find(itemName, "%.gun") == nil and string.find(itemName, "%.wpn") == nil and string.find(itemName, "%.itm") == nil then
+   if string.find(itemName, "%.gun") == nil and string.find(itemName, "%.wpn") == nil and string.find(itemName, "%.itm") == nil then
       return false
    end
    return true
 end
 
-function api.getItemClass(itemName)
+function api.getItemClass( itemName )
    local className = "CItem"
 
-   if api.isItemRangedWeapon(itemName) then
+   if (string.find(itemName, "%.gun") ~= nil) then
       className = "CGun"
-   elseif api.isItemMeleeWeapon(itemName) then
+   end
+
+   if (string.find(itemName, "%.wpn") ~= nil) then
       className = "CWeapon"
    end
 
-   if ItemsClasses[itemName] ~= nil then
+   if ( ItemsClasses[itemName] ~= nil ) then
       className = ItemsClasses[itemName]
    end
 
-   if className.class then
+   if ( className.class ) then
       className = className.class
    end
 
-   --log (itemName .. " className is " .. className)
+   --log ( itemName .. " className is " .. className )
 
    return className
 end
 
-function api.isItemTemplate(itemName)
-   return string.find(itemName, "%.tmpl") ~= nil
-end
-
-function api.isItemItem(itemName)
-   return string.find(itemName, "%.itm") ~= nil
-end
-
-function api.isItemMeleeWeapon(itemName)
-   return string.find(itemName, "%.wpn") ~= nil
-end
-
-function api.isItemRangedWeapon(itemName)
-   return string.find(itemName, "%.gun") ~= nil
-end
-
-function api.isItemWeapon(itemName)
-   return api.isItemMeleeWeapon(itemName) or api.isItemRangedWeapon(itemName)
-end
-
-function api.getItemClassParams(itemName)
+function api.getItemClassParams( itemName )
    local classParams = nil
 
-   if ItemsClasses[itemName] and ItemsClasses[itemName].params then
+   if ( ItemsClasses[itemName] and ItemsClasses[itemName].params ) then
       classParams = ItemsClasses[itemName].params
    end
 
    return classParams
 end
 
-function api.getItemMovementRestriction(itemName)
-   if not itemName or itemName == "" then return end
-   local info = ItemsInfo[itemName]
-   return info and info.movementRestriction
-end
-
-function api.getContainerCode(itemName)
-   if not itemName or itemName == "" then return end
-   local info = ItemsInfo[itemName]
-   return info and info.containerCode
-end
-
-function api.getContainedItems(itemName)
-   if not itemName or itemName == "" then return end
-   local info = ItemsInfo[itemName]
-   return info and info.containedItems
-end
-
-function api.isItemAlive(itemName)
-   if not itemName then
+function api.isItemAlive( itemName )
+   if ( not itemName ) then
       return false
    end
 
    local info = ItemsInfo[itemName]
 
-   return info and info.limitCategory == "alive"
+   return info and info.alive
 end
 
-function api.hasItemColliderOffset(itemName)
-   if not itemName or itemName == "" then
+function api.hasItemColliderOffset( itemName )
+   if ( not itemName or itemName == "") then
       return false
    end
 
@@ -395,8 +336,8 @@ function api.hasItemColliderOffset(itemName)
    return info and info.colliderOffset
 end
 
-function api.getItemColliderRadius(itemName)
-   if not itemName or itemName == "" then
+function api.getItemColliderRadius( itemName )
+   if ( not itemName or itemName == "") then
       return nil
    end
 
@@ -409,8 +350,8 @@ function api.getItemColliderRadius(itemName)
    end
 end
 
-function api.getItemColliderLength(itemName)
-   if not itemName or itemName == "" then
+function api.getItemColliderLength( itemName )
+   if ( not itemName or itemName == "") then
       return nil
    end
 
@@ -423,30 +364,21 @@ function api.getItemColliderLength(itemName)
    end
 end
 
-function api.getItemLabel(itemName)
-   if not itemName then
+function api.getItemLabel( itemName )
+   if ( not itemName ) then
       return ""
    end
 
    local info = ItemsInfo[itemName]
 
-   if info then
+   if ( info ) then
       return info.label.eng
    end
 
    return ""
 end
 
-function api.getAmmoCaliber(itemName)
-   if not itemName then return end
-
-   local label = api.getItemLabel(itemName)
-   if label then
-      return stringx.partition(label," ")
-   end
-end
-
-function api.getItemIcon(itemName)
+function api.getItemIcon( itemName )
    if not itemName then return "" end
 
    local info = ItemsInfo[itemName]
@@ -456,38 +388,36 @@ function api.getItemIcon(itemName)
    end
 end
 
-function api.getItemDesc(itemName)
-   if not itemName then
+function api.getItemDesc( itemName )
+   if ( not itemName ) then
       return ""
    end
 
    local info = ItemsInfo[itemName]
 
-   if info then
+   if ( info ) then
       return info.desc.eng
    end
 
    return ""
 end
 
-function api.getItemValue(itemName, qualityInt)
-   if not itemName then return nil end
-   local info = ItemsInfo[itemName]
-   if info and info.value then
-      local val = info.value
-      qualityInt = qualityInt or 2
-      return math.ceil(val * api.getItemQualityBonus("valueMul", qualityInt))
+function api.getItemValue( itemName )
+   if ( not itemName ) then
+      return ""
    end
-end
 
-function api.isItemStackable(itemName)
-   if not itemName then return false end
    local info = ItemsInfo[itemName]
-   return info and not api.isItemWeapon(itemName) and not api.isItemAttire(itemName) and not api.isItemAccessory(itemName)
+
+   if ( info ) then
+      return info.value
+   end
+
+   return nil
 end
 
-function api.isItemCookable(itemName)
-   if not itemName then
+function api.isItemCookable( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -496,81 +426,76 @@ function api.isItemCookable(itemName)
    return info and info.cookInfo
 end
 
-function api.getItemCookInfo(itemName)
-   if not itemName then return nil end
-   if ItemsInfo[itemName] then
+function api.getItemCookInfo( itemName )
+   if ( not itemName ) then
+      return nil
+   end
+
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].cookInfo
    else
       return nil
    end
 end
 
-function api.getRealItemName(name)
-   local template = api.getItemTemplate(name)
-   return (template and template.itemName) or name
-end
+function api.getItemModel( itemName )
+   if ( not itemName ) then
+      return nil
+   end
 
-function api.getItemModel(itemName)
-   if not itemName then return nil end
-   if ItemsInfo[itemName] then
-      return ItemsInfo[itemName].model or getKeyByValue(ItemsLists.modelsList, itemName)
+   if ( ItemsInfo[itemName] ) then
+      return ItemsInfo[itemName].model
    else
       return nil
    end
 end
 
-function api.getItemConsumeModel(itemName)
-   if not itemName then return nil end
-   if ItemsInfo[itemName] then
-      return ItemsInfo[itemName].consumeModel
-   else
+function api.getItemTexture( itemName )
+   if ( not itemName ) then
       return nil
    end
-end
 
-function api.getItemTexture(itemName)
-   if not itemName then return nil end
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].texture
    else
       return nil
    end
 end
 
-function api.isItemConsumable(itemName)
+function api.isItemConsumable( itemName )
    return itemName and ItemsInfo[itemName] and ItemsInfo[itemName].consumableType
 end
 
-function api.isItemFood(itemName)
+function api.isItemFood( itemName )
    return itemName and ItemsInfo[itemName] and ItemsInfo[itemName].consumableType == "food"
 end
 
-function api.isItemDrink(itemName)
+function api.isItemDrink( itemName )
    return itemName and ItemsInfo[itemName] and ItemsInfo[itemName].consumableType == "drink"
 end
 
-function api.isItemSmokable(itemName)
+function api.isItemSmokable( itemName )
    return itemName and ItemsInfo[itemName] and ItemsInfo[itemName].consumableType == "smokable"
 end
 
-function api.isItemBandage(itemName)
+function api.isItemBandage( itemName )
    return itemName and ItemsInfo[itemName] and ItemsInfo[itemName].consumableType == "bandage"
 end
 
-function api.isItemInjector(itemName)
+function api.isItemInjector( itemName )
    return itemName and ItemsInfo[itemName] and ItemsInfo[itemName].consumableType == "injector"
 end
 
-function api.isItemMoney(itemName)
-   if not itemName then
+function api.isItemMoney( itemName )
+   if ( not itemName ) then
       return false
    end
 
    return itemName == "antigravium_shards.itm"
 end
 
-function api.isItemPermaBuff(itemName)
-   if not itemName then
+function api.isItemPermaBuff( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -579,8 +504,8 @@ function api.isItemPermaBuff(itemName)
    return info and info.permaBuffInfo
 end
 
-function api.isItemUsable(itemName)
-   if not itemName then
+function api.isItemUsable( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -589,8 +514,8 @@ function api.isItemUsable(itemName)
    return info and info.usable
 end
 
-function api.isItemMessage(itemName)
-   if not itemName then
+function api.isItemMessage( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -599,14 +524,8 @@ function api.isItemMessage(itemName)
    return info and info.message
 end
 
-function api.isItemContainer(itemName)
-   if not itemName then return false end
-   local info = ItemsInfo[itemName]
-   return info and info.containedItems ~= nil
-end
-
-function api.isItemDrawing(itemName)
-   if not itemName then
+function api.isItemDrawing( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -615,8 +534,8 @@ function api.isItemDrawing(itemName)
    return info and info.drawing
 end
 
-function api.isItemMap(itemName)
-   if not itemName then
+function api.isItemMap( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -625,214 +544,163 @@ function api.isItemMap(itemName)
    return info and info.invCategory == "map"
 end
 
-function api.isItemFaceCover(itemName)
-   if not itemName then return false end
-   return ItemsInfo[itemName] and ItemsInfo[itemName].isFaceCover == true
-end
-
-function api.getItemTemplate(templateName)
-   if not templateName then return nil end
-   return TemplateInfo[templateName]
-end
-
-function api.getItemFoodInfo(itemName)
-   if not itemName then
+function api.getItemFoodInfo( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].foodInfo
    else
       return nil
    end
 end
 
-function api.getItemPermaBuffInfo(itemName)
-   if not itemName then
+function api.getItemPermaBuffInfo( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].permaBuffInfo
    else
       return nil
    end
 end
 
-function api.getItemArmor(itemName)
-   if not itemName then
+function api.getItemArmor( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].armor
    else
       return nil
    end
 end
 
-function api.isItemEnergy(itemName)
-   if not itemName then return nil end
-
-   if ItemsClasses[itemName] and ItemsClasses[itemName].params then
-      return ItemsClasses[itemName].params.energyCost ~= nil
-   else
-      return nil
-   end
-end
-
-function api.getItemEnergyCost(itemName)
-   if not itemName then return nil end
-
-   if ItemsClasses[itemName] and ItemsClasses[itemName].params then
-      return ItemsClasses[itemName].params.energyCost
-   else
-      return nil
-   end
-end
-
-function api.getItemDmgPerEnergy(itemName)
-   if not itemName then
+function api.getItemDmgPerEnergy( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsClasses[itemName] then
+   if ( ItemsClasses[itemName] ) then
       return ItemsClasses[itemName].dmgPerEnergy
    else
       return nil
    end
 end
 
-function api.getItemAttachInfo(itemName)
-   if not itemName then return nil end
-
-   if ItemsInfo[itemName] then
-      return ItemsInfo[itemName].attachInfo
-   else
-      return nil
-   end
-end
-
-function api.getItemAttachments(itemName)
-   if not itemName then
+function api.getItemAttachments( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].attachments
    else
       return nil
    end
 end
 
-function api.getItemSounds(itemName)
-   if itemName and ItemsInfo[itemName] then
-      return ItemsInfo[itemName].sounds or {}
-   else
-      return {}
-   end
-end
-
-function api.getItemAnimations(itemName)
-   if not itemName then
+function api.getItemSounds( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
+      return ItemsInfo[itemName].sounds
+   else
+      return nil
+   end
+end
+
+function api.getItemAnimations( itemName )
+   if ( not itemName ) then
+      return nil
+   end
+
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].animations
    else
       return nil
    end
 end
 
-function api.getItemReloadAnimations(itemName)
-   if not itemName then
+function api.getItemReloadAnimations( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].reloadAnimations
    else
       return nil
    end
 end
 
-function api.getItemHitEffects(itemName)
-   if not itemName then return nil end
+function api.getItemHitEffect( itemName )
+   if ( not itemName ) then
+      return nil
+   end
 
-   if ItemsClasses[itemName] and ItemsClasses[itemName].params then
-      return ItemsClasses[itemName].params.hitEffects
+   if ( ItemsClasses[itemName] ) then
+      return ItemsClasses[itemName].params.hitEffect
    else
       return nil
    end
 end
 
-function api.getItemConsumeInfo(itemName)
-   if not itemName then
+function api.getItemUseEffects( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].useEffects
    else
       return nil
    end
 end
 
-function api.getItemDamage(itemName, qualityInt)
-   if not itemName then return 0 end
+function api.getItemDamage( itemName )
+   if ( not itemName ) then
+      return 0
+   end
 
-   if ItemsInfo[itemName] and ItemsInfo[itemName].damage ~= nil then
-      qualityInt = qualityInt or 2
-      return math.ceil(ItemsInfo[itemName].damage * api.getItemQualityBonus("damageMul", qualityInt))
+   if ( ItemsInfo[itemName] and ItemsInfo[itemName].damage ~= nil ) then
+      return ItemsInfo[itemName].damage
    else
       return 0
    end
 end
 
-function api.getItemDefaultQuality(itemName)
-   local className = api.getItemClass(itemName)
-   return DefaultQuality[className] or 2
-end
+function api.getItemCooldown( itemName )
+   if ( not itemName ) then
+      return 0
+   end
 
-function api.getItemQualityBonus(bonusType, qualityInt)
-   if not bonusType or not qualityInt then return end
-   return ItemQualityBonuses[bonusType][qualityInt]
-end
-
-function api.getItemCooldown(itemName, qualityInt)
-   if not itemName then return 0 end
-
-   if ItemsInfo[itemName] and ItemsInfo[itemName].cooldown ~= nil then
-      qualityInt = qualityInt or 2
-      return round(ItemsInfo[itemName].cooldown * api.getItemQualityBonus("cooldownMul", qualityInt), 2)
+   if ( ItemsInfo[itemName] and ItemsInfo[itemName].cooldown ~= nil ) then
+      return ItemsInfo[itemName].cooldown
    else
       return 0
    end
 end
 
-function api.getItemMessage(itemName)
-   if not itemName then
+function api.getItemMessage( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].message
    else
       return nil
    end
 end
 
-function api.getItemDrawing(itemName)
-   if not itemName then return nil end
-
-   if ItemsInfo[itemName] then
-      return ItemsInfo[itemName].drawing
-   end
-   return nil
-end
-
-function api.isItemAttire(itemName)
+function api.isItemAttire( itemName )
    if not api.isItemEquipable(itemName) then
       return false
    end
@@ -842,32 +710,32 @@ function api.isItemAttire(itemName)
    return info and info.attireType
 end
 
-function api.getAttireType(itemName)
-   if not itemName then
+function api.getAttireType( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].attireType
    else
       return nil
    end
 end
 
-function api.getAttireMeshes(itemName)
-   if not itemName then
+function api.getAttireMeshes( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].meshes
    else
       return nil
    end
 end
 
-function api.isItemEquipable(itemName)
-   if not itemName then
+function api.isItemEquipable( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -876,7 +744,7 @@ function api.isItemEquipable(itemName)
    return info and info.equipable
 end
 
-function api.isItemArmor(itemName)
+function api.isItemArmor( itemName )
    if not api.isItemEquipable(itemName) then
       return false
    end
@@ -886,7 +754,7 @@ function api.isItemArmor(itemName)
    return info and info.armor
 end
 
-function api.isItemAccessory(itemName)
+function api.isItemAccessory( itemName )
    if not api.isItemEquipable(itemName) then
       return false
    end
@@ -896,8 +764,8 @@ function api.isItemAccessory(itemName)
    return info and (info.attireType == "mask" or info.attireType == "eyewear" or info.attireType == "hat")
 end
 
-function api.getCreateModel(itemName)
-   if not itemName then
+function api.getCreateModel( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -906,8 +774,8 @@ function api.getCreateModel(itemName)
    return info and info.createModel
 end
 
-function api.isItemBooze(itemName)
-   if not itemName then
+function api.isItemBooze( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -916,8 +784,8 @@ function api.isItemBooze(itemName)
    return info and info.boozeInfo
 end
 
-function api.getBoozeStrength(itemName)
-   if not itemName then
+function api.getBoozeStrength( itemName )
+   if ( not itemName ) then
       return false
    end
 
@@ -926,45 +794,36 @@ function api.getBoozeStrength(itemName)
    return info.boozeInfo
 end
 
-function api.getItemLimitCategory(itemName)
-   if not itemName then return nil end
-   if ItemsInfo[itemName] then
-      return ItemsInfo[itemName].limitCategory
-   else
-      return nil
-   end
-end
-
-function api.getItemInvCategory(itemName)
-   if not itemName then
+function api.getItemInvCategory( itemName )
+   if ( not itemName ) then
       return false
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].invCategory
    else
       return nil
    end
 end
 
-function api.getItemWeaponType(itemName)
-   if not itemName then
+function api.getItemWeaponType( itemName )
+   if ( not itemName ) then
       return false
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       return ItemsInfo[itemName].weaponType
    else
       return nil
    end
 end
 
-function api.isItemQuestItem(itemName)
-   if not itemName then
+function api.isItemQuestItem( itemName )
+   if ( not itemName ) then
       return nil
    end
 
-   if ItemsInfo[itemName] then
+   if ( ItemsInfo[itemName] ) then
       if ItemsInfo[itemName].questItem then
          return true
       else
@@ -975,8 +834,9 @@ function api.isItemQuestItem(itemName)
    end
 end
 
-api.ItemsInfo          = ItemsInfo
-api.ItemsClasses       = ItemsClasses
-api.ItemQualityBonuses = ItemQualityBonuses
+api.ItemsInfo      = ItemsInfo
+api.ItemsDecompose = ItemsDecompose
+api.ItemsCompose   = ItemsCompose
+api.ItemsClasses   = ItemsClasses
 
 return api

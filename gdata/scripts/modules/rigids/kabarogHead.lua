@@ -1,31 +1,29 @@
 local oo = require "loop.simple"
-local _rootRigid = (require "roots")._rootRigid
 
----@class CKabarogHead : shRigidEntity
-local CKabarogHead = oo.class({}, _rootRigid)
+local CKabarogHead = oo.class({})
 
 function CKabarogHead:OnCreate()
-   self.interactor = self:createAspect("interactor")
-   self.interactor:setObject(self)
-   self.interactor:setTriggerRadius(250.0)
-   self.interactor:setRaycastRadius(0)
-   self.interactor:getPose():setParent(self:getPose())
+   self.interactor = self:createAspect( "interactor" )
+   self.interactor:setObject( self )
+   self.interactor:setTriggerRadius( 250.0 )
+   self.interactor:setRaycastRadius( 0 )
+   self.interactor:getPose():setParent( self:getPose() )
    self.interactor:getPose():resetLocalPose()
-   self.interactor:setTriggerActive(false)
+   self.interactor:setTriggerActive( false )
 
    self:addMaterial("placeholder")
    self:setMaterialVisible("placeholder", false)
 
    self:setVisible(false)
 
-   self.stink_1 = self:createAspect("stink.sps")
+   self.stink_1 = self:createAspect( "stink.sps" )
    self.stink_1:setLoop(true)
    self.stink_1:getPose():setScale({x=2,y=2,z=2})
    self.stink_1:getPose():setParent(self:getPose())
    self.stink_1:getPose():resetLocalPos()
    self.stink_1:disable()
 
-   self.stink_2 = self:createAspect("stink.sps")
+   self.stink_2 = self:createAspect( "stink.sps" )
    self.stink_2:setLoop(true)
    -- self.stink_2:getPose():setScale({x=2,y=2,z=2})
    self.stink_2:getPose():setParent(self:getPose())
@@ -33,40 +31,40 @@ function CKabarogHead:OnCreate()
    self.stink_2:disable()
 end
 
--- if (effectName == "electro_shock") then
---       if (not self.fx.electroShock) then
+-- if ( effectName == "electro_shock" ) then
+--       if ( not self.fx.electroShock ) then
 --          self.fx.electroShock = {}
---          self.fx.electroShock.emitter = self:createAspect("electro_shock.sps")
+--          self.fx.electroShock.emitter = self:createAspect( "electro_shock.sps" )
 
 --          local emitter = self.fx.electroShock.emitter
 
---          emitter:setLoop(true)
+--          emitter:setLoop( true )
 
 --          local scale = (self:getCollisionRadius() + self:getCollisionHeight()) * 0.005
---          if (scale < 0.5) then scale = 0.5 end
+--          if ( scale < 0.5 ) then scale = 0.5 end
 
---          emitter:getPose():setScale     ({x=scale,y=scale,z=scale})
---          emitter:getPose():setParent    (self:getPose())
+--          emitter:getPose():setScale     ( {x=scale,y=scale,z=scale} )
+--          emitter:getPose():setParent    ( self:getPose() )
 --          emitter:getPose():resetLocalPos()
---          emitter:getPose():setLocalPos  ({x=0,y=self:getCollisionHeight() * 0.5,z=0})
+--          emitter:getPose():setLocalPos  ( {x=0,y=self:getCollisionHeight() * 0.5,z=0} )
 
---          self.fx.electroShock.sound = self:createAspect("electro_smash.wav")
+--          self.fx.electroShock.sound = self:createAspect( "electro_smash.wav" )
 
---          self.fx.electroShock.sound:getPose():setParent(self:getPose())
+--          self.fx.electroShock.sound:getPose():setParent( self:getPose() )
 --          self.fx.electroShock.sound:getPose():resetLocalPose()
---          self.fx.electroShock.sound:getPose():setLocalPos({x=0,y=100,z=0})
---          self.fx.electroShock.sound:setLoop(false)
---          self.fx.electroShock.sound:setDistance(1200)
+--          self.fx.electroShock.sound:getPose():setLocalPos( {x=0,y=100,z=0} )
+--          self.fx.electroShock.sound:setLoop( false )
+--          self.fx.electroShock.sound:setDistance( 1200 )
 --       end
 
---       if (self.fx.electroShock.timer) then
+--       if ( self.fx.electroShock.timer ) then
 --          self.fx.electroShock.timer:stop()
 --          self.fx.electroShock.timer = nil
 --       end
 
 --       self.fx.electroShock.emitter:play()
 --       self.fx.electroShock.sound:play()
---       self.fx.electroShock.timer = runTimer(time, self.fx.electroShock, CCharacter.stopEffect, false)
+--       self.fx.electroShock.timer = runTimer( time, self.fx.electroShock, CCharacter.stopEffect, false )
 --    end
 
 
@@ -77,11 +75,11 @@ function CKabarogHead:activate(obj)
 
    -- temporary for testing
    -- self:start_stink()
-   questSystem:fireEvent("activate", self:getName())
+   questSystem:fireEvent( "activate", self:getName() )
    return true
 end
 
-function CKabarogHead:deactivate(obj)
+function CKabarogHead:deactivate( obj )
    return true
 end
 

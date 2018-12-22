@@ -3,20 +3,18 @@ local multiRefObjects = {
 
 } -- multiRefObjects
 local obj1 = {
-	["description"] = "";
+	["description"] = "Zak lost his beloved arphant Molly. He asked me to lead her back to him if I find her. He doesn't know where she might have gone to, but he said that Molly loves melons, and doesn't like bitebugs.";
 	["hidden"] = false;
 	["logs"] = {
 		["DiggingStart"] = "Juggo and his team started digging a ramp for the arphant. Shouldn't take longer than half a day.";
 		["FedSlaves"] = "I gave Juggo the meat. Now the aborigines should have the strength to help the arphant get out. Juggo kept his word and mentioned a hidden container with promised loot behind a lying door frame nearby.";
-		["FoundArphant"] = "I found the a striped arphant. It managed to trap itself inside a ruined building.";
+		["FoundArphant"] = "I found the arphant. It managed to trap itself inside a ruined building.";
 		["HelpedSlaves"] = "I helped slaves tame arphant. Juggo was extatic, and rewarded me with the promised broken shotgun and even more antigravium.";
-		["HelpedZak"] = "I fooled the slaves and helped Molly the arphant get to Zak.";
-		["JuggoWantsArphant"] = "Juggo told me that they want to free the arphant and use it to cross the desert to finally get away from their former owners. But to control the beast they need a special whistle that belongs to the arphant's owner. They promised to reward me with some sort of broken weapon which they assured me could easily be fixed in any mechanic's workshop. There also seems to exist some sort of weed, which might also help tame the arphant.";
-		["JuggoWantsMeat"] = "Juggo asked me if I could bring them 6 pieces of fried meat.";
+		["HelpedZak"] = "I fooled the slaves and helped arphant get to Zak.";
+		["JuggoWantsArphant"] = "Juggo told me that they want to free the arphant and use it to cross the desert to finally get away from their former owners. But to do that they need a special whistle that belongs to the arphant's owner, which helps controlling the animal. It's probably the same whistle Zak was talking about. They promised to reward me with some sort of broken weapon which they assured me could easily be fixed in any mechanic's workshop. There also seems to exist some sort of weed, which might also help tame the arphant.";
+		["MetSlaves"] = "I've met a bunch of hungry slaves near a ruined building, who asked me if I could bring them 6 pieces of fried meat. Their leader Juggo mentioned the arphant and warned me not to get close to the animal, as I might startle it, ruin some sort of plan of theirs and get stomped. These slaves might be the answer to getting the arphant out of the ruins.";
 		["RampFinished"] = "The ramp is finished, and the arphant should be able to get out. Now I just need some sort of way to make it trust me. Zak did mention that Molly loves melons...";
-		["StartJuggo"] = "I've met a bunch of hungry slaves near a ruined building. Their leader Juggo mentioned an arphant and warned me not to get close to the animal, as I might startle it, ruin some sort of plan of theirs and get stomped.";
-		["StartZak"] = "Zak lost his beloved arphant Molly. He asked me to lead her back to him if I find her. He doesn't know where she might have gone to, but he said that Molly loves melons, and doesn't like bitebugs.";
-		["WhoToHelp"] = "The question is, should I help Zak return his Molly and fool the runaway slaves, or help the slaves get away?";
+		["WhoToHelp"] = "The question is, should I help Zak return his Molly and fool the runaway slaves, or help the slaves get away for a broken shotgun?";
 	};
 	["nodes"] = {
 		["clear_way"] = {
@@ -27,14 +25,14 @@ local obj1 = {
 				[3] = 46;
 			};
 			["name"] = "clear_way";
-			["posX"] = 480;
+			["posX"] = 390;
 			["posY"] = -30;
 			["script"] = "function Step:onCheck()\
    return true\
 end\
 \
 function Step:onStart()\
-   for _,v in pairs({\"juggo\", \"chew\", \"ampa\"}) do\
+   for k,v in pairs({\"juggo\", \"chew\", \"ampa\"}) do\
       local s = getObj(v)\
       if s then\
         s:setIgnoreSleep(false)\
@@ -42,11 +40,8 @@ function Step:onStart()\
    end\
    self:writeLog(\"RampFinished\")\
    self:setTopicVisible(\"molly_stuck\", false)\
+   self:setTopicVisible(\"molly_give_melon_stuck\", false)\
    self:setTopicVisible(\"molly_give_weed\", true)\
-   self:setTopicVisible(\"juggo_blows_whistle\", true)\
-   if self:getParam(\"JuggoHasWhistle\") then\
-      getObj(\"juggo\"):setDialogInitiator(true)\
-   end\
 end\
 \
 function Step:onFinish()\
@@ -55,13 +50,32 @@ end\
 ";
 			["type"] = "step";
 		};
+		["condition_00013"] = {
+			["ID"] = 13;
+			["connectionsID"] = {
+				[1] = 14;
+			};
+			["event"] = "dead";
+			["posX"] = -90;
+			["posY"] = 330;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"zak_molly_dead\", true)\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "arphant_molly";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
 		["condition_00016"] = {
 			["ID"] = 16;
 			["connectionsID"] = {
 				[1] = 15;
 			};
 			["event"] = "dig_done";
-			["posX"] = 240;
+			["posX"] = 150;
 			["posY"] = -60;
 			["script"] = "";
 			["targetsAll"] = "";
@@ -75,11 +89,56 @@ end\
 				[1] = 21;
 			};
 			["event"] = "with_zak";
-			["posX"] = 1500;
+			["posX"] = 1560;
 			["posY"] = -60;
 			["script"] = "";
 			["targetsAll"] = "";
 			["targetsAny"] = "";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00032"] = {
+			["ID"] = 32;
+			["connectionsID"] = {
+				[1] = 0;
+			};
+			["event"] = "find";
+			["posX"] = -1380;
+			["posY"] = 540;
+			["script"] = "function Condition:onCheck(obj)\
+   if not self:getTopicVisible(\"zak_found_molly\") then\
+      self:setTopicVisible(\"zak_found_molly\", true)\
+      self:writeLog(\"FoundArphant\")\
+      if self.q:isStarted() then\
+         gameplayUI:showQuestUpdateInfo( \"Quest 'Zak's Lost Arphant' updated\" )\
+      end\
+   end\
+   return false\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "arphant_molly";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00035"] = {
+			["ID"] = 35;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = -540;
+			["posY"] = 630;
+			["script"] = "function Condition:onCheck(obj)\
+   self.q:giveWhistleToZak()\
+   self:setTopicVisible(\"juggo_give_whistle\", false)\
+   self:setTopicVisible(\"juggo_tell_whistle\", true)\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "zak_give_whistle";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -89,10 +148,13 @@ end\
 				[1] = 2;
 			};
 			["event"] = "discuss";
-			["posX"] = 1950;
+			["posX"] = 2010;
 			["posY"] = -60;
-			["script"] = "function Condition:onCheck(name, obj)\
-   addItemToPlayer(\"antigravium_shards.itm\", 300)\
+			["script"] = "function Condition:onCheck(obj)\
+   addItemsToPlayer(\"antigravium_shards.itm\", 300)\
+   if hasPlayerItem(\"zak_whistle.itm\") then\
+      self.q:giveWhistleToZak()\
+   end\
    return true\
 end\
 \
@@ -102,22 +164,72 @@ end\
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
+		["condition_00038"] = {
+			["ID"] = 38;
+			["connectionsID"] = {
+				[1] = 0;
+			};
+			["event"] = "discuss";
+			["posX"] = -1380;
+			["posY"] = 300;
+			["script"] = "";
+			["targetsAll"] = "";
+			["targetsAny"] = "start";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00040"] = {
+			["ID"] = 40;
+			["connectionsID"] = {
+				[1] = 17;
+			};
+			["event"] = "discuss";
+			["posX"] = -570;
+			["posY"] = -60;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"juggo_feed\", false)\
+   removeItemFromPlayer(\"fried_meat.itm\", self:getParam(\"meat_count\"))\
+   self:writeLog(\"FedSlaves\")\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "juggo_feed";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00041"] = {
+			["ID"] = 41;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = -780;
+			["posY"] = 540;
+			["script"] = "function Condition:onCheck(obj)\
+   self:writeLog(\"JuggoWantsArphant\")\
+   self:writeLog(\"WhoToHelp\")\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "juggo_wants_whistle";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
 		["condition_00042"] = {
 			["ID"] = 42;
 			["connectionsID"] = {
 			};
 			["event"] = "discuss";
-			["posX"] = -120;
-			["posY"] = -330;
-			["script"] = "function Condition:onCheck(name, obj)\
-   giveItemFromPlayerTo(\"zak_whistle.itm\", getObj(\"juggo\"))\
-   getMC():addExp(200)\
-   addItemToPlayer(\"flare_ammo.itm\", 8)\
-   addItemToPlayer(\"22_ammo.itm\", 10)\
-\
+			["posX"] = -540;
+			["posY"] = 450;
+			["script"] = "function Condition:onCheck(obj)\
+   removeItemFromPlayer(\"zak_whistle.itm\")\
+   getPlayer():addExp(200)\
+   self:setTopicVisible(\"zak_give_whistle\", false)\
    self:setTopicVisible(\"juggo_give_whistle\", false)\
-   self:setTopicVisible(\"juggo_have_weed\", false)\
-   self:setParam(\"JuggoHasWhistle\", true)\
    return true\
 end\
 \
@@ -133,11 +245,11 @@ end\
 				[1] = 2;
 			};
 			["event"] = "discuss";
-			["posX"] = 1500;
-			["posY"] = 150;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["posX"] = 1530;
+			["posY"] = 210;
+			["script"] = "function Condition:onCheck(obj)\
    --self.q:finish()\
-   addItemToPlayer(\"antigravium_shards.itm\", 200)\
+   addItemsToPlayer(\"antigravium_shards.itm\", 200)\
    addItemToPlayer(\"broken_shotgun.itm\")\
    return true\
 end\
@@ -156,14 +268,13 @@ end\
 			["event"] = "discuss";
 			["posX"] = 750;
 			["posY"] = -210;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    removeItemFromPlayer(\"melon.itm\", 1)\
-   runTimer(0, self, function()\
+   runTimer(0, self, function(self)\
       goToQuestStep(\"lost_arphant\", \"molly_walk_to_zak\", true)\
    end, false)\
    getObj(\"juggo\"):setDialogInitiator(true)\
    self:setTopicVisible(\"juggo_what_the_hell\", true)\
-   self:setTopicVisible(\"juggo_angry\", true)\
    return true\
 end\
 \
@@ -181,9 +292,9 @@ end\
 			["event"] = "discuss";
 			["posX"] = 750;
 			["posY"] = 90;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    removeItemFromPlayer(\"arphant_tranquilizer_weed.itm\", 1)\
-   runTimer(0, self, function()\
+   runTimer(0, self, function(self)\
       goToQuestStep(\"lost_arphant\", \"molly_for_slaves\", true)\
    end, false)\
    getObj(\"juggo\"):setDialogInitiator(true)\
@@ -205,8 +316,8 @@ end\
 			["event"] = "discuss";
 			["posX"] = 750;
 			["posY"] = -60;
-			["script"] = "function Condition:onCheck(name, obj)\
-   runTimer(0, self, function()\
+			["script"] = "function Condition:onCheck(obj)\
+   runTimer(0, self, function(self)\
       goToQuestStep(\"lost_arphant\", \"molly_for_slaves\", true)\
    end, false)\
    return true\
@@ -218,251 +329,175 @@ end\
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
+		["condition_00048"] = {
+			["ID"] = 48;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = -1020;
+			["posY"] = 690;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"juggo_warning\", false)\
+   self:setTopicVisible(\"juggo_about_molly\", true)\
+   self:setTopicVisible(\"zak_found_molly\", true)\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "juggo_warning";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00049"] = {
+			["ID"] = 49;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = -1020;
+			["posY"] = 840;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"zak_who_is_molly\", false)\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "zak_who_is_molly";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00050"] = {
+			["ID"] = 50;
+			["connectionsID"] = {
+				[1] = 0;
+			};
+			["event"] = "discuss";
+			["posX"] = -1380;
+			["posY"] = 840;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"zak_who_is_molly\", false)\
+   return false\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "zak_who_is_molly";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00051"] = {
+			["ID"] = 51;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = -1020;
+			["posY"] = 990;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"juggo_intro\", false)\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "juggo_intro";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00052"] = {
+			["ID"] = 52;
+			["connectionsID"] = {
+				[1] = 0;
+			};
+			["event"] = "discuss";
+			["posX"] = -1350;
+			["posY"] = 990;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"juggo_intro\", false)\
+   return false\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "juggo_intro";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00053"] = {
+			["ID"] = 53;
+			["connectionsID"] = {
+				[1] = 0;
+			};
+			["event"] = "discuss";
+			["posX"] = -1320;
+			["posY"] = 1140;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"juggo_ask_hungry\", false)\
+   self:setTopicVisible(\"juggo_feed\", true)\
+   return false\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "juggo_ask_hungry";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00055"] = {
+			["ID"] = 55;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = -1020;
+			["posY"] = 1140;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"juggo_ask_hungry\", false)\
+   self:setTopicVisible(\"juggo_feed\", true)\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "juggo_ask_hungry";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
 		["condition_00056"] = {
 			["ID"] = 56;
 			["connectionsID"] = {
 			};
 			["event"] = "discuss";
-			["posX"] = -120;
-			["posY"] = -480;
-			["script"] = "function Condition:onCheck(name, obj)\
-   self:setTopicVisible(\"juggo_tell_whistle_gone\", false)\
-   self:setTopicVisible(\"juggo_whistle_gone\", true)\
+			["posX"] = -300;
+			["posY"] = 540;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"juggo_tell_whistle\", false)\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "juggo_tell_whistle_gone";
+			["targetsAny"] = "juggo______whistle";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
-		["condition_00062"] = {
-			["ID"] = 62;
+		["condition_00057"] = {
+			["ID"] = 57;
 			["connectionsID"] = {
+				[1] = 0;
 			};
 			["event"] = "discuss";
-			["posX"] = -360;
-			["posY"] = -330;
-			["script"] = "function Condition:onCheck(name, obj)\
-   self:setTopicVisible(\"juggo_go_dig\", true)\
-   self:setTopicVisible(\"juggo_give_whistle\", true)\
-   self:setTopicVisible(\"juggo_have_weed\", true)\
-   self:setTopicVisible(\"juggo_tell_whistle_gone\", true)\
-   self:writeLog(\"JuggoWantsArphant\")\
-   return true\
-end\
-\
-";
-			["targetsAll"] = "";
-			["targetsAny"] = "juggo_wants_arphant";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00064"] = {
-			["ID"] = 64;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = -360;
-			["posY"] = -480;
-			["script"] = "function Condition:onCheck(name, obj)\
-   self:setTopicVisible(\"juggo_i_know_owner\", false)\
-   return true\
-end\
-\
-";
-			["targetsAll"] = "";
-			["targetsAny"] = "juggo_i_know_owner";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00065"] = {
-			["ID"] = 65;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = -810;
-			["posY"] = -450;
-			["script"] = "function Condition:onCheck(name, obj)\
-   self:setTopicVisible(\"juggo_wants_meat\", false)\
-   self:setTopicVisible(\"juggo_feed\", true)\
-   self:setParam(\"JuggoSaidWantsMeat\", true)\
-   return true\
-end\
-\
-";
-			["supercondition"] = true;
-			["targetsAll"] = "";
-			["targetsAny"] = "juggo_wants_meat";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00066"] = {
-			["ID"] = 66;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = -810;
-			["posY"] = -300;
-			["script"] = "function Condition:onCheck(name, obj)\
-   giveItemFromPlayerTo(\"fried_meat.itm\", getObj(\"juggo\"), self.meat_count)\
-   self:setParam(\"JuggoWasFed\", true)\
-   if self.q:isStarted() then\
-      self:goToStep(\"gave_food\", true)\
-   end\
-   return true\
-end\
-\
-";
-			["supercondition"] = true;
-			["targetsAll"] = "";
-			["targetsAny"] = "juggo_feed";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00067"] = {
-			["ID"] = 67;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = -660;
-			["posY"] = -150;
-			["script"] = "function Condition:onCheck(name, obj)\
-   if not self.q:isStarted() then\
-      self.q:start()\
-   else\
-      runTimer(0, nil, function() self:writeLog(\"WhoToHelp\") end, false)\
-   end\
-   self:setTopicVisible(\"juggo_start\", false)\
+			["posX"] = -1380;
+			["posY"] = 690;
+			["script"] = "function Condition:onCheck(obj)\
+   self:setTopicVisible(\"juggo_warning\", false)\
    self:setTopicVisible(\"juggo_about_molly\", true)\
    self:setTopicVisible(\"zak_found_molly\", true)\
-   self:writeLog(\"StartJuggo\")\
-   if self:getParam(\"JuggoSaidWantsMeat\") then\
-      self:writeLog(\"JuggoWantsMeat\")\
-   end\
-   return true\
-end\
-\
-";
-			["supercondition"] = true;
-			["targetsAll"] = "";
-			["targetsAny"] = "juggo_start";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00068"] = {
-			["ID"] = 68;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = -660;
-			["posY"] = 30;
-			["script"] = "function Condition:onCheck(name, obj)\
-   if not self.q:isStarted() then\
-      self.q:start()\
-   else\
-      runTimer(0, nil, function() self:writeLog(\"WhoToHelp\") end, false)\
-   end\
-   self:setTopicVisible(\"zak_start\", false)\
-   self:setTopicVisible(\"molly_go_to_zak\", true)\
-   self:setTopicVisible(\"juggo_i_know_owner\", true)\
-   self:writeLog(\"StartZak\")\
-   return true\
-end\
-\
-";
-			["supercondition"] = true;
-			["targetsAll"] = "";
-			["targetsAny"] = "zak_start";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00069"] = {
-			["ID"] = 69;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = -810;
-			["posY"] = 180;
-			["script"] = "function Condition:onCheck(name, obj)\
-   getMC():addExp(200)\
-   giveItemFromPlayerTo(\"zak_whistle.itm\", getObj(\"zak\"))\
-   addItemToPlayer(\"22_ammo.itm\", 20)\
-   self:setTopicVisible(\"zak_give_whistle\", false)\
-   self:setParam(\"ZakHasWhistle\", true)\
-   return true\
-end\
-\
-";
-			["supercondition"] = true;
-			["targetsAll"] = "";
-			["targetsAny"] = "zak_give_whistle";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00070"] = {
-			["ID"] = 70;
-			["connectionsID"] = {
-			};
-			["event"] = "find";
-			["posX"] = -810;
-			["posY"] = 330;
-			["script"] = "function Condition:onCheck(name, obj)\
-   if not self:getTopicVisible(\"zak_found_molly\") then\
-      self:setTopicVisible(\"zak_found_molly\", true)\
-      self:writeLog(\"FoundArphant\")\
-      if self.q:isStarted() then\
-         gameplayUI:showQuestUpdateInfo(\"Quest 'Lost Arphant' updated\")\
-      end\
-   end\
-   return true\
-end\
-\
-";
-			["supercondition"] = true;
-			["targetsAll"] = "";
-			["targetsAny"] = "arphant_molly";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00072"] = {
-			["ID"] = 72;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = -360;
-			["posY"] = 150;
-			["script"] = "function Condition:onCheck(name, obj)\
-   self:setTopicVisible(\"zak_found_molly\", false)\
-   self:setTopicVisible(\"zak_molly_questions1\", false)\
-   return true\
+   return false\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "zak_found_molly";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00074"] = {
-			["ID"] = 74;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = 150;
-			["posY"] = -420;
-			["script"] = "function Condition:onCheck(name, obj)\
-   if not self.q:isFinished() then\
-      self:setTopicVisible(\"zak_molly_questions1\", true)\
-   end\
-   return true\
-end\
-\
-";
-			["supercondition"] = true;
-			["targetsAll"] = "";
-			["targetsAny"] = "mention_arphant";
+			["targetsAny"] = "juggo_warning";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -471,8 +506,8 @@ end\
 			["connectionsID"] = {
 			};
 			["name"] = "finish";
-			["posX"] = 2220;
-			["posY"] = 180;
+			["posX"] = 2370;
+			["posY"] = 360;
 			["script"] = "function Step:onCheck()\
    return true\
 end\
@@ -493,16 +528,15 @@ end\
 				[1] = 8;
 			};
 			["name"] = "gave_food";
-			["posX"] = -180;
+			["posX"] = -300;
 			["posY"] = -30;
 			["script"] = "function Step:onCheck()\
    return true\
 end\
 \
 function Step:onStart()\
-   self:setTopicVisible(\"juggo_feed\", false)\
-   self:setTopicVisible(\"juggo_still_hungry\", false)\
-   self:writeLog(\"FedSlaves\")\
+   self:setTopicVisible(\"juggo_cant_dig\", false)\
+   self:setTopicVisible(\"juggo_gonna_dig\", true)\
 end\
 \
 function Step:onFinish()\
@@ -511,21 +545,31 @@ end\
 ";
 			["type"] = "step";
 		};
+		["molly_dead"] = {
+			["ID"] = 14;
+			["connectionsID"] = {
+				[1] = 2;
+			};
+			["name"] = "molly_dead";
+			["posX"] = 540;
+			["posY"] = 360;
+			["script"] = "";
+			["type"] = "step";
+		};
 		["molly_for_slaves"] = {
 			["ID"] = 18;
 			["connectionsID"] = {
 				[1] = 43;
 			};
 			["name"] = "molly_for_slaves";
-			["posX"] = 1290;
-			["posY"] = 180;
+			["posX"] = 1320;
+			["posY"] = 240;
 			["script"] = "function Step:onCheck()\
    return true\
 end\
 \
 function Step:onStart()\
    self:writeLog(\"HelpedSlaves\")\
-   self:setTopicVisible(\"juggo_what_now\", true)\
 end\
 \
 function Step:onFinish()\
@@ -541,21 +585,18 @@ end\
 				[2] = 18;
 			};
 			["name"] = "molly_walk_out_hole";
-			["posX"] = 1050;
+			["posX"] = 1110;
 			["posY"] = -30;
 			["script"] = "function Step:onCheck()\
    return true\
 end\
 \
 function Step:onStart()\
-   getObj(\"arphant_molly\"):setPatrolAllowed(true)\
-   getObj(\"arphant_molly\"):setState(\"talkForbidden\", true)\
-   getObj(\"arphant_molly\").defaultAnimation = \"idle\"\
+   activateObject(\"arphant_molly\")\
    self:setTopicVisible(\"juggo_about_molly\", false)\
    self:setTopicVisible(\"zak_about_molly\", false)\
+   self:setTopicVisible(\"molly_give_melon\", false)\
    self:setTopicVisible(\"molly_give_weed\", false)\
-   self:setTopicVisible(\"molly_go_to_zak\", false)\
-   self:setTopicVisible(\"juggo_blows_whistle\", false)\
 end\
 \
 function Step:onFinish()\
@@ -570,15 +611,16 @@ end\
 				[1] = 20;
 			};
 			["name"] = "molly_walk_to_zak";
-			["posX"] = 1290;
+			["posX"] = 1350;
 			["posY"] = -30;
 			["script"] = "function Step:onCheck()\
    return true\
 end\
 \
 function Step:onStart()\
-   getObj(\"arphant_molly\"):setPatrolRoute(self.pathToZak)\
-   getObj(\"arphant_molly\"):setPatrolAllowed(true)\
+   getObj(\"arphant_molly\").patrolPoints = loadParamObjects({}, \"patrolPoints\", \"wp_molly_1,wp_molly_2,wp_molly_3,wp_molly_4,wp_molly_5,wp_molly_6,wp_molly_7,wp_molly_8,wp_molly_9,wp_molly_10,wp_molly_11,wp_molly_12,wp_molly_13,wp_molly_14,wp_molly_15,wp_molly_16,wp_molly_17,wp_molly_18,wp_molly_19\")\
+   getObj(\"arphant_molly\").nextPatrolPoint = 1\
+   activateObject(\"arphant_molly\")\
    getObj(\"arphant_molly\"):setIgnoreSleep(true)\
 end\
 \
@@ -594,31 +636,30 @@ end\
 				[1] = 16;
 			};
 			["name"] = "slave_dig";
-			["posX"] = 30;
+			["posX"] = -60;
 			["posY"] = -30;
 			["script"] = "function Step:onCheck()\
    return true\
 end\
 \
 function Step:onStart()\
-   self:setTopicVisible(\"juggo_go_dig\", false)\
-\
-   local function goDig()\
-      for _,v in pairs({\"juggo\", \"chew\", \"ampa\"}) do\
-         local s = getObj(v)\
-         if s then\
-            s:setState(\"dig\", true)\
-            s:setState(\"talk\", false)\
-            s:setIgnoreSleep(true)\
-            if v == \"juggo\" then\
-               s.refuseTalk = true\
-            end\
-         end\
+   runTimer(0, self,\
+function(self)\
+   self:setParam(\"ramp_initial_height\", getObj(\"q_lost_arphant_bridge\"):getPose():getPos().y)\
+   for k,v in pairs({\"juggo\", \"chew\", \"ampa\"}) do\
+      local s = getObj(v)\
+      if s then\
+        s:setState(\"dig\", true)\
+\9s:setState(\"talk\", false)\
+        s:setIgnoreSleep(true)\
+\9if v == \"juggo\" then\
+\9   s.refuseTalk = true\
+\9end\
       end\
-      self:writeLog(\"DiggingStart\")\
    end\
-\
-   runTimer(0, self, goDig, false)\
+   self:writeLog(\"DiggingStart\")\
+end\
+             , false)\
 end\
 \
 function Step:onFinish()\
@@ -630,12 +671,29 @@ end\
 		["start"] = {
 			["ID"] = 0;
 			["connectionsID"] = {
-				[1] = 17;
+				[1] = 13;
+				[2] = 40;
 			};
 			["name"] = "start";
-			["posX"] = -390;
-			["posY"] = -30;
-			["script"] = "";
+			["posX"] = -1080;
+			["posY"] = 330;
+			["script"] = "function Step:onCheck()\
+   return true\
+end\
+\
+function Step:onStart()\
+   self:setTopicVisible(\"start\", false)\
+   self:setTopicVisible(\"juggo_ask_hungry\", true)\
+   self:setTopicVisible(\"juggo_about_molly\", true)\
+   self:setTopicVisible(\"juggo_cant_dig\", true)\
+   self:setTopicVisible(\"molly_give_melon_stuck\", true)\
+   self:setTopicVisible(\"molly_give_melon\", true)\
+end\
+\
+function Step:onFinish()\
+end\
+\
+";
 			["type"] = "step";
 		};
 		["with_zak"] = {
@@ -644,7 +702,7 @@ end\
 				[1] = 37;
 			};
 			["name"] = "with_zak";
-			["posX"] = 1740;
+			["posX"] = 1800;
 			["posY"] = -30;
 			["script"] = "function Step:onCheck()\
    return true\
@@ -664,67 +722,41 @@ end\
 		};
 	};
 	["script"] = "function Quest:onCreate()\
-   self:setTopicVisible(\"zak_start\", true)\
-   self:setTopicVisible(\"zak_about_molly\", false) -- next two are behind this one\
-   self:setTopicVisible(\"zak_molly_questions1\", false)\
-   self:setTopicVisible(\"zak_molly_questions2\", true)\
+   self:setTopicVisible(\"start\", true)\
+   self:setTopicVisible(\"zak_who_is_molly\", true)\
+   self:setTopicVisible(\"zak_about_molly\", true)\
    self:setTopicVisible(\"zak_found_molly\", false)\
+   self:setTopicVisible(\"zak_molly_dead\", false)\
    self:setTopicVisible(\"zak_give_whistle\", true)\
    self:setTopicVisible(\"molly_with_zak\", false)\
    self:setTopicVisible(\"zak_reward\", true) -- comes after molly_with_zak\
-\
-   self:setTopicVisible(\"juggo_start\", true)\
-   self:setTopicVisible(\"juggo_wants_meat\", true)\
+   self:setTopicVisible(\"juggo_intro\", true)\
    self:setTopicVisible(\"juggo_about_molly\", false)\
-   self:setTopicVisible(\"juggo_still_hungry\", true)\
+   self:setTopicVisible(\"juggo_ask_hungry\", false)\
    self:setTopicVisible(\"juggo_feed\", false)\
-   self:setTopicVisible(\"juggo_go_dig\", false)\
-   self:setTopicVisible(\"juggo_i_know_owner\", false)\
-   self:setTopicVisible(\"juggo_wants_arphant\", true)\
-   self:setTopicVisible(\"juggo_tell_whistle_gone\", false)\
-   self:setTopicVisible(\"juggo_whistle_gone\", false)\
-\
-   self:setTopicVisible(\"juggo_give_whistle\", false)\
-   self:setTopicVisible(\"juggo_have_weed\", false)\
-\
+   self:setTopicVisible(\"juggo_warning\", true)\
+   self:setTopicVisible(\"juggo_cant_dig\", false)\
+   self:setTopicVisible(\"juggo_gonna_dig\", false)\
+   self:setTopicVisible(\"juggo_give_whistle\", true)\
+   self:setTopicVisible(\"juggo_tell_whistle\", false)\
    self:setTopicVisible(\"juggo_what_the_hell\", false)\
-   self:setTopicVisible(\"juggo_angry\", false)\
    self:setTopicVisible(\"juggo_weed_worked\", false)\
-   self:setTopicVisible(\"juggo_blows_whistle\", false)\
    self:setTopicVisible(\"juggo_reward\", true)\
-   self:setTopicVisible(\"juggo_what_now\", false)\
-\
    self:setTopicVisible(\"molly_stuck\", true)\
-   self:setTopicVisible(\"molly_go_to_zak\", false)\
-   self:setTopicVisible(\"molly_give_melon\", true)\
+   self:setTopicVisible(\"molly_give_melon_stuck\", false)\
+   self:setTopicVisible(\"molly_give_melon\", false)\
    self:setTopicVisible(\"molly_give_weed\", false)\
    self:declareVar(\"meat_count\", 6)\
-   self:setParam(\"JuggoSaidWantsMeat\", false)\
-   self:setParam(\"JuggoWasFed\", false)\
-   self:setParam(\"JuggoHasWhistle\", false)\
-   self:setParam(\"ZakHasWhistle\", false)\
-\
-   local waypoints = {}\
-   for i=1,19 do\
-      waypoints[i] = \"wp_molly_\" .. i\
-   end\
-   self:declareVar(\"pathToZak\", table.concat(waypoints, \",\"))\
+   self:setParam(\"talked_to_zak\", false)\
 end\
 \
 function Quest:onStart()\
-   self:setTopicVisible(\"zak_about_molly\", true)\
-   if self:getParam(\"JuggoWasFed\") then\
-      self:goToStep(\"gave_food\", true)\
-   end\
-\
-   local ramp = getObj(\"q_lost_arphant_bridge\", true)\
-   if ramp then\
-      self:setParam(\"ramp_initial_height\", ramp:getPose():getPos().y)\
-      self:setParam(\"ramp_finished_height\", self:getParam(\"ramp_initial_height\") + 200)\
-   end\
+   --getObj(\"arphant_molly\"):setVisible(true)\
+   --getObj(\"juggo\"):setVisible(true)\
 end\
 \
 function Quest:onFinish()\
+   --self:writeLog(\"QUEST DONE\")\
 end\
 \
 function Quest:getTopicVisible_zak_give_whistle()\
@@ -735,29 +767,28 @@ function Quest:getTopicVisible_juggo_give_whistle()\
    return hasPlayerItem(\"zak_whistle.itm\")\
 end\
 \
-function Quest:getTopicVisible_juggo_tell_whistle_gone()\
-   return self:getParam(\"ZakHasWhistle\")\
-end\
-\
-function Quest:getTopicVisible_juggo_have_weed()\
-   return hasPlayerItem(\"arphant_tranquilizer_weed.itm\")\
-end\
-\
 function Quest:getTopicVisible_juggo_feed()\
-   return hasPlayerItem(\"fried_meat.itm\", self.meat_count)\
+   return hasPlayerItemCount(\"fried_meat.itm\", self.meat_count)\
+end\
+\
+function Quest:getTopicVisible_molly_give_melon_stuck()\
+   return hasPlayerItem(\"melon.itm\")\
 end\
 \
 function Quest:getTopicVisible_molly_give_melon()\
-   return hasPlayerItem(\"melon.itm\")\
+   return hasPlayerItem(\"melon.itm\") and not self:getTopicVisible(\"molly_stuck\")\
 end\
 \
 function Quest:getTopicVisible_molly_give_weed()\
    return hasPlayerItem(\"arphant_tranquilizer_weed.itm\")\
 end\
 \
-function Quest:getTopicVisible_juggo_blows_whistle()\
-   return self:getParam(\"JuggoHasWhistle\")\
+function Quest:giveWhistleToZak()\
+   removeItemFromPlayer(\"zak_whistle.itm\")\
+   getPlayer():addExp(200)\
+   addItemsToPlayer(\"22_ammo.itm\", 20)\
+   self:setTopicVisible(\"zak_give_whistle\", false)\
 end";
-	["title"] = "Lost Arphant";
+	["title"] = "Zak's Lost Arphant";
 }
 return obj1

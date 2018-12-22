@@ -17,7 +17,6 @@ local obj1 = {
 	["message_00010"] = {
 		["ID"] = 10;
 		["actor"] = 1;
-		["animation"] = "dl_point_back";
 		["connectID"] = 11;
 		["posX"] = 1170;
 		["posY"] = 480;
@@ -39,7 +38,6 @@ end\
 	["message_00011"] = {
 		["ID"] = 11;
 		["actor"] = 2;
-		["animation"] = "dl_hand_facepalm";
 		["posX"] = 1440;
 		["posY"] = 480;
 		["script"] = "";
@@ -71,7 +69,6 @@ end\
 	["message_00017"] = {
 		["ID"] = 17;
 		["actor"] = 2;
-		["animation"] = "dl_head_wipe";
 		["connectID"] = 14;
 		["posX"] = 750;
 		["posY"] = 480;
@@ -210,17 +207,9 @@ end\
 			[4] = 27;
 			[5] = 19;
 		};
-		["h"] = 140;
 		["posX"] = 1470;
 		["posY"] = 30;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 }
-local obj2 = {
-	["actor_prefab"] = {
-		[1] = "human_male";
-		[2] = "abori";
-	};
-}
-return obj1 ,obj2
+return obj1

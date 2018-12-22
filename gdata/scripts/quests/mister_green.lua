@@ -13,10 +13,10 @@ local obj1 = {
 			["event"] = "discuss";
 			["posX"] = 270;
 			["posY"] = -30;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    removeItemFromPlayer(\"bug_dead.itm\")\
    addItemToPlayer(\"fried_bug.itm\")\
-   getMC():addExp(100)\
+   getPlayer():addExp(100)\
    self:setTopicVisible(\"give_bug\", false)\
    return false\
 end\
@@ -34,10 +34,10 @@ end\
 			["event"] = "discuss";
 			["posX"] = 510;
 			["posY"] = -30;
-			["script"] = "function Condition:onCheck(name, obj)\
-   giveItemFromPlayerTo(\"meat.itm\", getObj(\"mister_green\"))\
-   addItemToPlayer(\"antigravium_shards.itm\", 5)\
-   getMC():addExp(150)\
+			["script"] = "function Condition:onCheck(obj)\
+   removeItemFromPlayer(\"meat.itm\")\
+   addItemsToPlayer(\"antigravium_shards.itm\", 5)\
+   getPlayer():addExp(150)\
    self:setTopicVisible(\"give_meat\", false)\
    return false\
 end\
@@ -55,11 +55,11 @@ end\
 			["event"] = "discuss";
 			["posX"] = 750;
 			["posY"] = -30;
-			["script"] = "function Condition:onCheck(name, obj)\
-   giveItemFromPlayerTo(\"humanoid_leg.itm\", getObj(\"mister_green\"))\
-   addItemToPlayer(\"howdah_ammo.itm\", 5)\
+			["script"] = "function Condition:onCheck(obj)\
+   removeItemFromPlayer(\"humanoid_leg.itm\")\
+   addItemsToPlayer(\"howdah_ammo.itm\", 5)\
    addItemToPlayer(\"cleaver.wpn\")\
-   getMC():addExp(200)\
+   getPlayer():addExp(200)\
    self:setTopicVisible(\"give_leg\", false)\
    return false\
 end\
@@ -77,7 +77,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = 390;
 			["posY"] = 120;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    -- old code\
    --[[\
    removeItemFromPlayer(\"kabarog_head.itm\", 4)\
@@ -107,14 +107,14 @@ end\
 			["event"] = "discuss";
 			["posX"] = 630;
 			["posY"] = 120;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    -- old code\
    --[[\
    removeItemFromPlayer(\"lem_hard_drive_broken.itm\")\
    stepQuest(\"cannedbrains\", \"sold_green\")\
    stepQuest(\"cannedbrains\", \"finish\")\
    finishQuest(\"cannedbrains\")\
-   addItemToPlayer(\"antigravium_shards.itm\", 250)\
+   addItemsToPlayer(\"antigravium_shards.itm\", 250)\
    addItemToPlayer(\"cannibal_spoon.itm\")\
    self:setTopicVisible(\"give_brain\", false)\
    ]]\
@@ -204,7 +204,7 @@ function Quest:getTopicVisible_give_leg()\
 end\
 \
 function Quest:getTopicVisible_give_hornhog()\
-   return hasPlayerItem(\"kabarog_head.itm\",4)\
+   return hasPlayerItemCount(\"kabarog_head.itm\",4)\
 end\
 \
 function Quest:getTopicVisible_give_brain()\

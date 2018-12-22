@@ -1,18 +1,12 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
 local Node = require "ai.Node"
 local NodeState = require "ai.NodeState"
 
----@class ai.Action : ai.Node
----@field public entity CNPC | CCharacter
 local Action = oo.class({
    entity           = nil,
    start_function   = nil,
    running_function = nil,
    finish_function  = nil,
-   className = className,
 }, Node)
 
 function Action:__init()
@@ -34,7 +28,7 @@ function Action:start()
 end
 
 function Action:running()
-   if not self.running_function(self.entity) then
+   if(not self.running_function(self.entity)) then
       return NodeState.SUCCESS
    else
       return NodeState.RUNNING
@@ -42,18 +36,9 @@ function Action:running()
 end
 
 function Action:finish()
-   if self.finished or self.status == nil then
-      return
-   end
    if self.finish_function then
       self.finish_function(self.entity)
    end
-   self.finished = true
-end
-
-function Action:reset()
-   Node.reset(self)
-   self.finished = nil
 end
 
 return Action

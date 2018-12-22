@@ -11,9 +11,7 @@
 --[[ License: MIT (see bottom) ]]
 
 -- Private methods
-local _ = require "orderedPairs"
-local orderedPairs, orderedMixedPairs = _.orderedPairs, _.orderedMixedPairs
-local write, writeIndent, writers, refCount;
+local write, writeIndent, writers, refCount, pairsByKeys;
 
 local persistence =
 {
@@ -120,6 +118,21 @@ refCount = function (objRefCount, item)
 	end;
 end;
 
+-- sorted pairs
+pairsByKeys = function (t, f)
+	local a = {}
+	for n in pairs(t) do table.insert(a, n) end
+	table.sort(a, f)
+	local i = 0      -- iterator variable
+	local iter = function ()   -- iterator function
+		i = i + 1
+		if a[i] == nil then return nil
+		else return a[i], t[a[i]]
+		end
+	end
+	return iter
+end
+
 -- Format items for the purpose of restoring
 writers = {
 	["nil"] = function (file, item)
@@ -147,7 +160,7 @@ writers = {
 			else
 				-- Single use table
 				file:write("{\n");
-				for k, v in orderedMixedPairs(item) do
+				for k, v in pairs(item) do
 					writeIndent(file, level+1);
 					file:write("[");
 					write(file, k, level+1, objRefNames);

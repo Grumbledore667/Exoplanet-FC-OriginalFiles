@@ -1,14 +1,9 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
 local Node = require "ai.Node"
 local NodeState = require "ai.NodeState"
 
----@class ai.Wait : ai.Node
 local Wait = oo.class({
    seconds = nil,
-   className = className,
 }, Node)
 
 function Wait:__init()

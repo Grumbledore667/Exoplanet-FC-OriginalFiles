@@ -1,15 +1,9 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
 local Action = require "ai.Action"
 local NodeState = require "ai.NodeState"
 
----@class ai.AnimatedAction : ai.Action
----@field public entity CNPC | CCharacter
 local AnimatedAction = oo.class({
    animation = nil,
-   className = className,
 }, Action)
 
 function AnimatedAction:__init()
@@ -18,14 +12,17 @@ function AnimatedAction:__init()
    end
 end
 
-function AnimatedAction:start()
-   self.callbackObj = self.entity.animationsManager:subscribeAnimationEnd(self.animation,
-      function() self.stopEventArrived = true end)
-   Action.start(self)
-end
 
 function AnimatedAction:hasAnimationStopEvent()
-   return self.stopEventArrived
+   local char = self.entity
+   for _, event in char.eventManager:iter() do
+      if event.name == "onAnimationStop" and event.data.animation == self.animation then
+         event.consumed = true
+         char.eventManager:purgeConsumedNotifications()
+         return true
+      end
+   end
+   return false
 end
 
 function AnimatedAction:running()
@@ -34,15 +31,6 @@ function AnimatedAction:running()
    else
       return NodeState.RUNNING
    end
-end
-
-function AnimatedAction:finish()
-   if not self.finished then
-      self.entity.animationsManager:removeAnimationCallback(self.animation, self.callbackObj)
-      self.callbackObj = nil
-      self.stopEventArrived = false
-   end
-   Action.finish(self)
 end
 
 return AnimatedAction

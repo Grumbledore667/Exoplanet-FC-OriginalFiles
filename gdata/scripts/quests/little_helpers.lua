@@ -34,7 +34,7 @@ local obj1 = {
 			["event"] = "discuss";
 			["posX"] = 990;
 			["posY"] = 210;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self.q.hidden = false\
    return true\
 end\
@@ -53,8 +53,8 @@ end\
 			["event"] = "discuss";
 			["posX"] = -60;
 			["posY"] = 300;
-			["script"] = "function Condition:onCheck(name, obj)\
-   addItemToPlayer(\"neurochip.itm\", 2)\
+			["script"] = "function Condition:onCheck(obj)\
+   addItemsToPlayer(\"neurochip.itm\", 2)\
    self:setTopicVisible(\"msasi_needs_power_cell\", false)\
    self:setTopicVisible(\"finish\", true)\
    return true\
@@ -74,7 +74,7 @@ end\
 			["event"] = "get";
 			["posX"] = -60;
 			["posY"] = 120;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setParam(\"found_cell_before\", true)\
    self.q.hidden = true\
    return true\
@@ -93,7 +93,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = 240;
 			["posY"] = 60;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self.q.hidden = false\
    fakeQuestStartInfo(self.q)\
    self:setTopicVisible(\"msasi_needs_power_cell\", false)\
@@ -178,10 +178,6 @@ end\
    self:setTopicVisible(\"start\", true)\
    self:setTopicVisible(\"msasi_needs_power_cell\", true)\
    self:setTopicVisible(\"finish\", false)\
-   local markers = {\
-      start = {{pos = {x=10162, y=929, z=147950}, radius = 30, tip = \"Lost Power Cell\"}},\
-   }\
-   self:declareQuestMarkers(markers)\
 end\
 \
 function Quest:onStart()\
@@ -191,13 +187,11 @@ function Quest:onStart()\
 end\
 \
 function Quest:onFinish()\
-   addItemToPlayer(\"antigravium_shards.itm\", 200)\
-   local terminalStep = getQuest(\"find_terminal\"):getActiveStepName()\
-   if terminalStep == \"plug_battery\" then\
+   addItemsToPlayer(\"antigravium_shards.itm\", 200)\
+   if getQuest(\"find_terminal\"):isActive() then\
       self:writeLog(\"BroughtCellTerminal\")\
    else\
-      giveItemFromPlayerTo(\"power_cell.itm\", getObj(\"msasi\"))\
-      getQuest(\"find_terminal\"):setTopicVisible(\"msasi_returned_battery_before\", true)\
+      removeItemFromPlayer(\"power_cell.itm\")\
       self:writeLog(\"BroughtCell\")\
    end\
    self:setTopicVisible(\"msasi_needs_power_cell\", false)\
@@ -209,7 +203,7 @@ function Quest:getTopicVisible_start()\
 end\
 \
 function Quest:getTopicVisible_finish()\
-   return hasPlayerItem(\"power_cell.itm\") and\
+   return hasPlayerItem( \"power_cell.itm\" ) and\
    (getQuest(\"find_terminal\"):getActiveStepName() ~= \"plug_battery\"\
     and getQuest(\"find_terminal\"):getActiveStepName() ~= \"return_battery\"\
     and getQuest(\"find_terminal\"):getActiveStepName() ~= \"spawn_terminal\")\

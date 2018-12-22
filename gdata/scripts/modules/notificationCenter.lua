@@ -1,11 +1,10 @@
 local oo = require "loop.simple"
-local tablex = require "pl.tablex"
 
 local members =
-{
-   owner = nil,
-   notifications = nil,
-}
+   {
+      owner = nil,
+      notifications = nil,
+   }
 
 local CNotificationCenter = oo.class(members)
 
@@ -14,8 +13,8 @@ function CNotificationCenter:init()
 end
 
 function CNotificationCenter:notification(notification)
-   if not notification then
-      if tablex.size(self.notifications) == 0 then
+   if (not notification) then
+      if (tableSize(self.notifications) == 0) then
          return false
       else
          return true
@@ -31,7 +30,7 @@ function CNotificationCenter:postNotification(notification)
 end
 
 function CNotificationCenter:removeNotifications()
-   --log("CNotificationCenter:removeNotifications")
+   --log( "CNotificationCenter:removeNotifications" )
    self.notifications = {}
 end
 

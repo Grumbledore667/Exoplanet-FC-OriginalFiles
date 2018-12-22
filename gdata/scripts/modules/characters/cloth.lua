@@ -1,22 +1,16 @@
 local oo = require "loop.simple"
-local _rootCharacter = (require "roots")._rootCharacter
 
-local random = require "random"
-
-
----@class CCloth : shCharacter
-local CCloth = oo.class({}, _rootCharacter)
+local CCloth = oo.class({})
 
 function CCloth:OnCreate()
    self:setCollision(false)
    self:setMassCoeff(0)
    self:setFeelVisible(false)
-   self:stopCycles(0)
-   runTimer(random.random(), self, self.startAnimation, false)
+   runTimer(rand(1), self, self.startAnimation, false)
 end
 
 function CCloth:startAnimation()
-   self:playCycle("start", 0, 1, 1)
+   self:execAnimState("start.caf", 0.5)
 end
 
 function CCloth:OnDestroy()

@@ -3,15 +3,15 @@ local multiRefObjects = {
 
 } -- multiRefObjects
 local obj1 = {
-	["description"] = "A gravely wounded aborigine named Swift Strider, who was the sole survivor of the massacred trading caravan, asked to find his hatchet and deliver to his brother called Carry the Stone. He works for some mysterious person living in the old terraforming tower near the town. Alternatively, he can be found in saloon, spending his free time drinking. The hatchet is said to be some kind of family heirloom, that has no particular value outside of the family. Whether the hatchet has hit the target or not I must look around the ambush scene and find the weapon. The scanner might be useful for searching for the clues.";
-   ["hidden"] = false;
-   ["logs"] = {
-      ["FoundHatchet"] = "I have found a weathered hatchet in a dead aborigine's head. These locals seems to be tough creatures: he managed to survive and function for at least a couple of hours with a huge piece of steel in his brains.";
-      ["FoundHatchetBefore"] = "I managed to find the axe beforehand.";
-      ["finish"] = "The family relic has been delivered to Carry the Stone. It seems the relationships between two brothres are quite tense, so Carry cares little for Swift Strider's fate and offered no special reward for my efforts. What was I expecting, playing errand boy for aborigines on this shitty planet?\
-";
-      ["strider_show_hatchet"] = "I showed the old weathered hatchet to the Swift Strider and it appeared to be his. He refused to take it back so in order to get some reward for my troubles the weapon must be handed over to his brother Carry the Stone.";
-   };
+	["description"] = "A gravely wounded aborigine named Swift Strider who was the sole survivor of the massacred trading caravan asked to find his hatchet[and deliver to his brother Carry-the-Stone. Carry-the-Stone works at a hoverbike mechanic's shop situated near the small town of New Hope] and bring it to him so that he could die in peace. The hatchet is said to be some kind of family heirloom, that has no particular value outside of the family. Whether the hatchet has hit the target or not I must look around the ambush scene and find the weapon. The scanner might be useful for searching for the clues.";
+	["hidden"] = false;
+	["logs"] = {
+		["FoundHatchet"] = "I have found a weathered hatchet in a dead aborigine's head. These locals seems to be tough creatures: he managed to survive and function for at least a couple of hours with a huge piece of steel in his brains.";
+		["FoundHatchetBefore"] = "I managed to find the axe beforehand.";
+		["GaveAxe"] = "I gave the axe to Swift Strider. The stubborn sod is still centered on the idea of kicking the bucket (heh) with the axe by his side.";
+		["GaveAxeSafe"] = "I gave the axe to Swift Strider. Though his idea of dying with the family relic beside him is now obsolete.";
+		["ShowedHatchet"] = "I showed the old weathered hatchet to the Swift Strider and it appeared to be his. He refused to take it back so in order to get some reward for my troubles the weapon must be handed over to his brother Carry-the-Stone.";
+	};
 	["nodes"] = {
 		["condition_00007"] = {
 			["ID"] = 7;
@@ -21,7 +21,7 @@ local obj1 = {
 			["event"] = "get";
 			["posX"] = 510;
 			["posY"] = 180;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    for i=1,5 do\
       disableObject(\"q_relic_hint\"..i)\
    end\
@@ -55,29 +55,35 @@ end\
 				[1] = 2;
 			};
 			["event"] = "discuss";
-			["posX"] = 990;
-			["posY"] = 270;
-			["script"] = "";
-			["targetsAll"] = "";
-			["targetsAny"] = "finish";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00010"] = {
-			["ID"] = 10;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = 780;
-			["posY"] = 90;
-			["script"] = "function Condition:onCheck(name, obj)\
-   self:writeLog(name)\
+			["posX"] = 1020;
+			["posY"] = 360;
+			["script"] = "function Condition:onCheck(obj)\
+   self:writeLog(\"GaveAxe\")\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "strider_show_hatchet";
+			["targetsAny"] = "strider_give_axe";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00012"] = {
+			["ID"] = 12;
+			["connectionsID"] = {
+				[1] = 2;
+			};
+			["event"] = "discuss";
+			["posX"] = 1020;
+			["posY"] = 180;
+			["script"] = "function Condition:onCheck(obj)\
+   self:writeLog(\"GaveAxeSafe\")\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "strider_give_axe_safe";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -86,7 +92,7 @@ end\
 			["connectionsID"] = {
 			};
 			["name"] = "finish";
-			["posX"] = 1230;
+			["posX"] = 1290;
 			["posY"] = 300;
 			["script"] = "";
 			["type"] = "step";
@@ -95,6 +101,7 @@ end\
 			["ID"] = 5;
 			["connectionsID"] = {
 				[1] = 9;
+				[2] = 12;
 			};
 			["name"] = "got_axe";
 			["posX"] = 780;
@@ -117,18 +124,11 @@ end\
 	};
 	["script"] = "function Quest:onCreate()\
    self:setTopicVisible(\"start\", true)\
-   self:setTopicVisible(\"strider_unknown\", false)\
-   self:setTopicVisible(\"strider_saved\", false)\
-   self:setTopicVisible(\"strider_reported\", false)\
-   self:setTopicVisible(\"strider_dead\", false)\
-   self:setTopicVisible(\"strider_killed\", false)\
-   self:setTopicVisible(\"strider_show_hatchet\", true)\
-   self:setTopicVisible(\"finish\", false)\
+   self:setTopicVisible(\"strider_give_axe\", true)\
+   self:setTopicVisible(\"strider_give_axe_safe\", false)\
 end\
 \
 function Quest:onStart()\
-   self:setTopicVisible(\"strider_unknown\", true)\
-   self:setTopicVisible(\"finish\", true)\
    if hasPlayerItem(\"family_relic.wpn\") then\
       self:writeLog(\"FoundHatchetBefore\")\
       self:goToStep(\"got_axe\", true)\
@@ -140,16 +140,15 @@ function Quest:onStart()\
 end\
 \
 function Quest:onFinish()\
-   giveItemFromPlayerTo(\"family_relic.wpn\", getObj(\"carry_the_stone\"))\
-   self:setTopicVisible(\"finish\", false)\
-   self:writeLog(\"finish\")\
+   giveItemToNPC(\"family_relic.wpn\", \"swift_strider\")\
+   self:setTopicVisible(\"strider_give_axe\", false)\
 end\
 \
-function Quest:getTopicVisible_strider_show_hatchet()\
+function Quest:getTopicVisible_strider_give_axe()\
    return hasPlayerItem(\"family_relic.wpn\")\
 end\
 \
-function Quest:getTopicVisible_finish()\
+function Quest:getTopicVisible_strider_give_axe_safe()\
    return hasPlayerItem(\"family_relic.wpn\")\
 end";
 	["title"] = "Family Heirloom";

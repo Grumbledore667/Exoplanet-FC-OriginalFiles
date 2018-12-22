@@ -5,12 +5,7 @@ local CMusicManager = (require "scenes.musicManager").CMusicManager
 local WeatherSystem = (require "environment.weather").WeatherSystem
 local SkySystem = (require "environment.sky").SkySystem
 local stringx = require "pl.stringx"
-local tablex = require "pl.tablex"
-local ItemsData = require "itemsData"
 
-local GUIUtils       = require "ui.utils"
-
----@class CScene : shScene
 local CScene = oo.class(
    {
       m_camManager = nil,
@@ -20,9 +15,6 @@ local CScene = oo.class(
       m_playerDetectedChars = nil,
       m_breakBrushSubscribers = nil,
       m_checkpoints = nil,
-      loadedGame = false,
-      callbacksEnter = nil,
-      callbacksFirstFrame = nil,
    }
 )
 
@@ -36,63 +28,40 @@ function CScene:OnControlDown(code)
 
    if code == 192 and gameplayUI:isGameplayRootWindow() then -- `(~)
       gameplayUI:showConsole()
+   end
 
-   elseif code == PC_F5 and isSavingEnabled() then
-      log("saved")
-      saveGameSafe("quicksave")
-   elseif code == PC_F9 and not isEditor() then
-      initSavegamesList(gameplayUI.wndSaveLoad:getChild("Savegames"))
-      loadSaveVersionCheck(getSaveIDByName("quicksave"), true)
+   if (code == PC_F5 and isSavingEnabled()) then
+      log( "saved" )
+      saveGameSafe( "quicksave" )
+   end
 
-   elseif code == 190 and (isEditor() or isDebug("keys")) then
-      WeatherSystem:changeTimeRate(50)
-      SkySystem:changeTimeRate(50)
-
-   elseif code == 188 and (isEditor() or isDebug("keys")) then
-      WeatherSystem:changeTimeRate(-50)
-      SkySystem:changeTimeRate(-50)
-
-   elseif code == PC_K and (isEditor() or isDebug("keys")) then
-      local p = getPlayer()
-      if p then
-         p:getPose():setPos(vec3Add(p:getPose():getPos(), vec3Mul(p:getDirTarget(), 500)))
-
-         -- reset falling momentum
-         local mass = p:getMassCoeff()
-         p:setMassCoeff(0)
-         runTimerAdv(0, false, p.setMassCoeff, p, mass)
+   if (code == PC_F9 and not isEditor()) then
+      if not gSavegames then
+         local listBox = CEGUI.toListbox( gameplayUI.wndSaveLoad:getChild( "Savegames" ) )
+         initSavegamesList( listBox )
       end
+      loadSaveVersionCheck( getLastSaveID() )
+   end
 
-   elseif code == PC_F8 and (isEditor() or isDebug("keys")) then
-      local p = getPlayer()
-      if p then
-         if p.deathTimer then
-            p.deathTimer:stop()
-            p.deathTimer = nil
-            GUIUtils.tryDestroyDynamicWindows()
-         end
-         p:setStatCount("health", p:getStatCount("healthMax"))
-         p:setState("dead", false)
-         p.animationsManager:stopActionsAndCycles()
-         p:getPose():setPos(vec3Add(p:getPose():getPos(), vec3Mul(vec3Normalize(vec3Add(p:getDirTarget(), {y=1})), 500)))
-
-         -- reset falling momentum
-         local mass = p:getMassCoeff()
-         p:setMassCoeff(0)
-         runTimerAdv(0, false, p.setMassCoeff, p, mass)
+   if ( isEditor() or isDebug("keys")) then
+      if ( code == 190 ) then
+         WeatherSystem:changeTimeRate(  5.0 )
+         SkySystem:changeTimeRate    (  0.01 )
       end
+      if ( code == 188 ) then
+         WeatherSystem:changeTimeRate( -5.0 )
+         SkySystem:changeTimeRate    ( -0.01 )
+      end
+   end
 
-   elseif code == getButtonCode("STYLESEDITOR") and (isDebug("keys")) then
-      local focusObj = gameplayUI:getFocusObj()
-
-      if not gameplayUI:editBoxHasFocus() then
-         if gameplayUI.stylesEditorUI:isVisible() then
-            gameplayUI.stylesEditorUI:show(false)
-         elseif focusObj then
-            gameplayUI.stylesEditorUI:show(true, focusObj)
+   if isDebug("keys") or isEditor() then
+      if code == PC_B then
+         if gameplayUI:getFocusObj() then
+            gameplayUI:setupStylesEditor(gameplayUI:getFocusObj())
          end
       end
    end
+
 end
 
 function CScene:OnControlUp(code)
@@ -101,34 +70,9 @@ function CScene:OnControlUp(code)
    end
 end
 
-function CScene:isLoadedGame()
-   return self.loadedGame
-end
 
 function CScene:OnLocationInit()
    setScene(self)
-
-   -- FIXME:
-   -- not using isMainMenu because in simulation deb.init is called before isMainMenu
-   -- function is defined in menuUtils. so call register method manually for the time being
-   local deb = require 'global.debug'
-   deb.loadEngineUserdataTypes()
-
-   self.loadedGame = isLoadingGame()
-
-   local runTimerEngine = _G.runTimer
-   --local runTimerEngineExt = _G.runTimerExt
-
-   local timer = require "timer"
-   local default = timer.getDefaultTimerManager()
-
-   runTimerEngine(0, nil, function()
-      default:updateTimers(getFrameTime())
-   end, true)
-
-   _G.runTimer    = timer.runTimerLegacyFormat
-   _G.runTimerExt = timer.runTimerLegacyFormat
-   _G.runTimerAdv = timer.runTimer
 
    self.m_breakBrushes = {}
    self.m_playerDetectedChars = {}
@@ -140,134 +84,86 @@ function CScene:OnLocationInit()
    self.m_camManager:init()
    self.m_textManager:init()
    self.m_musicManager:init()
-
-   self.callbacksEnter = {}
-   self.callbacksFirstFrame = {}
-
-   ItemsData.validateItemsTemplates()
-
-   runTimer(0, self, self.performOnFirstFrameCallbacks, false)
-end
-
--- called after all objects are created and registered by name
-function CScene:subscribeOnLocationEnter(func, ...)
-   if not self.callbacksEnter then
-      runTimerAdv(0, false, func, ...)
-      return
-   end
-   local callback = {func=func, args=table.pack(...)}
-   table.insert(self.callbacksEnter, callback)
-end
-
--- called after all objects' OnLoadState finished
-function CScene:subscribeOnFirstFrame(func, ...)
-   if not self.callbacksFirstFrame then
-      runTimerAdv(0, false, func, ...)
-      return
-   end
-   local callback = {func=func, args=table.pack(...)}
-   table.insert(self.callbacksFirstFrame, callback)
-end
-
-function CScene:performOnLocationEnterCallbacks()
-   for _, callback in ipairs(self.callbacksEnter) do
-      pcall(callback.func, unpack(callback.args))
-   end
-   self.callbacksEnter = nil
-end
-
-function CScene:performOnFirstFrameCallbacks()
-   for _, callback in ipairs(self.callbacksFirstFrame) do
-      pcall(callback.func, unpack(callback.args))
-   end
-   self.callbacksFirstFrame = nil
 end
 
 function CScene:OnLocationEnter()
-   setPlayer(getMC())
+   setPlayer( getDefaultPlayer() )
    self.m_camManager:setCamPlayer()
    self.m_musicManager:setShuffle(true)
    self.m_musicManager:setDefaultTheme("idle")
    initLocationEnterUI()
 
-   if getObj("start_trigger", true) and not (getScene():isLoadedGame() or getPersistentTable().optionalLoading or isDebug() or isEditor()) then
-      blockUserControl()
-   end
-
-   SkySystem:init()
    WeatherSystem:init()
-   runTimer(0.05, nil, function()
-      SkySystem:update    (0.05)
-      WeatherSystem:update(0.05)
-   end, true)
+   runTimer( 0.05, nil, function() WeatherSystem:update( 0.05 ) end, true )
    --[[
-   snow_0:getPose():setParent(getPlayer():getPose())
+   snow_0:getPose():setParent( getPlayer():getPose() )
    snow_0:getPose():resetLocalPose()
-   snow_0:getPose():setLocalRot({x=180,y=90,z=0,})
-   snow_0:getPose():setLocalPos({x=0,y=1000,z=0,})
+   snow_0:getPose():setLocalRot( {x=180,y=90,z=0,} )
+   snow_0:getPose():setLocalPos( {x=0,y=1000,z=0,} )
    ]]
 
    --self:playIntro()
-   self:performOnLocationEnterCallbacks()
    self:loadFromPersistentData()
 end
 
 function CScene:playIntro()
-   log("playIntro")
-   -- Character_0:execAnimSingle("intro", false)
+   log( "playIntro" )
+   Character_0:execAnimSingle( "intro.caf", false )
 
-   --[[Camera_0:setFile(".\\gdata\\cameras\\intro.sca")
-   Camera_0:playAnimation("intro")
-   activateCamera(Camera_0)]]
+   --[[Camera_0:setFile( ".\\gdata\\cameras\\intro.sca" )
+   Camera_0:playAnimation( "intro" )
+   activateCamera( Camera_0 )]]
 end
 
 function CScene:OnLocationExit()
-   setPlayer(getMC())
+   setPlayer( getDefaultPlayer() )
    self.m_musicManager:stopMusic()
 end
 
 
-function CScene:OnBreakBrush(brush)
-   table.insert(self.m_breakBrushes, brush)
-   if not self.m_breakBrushSubscribers then
+function CScene:OnBreakBrush( brush )
+   table.insert( self.m_breakBrushes, brush )
+   if (not self.m_breakBrushSubscribers) then
       return
    end
    for key in pairs(self.m_breakBrushSubscribers) do
       local obj = self.m_breakBrushSubscribers[key]
-      obj.onBreakBrush(obj, brush)
+      obj.onBreakBrush( obj, brush )
    end
 end
 
 
 function CScene:addBreakBrushSubscriber(obj)
-   if not self.m_breakBrushSubscribers then
+   if (not self.m_breakBrushSubscribers) then
       self.m_breakBrushSubscribers = {}
    end
    table.insert(self.m_breakBrushSubscribers, obj)
 end
 
 
-function CScene:addCheckpoint(checkpoint)
+function CScene:addCheckpoint( checkpoint )
    self.m_checkpoints = checkpoint
 end
 
 function CScene:OnSkipMovie()
+   log("OnSkipMovie")
+   --self.m_camManager:getCurCam():onSkip()
 end
 
-function CScene:onCharDie(char)
-   if char == getPlayer() then
-      runTimer(5, self, self.failedLevel, false)
+function CScene:onCharDie( char )
+   if ( char == getPlayer() ) then
+      runTimer( 5, self, self.failedLevel, false )
    end
 end
 
-function CScene:onPlayerDetected(char, value)
+function CScene:onPlayerDetected( char, value )
    local index = getKeyByValue(self.m_playerDetectedChars, char)
-   if value then
-      if not index then
+   if (value) then
+      if (not index) then
          table.insert(self.m_playerDetectedChars, char)
       end
    else
-      if index then
+      if (index) then
          table.remove(self.m_playerDetectedChars, index)
       end
    end
@@ -289,11 +185,11 @@ function CScene:failedLevel()
    if (not self.m_checkpoints) then
       self:endGame(0)
    else
-      getPlayer():setCameraHeight(getDefaultPlayerCameraHeight(), 0)
-      getPlayer():setCameraDist  (getDefaultPlayerCameraDistance(), 0)
-      getPlayer():setCameraFov   (getDefaultPlayerCameraFov(), 0)
+      getPlayer():setCameraHeight( getDefaultPlayerCameraHeight(), 0 )
+      getPlayer():setCameraDist  ( getDefaultPlayerCameraDistance(), 0 )
+      getPlayer():setCameraFov   ( getDefaultPlayerCameraFov(), 0 )
       getPlayer():respawn()
-      --changeObjectPos(player, self.m_checkpoints)
+      --changeObjectPos( player, self.m_checkpoints )
    end
 ]]
 end
@@ -304,16 +200,16 @@ function CScene:endGame(value)
 end
 
 
-function CScene:isBroken(brush)
+function CScene:isBroken( brush )
    for key in pairs(self.m_breakBrushes) do
-      if brush == self.m_breakBrushes[key] then
+      if ( brush == self.m_breakBrushes[key] ) then
          return true
       end
    end
    return false
 end
 
-function CScene:OnSaveState(state)
+function CScene:OnSaveState( state )
    gameplayUI:showInfoTextEx("Game saved", "major", "")
    local quests_states = {}
    for k,v in pairs(quests) do
@@ -334,32 +230,15 @@ function CScene:OnSaveState(state)
          if v.log ~= "" then
             qs["log"] = v.log
          end
-
-         --from CQuest:goToStepTimer
-         if v.stepTimers and #v.stepTimers > 0 then
-            qs["stepTimers"] = {}
-            for _,params in ipairs(v.stepTimers) do
-               table.insert(qs["stepTimers"], {step_name = params.step_name, timeLeft = params.timer:getTimeLeft(), silent = params.silent})
-            end
-         end
-         --from CQuest:goToStepAtDayState
-         --TODO:FIXME: right now it will only save the last callback - redo it the proper way or refac 'goToStepAtDayState' alltogether
-         if v.dayStateCbParams and #v.dayStateCbParams > 0 then
-            qs["dayStateCbParams"] = {}
-            for _,savedParams in ipairs(v.dayStateCbParams) do
-               qs["dayStateCbParams"] = tablex.deepcopy(savedParams)
-            end
+         if #v.daytime_timers > 0 then
+            qs["daytime_timers"] = tableDeepCopy(v.daytime_timers)
          end
          qs["hidden"] = v.hidden
-         qs["tracked"] = v.tracked
+         qs["markersEnabled"] = v.markersEnabled
          quests_states[k] = qs
       end
    end
    state.quests = quests_states
-
-   --music
-   state.music = {}
-   self.m_musicManager:OnSaveState(state.music)
 
    --sky
    local sky = {}
@@ -373,7 +252,7 @@ function CScene:OnSaveState(state)
    state.weather = weather
 end
 
-function CScene:OnLoadState(state)
+function CScene:OnLoadState( state )
    gameplayUI:showInfoTextEx("Game loaded", "major", "")
    if state.quests then
       for k,v in pairs(state.quests) do
@@ -384,7 +263,6 @@ function CScene:OnLoadState(state)
                local activeStep = q:getStep(v.activeStepName)
                if activeStep then
                   q.activeStep = activeStep
-                  q:setupQuestMarkers(true)
                end
             end
             -- set step states
@@ -409,21 +287,20 @@ function CScene:OnLoadState(state)
             if v.log then
                q.log = v.log
             end
-
-            if v.stepTimers then
-               for _,params in ipairs(v.stepTimers) do
-                  q:goToStepTimer(params.step_name, params.timeLeft, params.silent)
+            if v.daytime_timers then
+               for i,dtimer in ipairs(v.daytime_timers) do
+                  if dtimer.time == "day" then
+                     q:goToStepAtDay(dtimer.params.step, dtimer.params.count)
+                  elseif dtimer.time == "night" then
+                     q:goToStepAtNight(dtimer.params.step, dtimer.params.count)
+                  end
                end
             end
-            if v.dayStateCbParams then
-               q:goToStepAtDayState(v.dayStateCbParams.dayState, v.dayStateCbParams.stepName, v.dayStateCbParams.waitCount)
-            end
-
             if v.hidden ~= nil then
                q.hidden = v.hidden
             end
-            if v.tracked ~= nil then
-               q:setTracked(v.tracked)
+            if v.markersEnabled ~= nil then
+               q.markersEnabled = v.markersEnabled
             end
             if q.OnLoadState then
                -- empty table for now, later add ability to save custom data
@@ -435,11 +312,6 @@ function CScene:OnLoadState(state)
             end
          end
       end
-   end
-
-   --music
-   if state.music then
-      self.m_musicManager:OnLoadState(state.music)
    end
 
    --sky
@@ -455,164 +327,154 @@ end
 
 --Load game state with params previously set in persistent data
 function CScene:loadFromPersistentData()
-   local options = tablex.deepcopy(getPersistentTable()).optionalLoading
-   addToPersistentTable("optionalLoading", nil)
-
-   if options then
-      log(string.format("WARNING: Loading from an older save %s", options.saveName))
-      local saveRetriever, err = loadfile(getSavegamesFolder() .. "/" .. options.saveName .. ".sav")
+   local persistentString = getPersistentData()
+   setPersistentData( "" )
+   if persistentString and persistentString ~= "" then
+      local f, err = loadstring( persistentString, "getPersistentData string" )
       if err then
          log(err)
          return
       end
 
-      local saveData = saveRetriever()
+      local persistentState = f()
+      if type(persistentState) == "table" and persistentState.saveName then
+         log(string.format("WARNING: Loading from an older save %s", persistentState.saveName))
+         local saveRetriever, err = loadfile( getSavegamesFolder() .. "/" .. persistentState.saveName .. ".sav" )
+         if err then
+            log(err)
+            return
+         end
 
-      local playerStatus, playerState = pcall(function() return saveData.Characters.jack_sharp end)
-      if playerStatus and playerState then
-         local invDumpContainer = getObj("jack_crash_chest")
-         local placeInvToContainer = false
+         local saveData = saveRetriever()
 
-         local player = getMC()
-         local pInventory = player:getInventory()
-         log("Optional Loading:")
-         local playerPosStatus
-         if options.playerPosition then
-            playerPosStatus = pcall(function()
-               log("- Player Position")
-               local pos = {x=playerState.pose_12, y=playerState.pose_13, z=playerState.pose_14}
-               player:getPose():setPos(pos)
-            end)
-            if not playerPosStatus then
-               log("Couldn't load player position")
+         local playerStatus, playerState = pcall(function() return saveData.Characters.jack_sharp end)
+         if playerStatus and playerState then
+            local invDumpContainer = getObj( "footlocker_tall_20" )
+            local placeInvToContainer = false
+
+            local player = getDefaultPlayer()
+            --log(playerState)
+            log("Optional Loading:")
+            local playerPosStatus
+            if persistentState.playerPosition then
+               playerPosStatus = pcall(function()
+                  log("- Player Position")
+                  local pos = {x=playerState.pose_12, y=playerState.pose_13, z=playerState.pose_14}
+                  player:getPose():setPos( pos )
+               end)
+               if not playerPosStatus then
+                  log("Couldn't load player position")
+               end
             end
-         end
-         if (not options.playerPosition or not playerPosStatus) and invDumpContainer then
-            placeInvToContainer = true
-         end
+            if (not persistentState.playerPosition or not playerPosStatus) and invDumpContainer then
+               placeInvToContainer = true
+            end
 
-         pcall(function()
-            if options.level then
-               log("- Levels")
-               player:addLevels(playerState.scriptState.level - 1, true)
-               if options.attributePoints then
-                  log("- Attribute Points")
-                  for statName, timesUpgraded in pairs(playerState.scriptState.assignedAttributes) do
-                     --Means old save with badly named statNames
-                     if stringx.startswith(statName, "Max") then
-                        statName = statName:gsub("Max", "")
-                        statName = statName:lower() .. "Max"
-                     end
-                     for i=1,timesUpgraded do
-                        player:upgradeStat(statName)
+            pcall(function()
+               if persistentState.level then
+                  log("- Levels")
+                  player:addLevels( playerState.scriptState.level - 1, true )
+                  if persistentState.attributePoints then
+                     log("- Attribute Points")
+                     for statName, timesUpgraded in pairs(playerState.scriptState.assignedAttributes) do
+                        --Means old save with badly named statNames
+                        if stringx.startswith(statName, "Max") then
+                           statName = statName:gsub("Max", "")
+                           statName = statName:lower() .. "Max"
+                        end
+                        for i=1,timesUpgraded do
+                           player:upgradeStat( statName )
+                        end
                      end
                   end
                end
-            end
-         end)
+            end)
 
-         --TODO:FIXME: UPD11 - remove deprecated loading calls for sure
-         if options.inventory then
-            runTimer(0.5, nil, function()
+            if persistentState.inventory then
                if placeInvToContainer then
                   pcall(function()
                      log("- Dump Inventory To Container")
-                     invDumpContainer:getInventory():deserialize(playerState.scriptState.inventory)
-                     invDumpContainer:getInventory():destroyItemByName("hand_to_hand.wpn")
-                     invDumpContainer:getInventory():destroyItemByName("scanner.itm")
-                     invDumpContainer:getInventory():destroyItemByName("scanner_broken.itm")
+                     invDumpContainer.inventory.itemsManager:deserialize(playerState.scriptState.inventory)
+                     invDumpContainer.inventory.itemsManager:destroyItemByName( "hand_to_hand.wpn" )
+                     invDumpContainer.inventory.itemsManager:destroyItemByName( "scanner.itm" )
                   end)
                else
-                  pcall(function()
-                     log("- Inventory")
-                     if playerState.scriptState.inventory then
-                        pInventory:destroyAllItems(true)
-                        pInventory:deserialize(playerState.scriptState.inventory)
-                     end
+                  runTimer(0.05, nil, function()
+                     pcall(function()
+                        log("- Inventory")
+                        if playerState.scriptState.inventory then
+                           player.itemsManager:removeAllItems()
+                           player.itemsManager:deserialize(playerState.scriptState.inventory)
+                        end
+                     end)
 
-                     if player.inventory:getItemByName("scanner_broken.itm") then
-                        startQuest("broken_scanner")
-                     end
-                  end)
-
-                  pcall(function()
-                     if playerState.scriptState.hotbar then
-                        log("- Loading deprecated hotbar state")
+                     pcall(function()
                         for index,itemName in pairs(playerState.scriptState.hotbar) do
-                           gameplayUI.hotbarUI:setItemToHotbarByName(index, itemName)
+                           player.itemsManager:setToHotbarByName( index, itemName )
                         end
-                     end
-                  end)
+                     end)
 
-                  pcall(function()
-                     if playerState.scriptState.fastAccessSlots then
-                        log("- Loading deprecated fastAccessSlots state")
-                        for slotId,itemName in pairs(playerState.scriptState.fastAccessSlots) do
-                           local item = pInventory:getItemByName(itemName)
-                           if pInventory:setItemToFastAccess(slotId, item:getId()) then
-                              pInventory:equipSlotWithItem(slotId, item:getId(), true)
-                           end
-                        end
-                     end
-                  end)
+                     pcall(function()
+                        player.fastAccessSlots = tableDeepCopy( playerState.scriptState.fastAccessSlots )
+                     end)
 
-                  pcall(function()
-                     if playerState.scriptState.weapon then
-                        log("- Loading deprecated weapon state")
-                        local wpn = pInventory:getItemByName(playerState.scriptState.weapon)
-                        player:useItem(wpn)
-                     end
-                  end)
+                     pcall(function()
+                        local wpn = player.itemsManager:getItemByName( playerState.scriptState.weapon )
+                        player:useItem( wpn )
+                     end)
 
-                  pcall(function()
-                     if playerState.scriptState.equippedAttire then
-                        log("- Loading deprecated equippedAttire state")
+                     player:wearHair()
+                     pcall(function()
                         for slotId, itemName in pairs(playerState.scriptState.equippedAttire) do
-                           pInventory:equipSlotWithItem(slotId, pInventory:getItemByName(itemName):getId(), true)
+                           player.itemsManager:equipSlotWithItem( slotId, player.itemsManager:getItemByName(itemName).id, true )
                         end
-                     end
-                  end)
-               end
-            end, false)
-         end
-      else
-         log("Could not load player script state:")
-         if playerState then
-            log(playerState)
-         else
-            log("Could not find valid jack_sharp entry in savegame Characters table")
-         end
-      end
-
-      if options.fastTravel then
-         local q = getQuest("travel")
-         q.hidden = true
-         pcall(function()
-            log("- Fast Travel")
-            for name, objState in pairs(saveData.Story.globals.fast_travel_destinations) do
-               if objState.activated then
-                  local obj = getObj(name)
-                  if obj and obj.register then
-                     obj:register(true)
-                     if not q:isStarted() then
-                        q:startImediate()
-                     end
-                     q:writeLog("%s", obj.prettyName)
-                  end
+                     end)
+                  end, false)
                end
             end
-         end)
-         q.hidden = false
+         else
+            log("Could not load player script state:")
+            if playerState then
+               log(playerState)
+            else
+               log("Could not find valid jack_sharp entry in savegame Characters table")
+            end
+         end
+
+         if persistentState.fastTravel then
+            local q = getQuest("travel")
+            q.hidden = true
+            pcall(function()
+               log("- Fast Travel")
+               for name, objState in pairs(saveData.Story.globals.fast_travel_destinations) do
+                  if objState.activated then
+                     local obj = getObj( name )
+                     if obj and obj.register then
+                        obj:register( true )
+                        if not q:isStarted() then
+                           q:startImediate()
+                        end
+                        q:writeLog(string.format("%s", obj.prettyName))
+                     end
+                  end
+               end
+            end)
+            q.hidden = false
+         end
       end
    end
 end
 
 function CScene:tryAutoSave()
-   if isSavingEnabled() then
-      log("Auto saved")
-      saveGameSafe("autosave")
-   else
-      runTimer(1.0, self, self.tryAutoSave, false)
+   local player = getPlayer()
+   if (not isEditor() and player
+      and not player:getState("dead") and (player:getScriptClass() == "CMainCharacter") and not player:getState("resting")) then
+      if not player:getState("talk") and not gameplayUI.fadeToBlackSequence then
+         log( "Auto saved" )
+         saveGameSafe( "autosave" )
+      else
+         runTimer( 1.0, self, self.tryAutoSave, false )
+      end
    end
 end
 

@@ -1,10 +1,6 @@
 local oo = require "loop.simple"
-local _rootRigid = (require "roots")._rootRigid
 
-local random = require "random"
-
----@class CEnergySphere : shRigidEntity
-local CEnergySphere = oo.class({enabled = true}, _rootRigid)
+local CEnergySphere = oo.class({enabled = true})
 
 function CEnergySphere:OnCreate()
    self:setMaterials("energy_sphere")
@@ -18,10 +14,10 @@ function CEnergySphere:OnCreate()
    self.interactor:setTriggerRadius(1500 * scale)
    self.interactor:setTriggerActive(true)
 
-   self.electroHit = self:createAspect("electro_touch.sps")
-   self.electroHit:setLoop(false)
-   self.electroHit:getPose():setScale({x=3,y=3,z=3})
-   self.electroHit:getPose():setParent(self:getPose())
+   self.electroHit = self:createAspect( "electro_touch.sps" )
+   self.electroHit:setLoop( false )
+   self.electroHit:getPose():setScale( {x=3,y=3,z=3} )
+   self.electroHit:getPose():setParent( self:getPose() )
    self.electroHit:getPose():resetLocalPos()
    self.electroHit:disable()
 
@@ -47,32 +43,32 @@ function CEnergySphere:OnCreate()
    self.soundBuzz:setDistance(2000 * scale)
    self.soundBuzz:setVolume(0.5)
 
-   getScene():subscribeOnFirstFrame(function()
+   runTimer(0, self, function(self)
       if self.enabled then
          self.soundBuzz:play()
       end
-   end)
+   end, false)
 
    self.electroTimer = runTimer(5, self, function(self)
       self.electroHit:play()
       self.electroHitSound:play()
 
       local sphereRadius = 1400 * scale
-      local rndT = random.random(0,2*math.pi)
-      local rndP = random.random(-math.pi/2,math.pi/2)
-      local rndR = random.random(0, sphereRadius)
+      local rndT = math.random(0,2*math.pi)
+      local rndP = math.random(-math.pi/2,math.pi/2)
+      local rndR = math.random(0, sphereRadius)
       local pos = {}
       pos.x = rndR * math.cos(rndT) * math.cos(rndP)
       pos.y = rndR * math.sin(rndP)
       pos.z = rndR * math.sin(rndT) * math.cos(rndP)
-      self.electroHit:getPose():setLocalPos(pos)
+      self.electroHit:getPose():setLocalPos( pos )
    end, true)
 end
 
 function CEnergySphere:OnInteractTriggerBegin(obj)
    if self.enabled and obj == getPlayer() then
-      obj:pushFrom(self:getPose():getPos(), 10000, 0.5)
-      obj:playEffect("electro_shock", 1)
+      obj:push( vec3Sub( obj:getPose():getPos(), self:getPose():getPos() ), 10000, 0.5 )
+      obj:playEffect( "electro_shock", 1 )
       self:disable(true)
    end
 end

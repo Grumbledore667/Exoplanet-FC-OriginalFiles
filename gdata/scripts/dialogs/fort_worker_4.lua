@@ -140,7 +140,7 @@ end\
 		["posX"] = 1440;
 		["posY"] = 480;
 		["script"] = "";
-		["text"] = "Not gonna happen. I'm packing my shit and leaving that lousy Fort with the first caravan. Find some else to bother.";
+		["text"] = "Not gonna hapen. I'm packing my shit and leaving that lousy Fort with the first caravan. Find some else to bother.";
 		["time"] = 11.5;
 		["type"] = "message";
 	};

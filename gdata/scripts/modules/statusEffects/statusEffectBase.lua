@@ -1,83 +1,72 @@
-local MiscLabels = require "miscLabels"
-local SkySystem = (require "environment.sky").SkySystem
-
-local f = require "fun"
-local partial = f.partial
-local tablex = require "pl.tablex"
-
-local CCharacterStatBase = require "characterStatBase"
-local CCharacterStatModifier = require "characterStatModifier"
-
+local miscLabels = require("miscLabels")
 local oo = require "loop.simple"
 
----@class CStatusEffectBase
----@field owner CStatusEffectsManager
----@field source any for non saveable status effects' custom logic.
-local CStatusEffectBase = oo.class({
-   owner = nil,
-   source = nil,
-})
-
-function CStatusEffectBase:__new(members)
-   local defaultParams = {
-      stackCount = 1,
-      statBonuses = {},
-      changeStats = {},
-      particles = {},
-      sounds = {},
-      interval = 5,
-      timeLeft = nil,
-      inflictor = nil, --string - serializable inflictor character's name
-      visible = true,
-      saved = true,
-      debuff = false,
-      removeOnDeath = true,
-   }
-   self = oo.rawnew(self, members)
-   self.params = tablex.union(defaultParams, self.params)
-   self.emitters = {}
-   self.soundAspects = {}
-   self.statModifiers = {}
-   return self
-end
+local CStatusEffectBase = oo.class({})
 
 function CStatusEffectBase:init()
+   local char = self.owner.owner
+
+   self.params.stackCount = self.params.stackCount or 1
+   self.params.statBonuses = self.params.statBonuses or {}
+   self.params.changeStats = self.params.changeStats or {}
+   self.params.particles = self.params.particles or {}
+   self.sounds = self.params.sounds or {}
+
+   self.params.timeLeft = self.params.timeLeft or self.params.duration
    if self.params.duration then
-      --Enables you to have an instance with X duration and Y timeLeft
-      self.params.timeLeft = (self.params.timeLeft or self.params.duration) * 100 --Counting in miliseconds removes floating point problems
-      --TODO:FIXME: Make it use CTime
-      self.timer = runTimer(self.params.interval/100, self, self.tick, true)
-      self.ffCallback = SkySystem:subscribeFastForwardTime(partial(self.onFastForwardTime, self))
+      self.params.interval = self.params.interval or 0.05
+      self.timer = runTimer( self.params.interval, self, self.tick, true )
    end
 
-   self:attachStatModifiers()
+   self.emitters = {}
    self:attachEmitters()
-   self:startSounds()
 
-   local char = self.owner.owner
-   if char == getMC() and (self:isVisible() or isDebug()) then
-      gameplayUI.characterUI:addEffectToUI(self)
+   for _,soundName in pairs(self.sounds) do
+      if char.sounds and char.sounds[soundName] then
+         char.sounds[soundName]:play()
+      end
+   end
+
+   if char == getDefaultPlayer() and (self:isVisible() or isDebug()) then
+      gameplayUI:addEffectToUI( self )
    end
 end
 
----Does not refresh sounds, particles or timer interval
-function CStatusEffectBase:refreshWithParams(params)
-   self.params = tablex.union(self.params, params)
-   if params.duration then
-      self.params.timeLeft = params.duration * 100
+function CStatusEffectBase:getStatBonus( bonusName )
+   if self.params.statBonuses[bonusName] and type(self.params.statBonuses[bonusName]) == "function" then
+      return self.params.statBonuses[bonusName]( self )
+   elseif self.params.statBonuses then
+      return self.params.statBonuses[bonusName]
    end
+end
+
+function CStatusEffectBase:getAllStatBonuses()
+   local t = {}
+   for bonusName,_ in pairs( self.params.statBonuses ) do
+      t[bonusName] = self:getStatBonus( bonusName )
+   end
+   return t
 end
 
 function CStatusEffectBase:isVisible()
-   return self.params.visible
+   if self.params.visible ~= nil then
+      return self.params.visible
+   end
+   return true
 end
 
 function CStatusEffectBase:isSaved()
-   return self.params.saved
+   if self.params.saved ~= nil then
+      return self.params.saved
+   end
+   return true
 end
 
 function CStatusEffectBase:isDebuff()
-   return self.params.debuff
+   if self.params.debuff ~= nil then
+      return self.params.debuff
+   end
+   return false
 end
 
 function CStatusEffectBase:getName()
@@ -85,7 +74,7 @@ function CStatusEffectBase:getName()
 end
 
 function CStatusEffectBase:getLabel()
-   local label = self.params.label or MiscLabels.getLabel(self:getName())
+   local label = self.params.label or miscLabels.getLabel( self:getName() )
    if label == "" then label = self:getName() end
    return label
 end
@@ -94,19 +83,22 @@ function CStatusEffectBase:getIcon()
    return self.params.icon or "gameplay/Empty"
 end
 
-function CStatusEffectBase:isRemoveOnDeath()
-   return self.params.removeOnDeath
+function CStatusEffectBase:removeOnDeath()
+   if self.params.removeOnDeath ~= nil then
+      return self.params.removeOnDeath
+   end
+   return true
 end
 
 function CStatusEffectBase:incStackCount()
-   self:setStackCount(self:getStackCount() + 1)
+   self:setStackCount( self:getStackCount() + 1 )
 end
 
 function CStatusEffectBase:decStackCount()
-   self:setStackCount(self:getStackCount() - 1)
+   self:setStackCount( self:getStackCount() - 1 )
 end
 
-function CStatusEffectBase:setStackCount(value)
+function CStatusEffectBase:setStackCount( value )
    self.params.stackCount = value
    if self.params.stackCount <= 0 then
       self:destroy()
@@ -117,60 +109,31 @@ function CStatusEffectBase:getStackCount()
    return self.params.stackCount
 end
 
----Create modifiers from params.statBonuses table, store references and attach them to character stats. If the stat exists on the character.
----Modifier type is in the last 4 characters - 'Flat', 'Mult' or 'Ovrd'
-function CStatusEffectBase:attachStatModifiers()
-   for bonusName, value in pairs(self.params.statBonuses) do
-      local statName = string.sub(bonusName, 0, string.len(bonusName) - 4)
-      local type = string.sub(bonusName, string.len(bonusName) - 3)
-      local stat = self.owner.owner:getStatByName(statName)
-      if stat and oo.isinstanceof(stat, CCharacterStatBase) then
-         local modifier = CCharacterStatModifier{value = value, type = type, source = self}
-         self.statModifiers[bonusName] = modifier
-         stat:addModifier(modifier)
-      end
-   end
-end
-
-function CStatusEffectBase:getAllStatBonuses()
-   local t = {}
-   for bonusName, modifier in pairs(self.statModifiers) do
-      t[bonusName] = modifier:getValue()
-   end
-   return t
-end
-
-function CStatusEffectBase:removeStatModifiers()
-   for _, modifier in pairs(self.statModifiers) do
-      modifier.affectedStat:removeModifier(modifier)
-   end
-end
-
 function CStatusEffectBase:attachEmitters()
    local char = self.owner.owner
    local pose = char:getPose()
    for _,t in pairs(self.params.particles) do
-      local emitter =  char:createAspect(t.name)
+      local emitter =  char:createAspect( t.name )
       --Manage emitter's position on a character
 
-      emitter:getPose():setParent(pose)
+      emitter:getPose():setParent( pose )
       emitter:getPose():resetLocalPos()
 
       if t.offset then
          if t.offset == "impactPos" then
             t.offset = self.params.impactPos
          end
-         emitter:getPose():setLocalPos(t.offset)
+         emitter:getPose():setLocalPos( t.offset )
       end
 
       if t.bones then
          local index = 1
-         while t.bones[index] and not char:findBonePose(t.bones[index]) do
+         while t.bones[index] and not char:findBonePose( t.bones[index] ) do
             index = index + 1
          end
-         local bonePose = char:findBonePose(t.bones[index])
+         local bonePose = char:findBonePose( t.bones[index] )
          if bonePose then
-            emitter:getPose():setParent(bonePose)
+            emitter:getPose():setParent( bonePose )
             if not t.offset then
                emitter:getPose():resetLocalPos()
             end
@@ -178,37 +141,19 @@ function CStatusEffectBase:attachEmitters()
       end
 
       if t.light then
-         emitter:setColor(t.light.color)
-         emitter:setRadius(t.light.radius)
-         emitter:setIntensity(t.light.intensity)
-         self.omniTimer = runTimer(0.1, { intensity = t.light.intensity, omni = emitter }, omniFlicker, true)
+         emitter:setColor( t.light.color )
+         emitter:setRadius( t.light.radius )
+         emitter:setIntensity( t.light.intensity )
+         self.omniTimer = runTimer( 0.1, { intensity = t.light.intensity, omni = emitter }, omniFlicker, true )
       end
 
       table.insert(self.emitters, emitter)
    end
 end
 
-function CStatusEffectBase:startSounds()
+function CStatusEffectBase:tick()
    local char = self.owner.owner
-   for _, soundTable in pairs(self.params.sounds) do
-      local aspect
-      if soundTable.actionSound then
-         --TODO:FIXME: make proper soundTables for player and npcs and stop using char.sounds in favor of soundManager
-         if char.sounds then
-            aspect = char.sounds[soundTable.name]
-            aspect:play()
-         end
-      else
-         aspect = char.soundManager:playSoundDynamic(soundTable.name, soundTable.channel, soundTable.distance, soundTable.looped)
-      end
-      table.insert(self.soundAspects, aspect)
-   end
-end
-
-function CStatusEffectBase:tick(tickAmount, allowOverflow)
-   tickAmount = tickAmount or 1
-   local char = self.owner.owner
-   if self.params.timeLeft <= 0 or (char:getState("dead") and self:isRemoveOnDeath()) then
+   if self.params.timeLeft <= 0 or ( char:getState("dead") and self:removeOnDeath() ) then
       self:destroy()
       return
    end
@@ -216,28 +161,28 @@ function CStatusEffectBase:tick(tickAmount, allowOverflow)
    if not char:getState("dead") then
       local inflictor
       if self.params.inflictor then
-         inflictor = getObj(self.params.inflictor, true)
+         inflictor = getObj( self.params.inflictor, true )
       end
-      local denominator = (self.params.duration * 100)/self.params.interval
+      local denominator = self.params.duration/self.params.interval
       for statName,value in pairs(self.params.changeStats) do
-         if value > 0 or char:isDamageAllowed(inflictor) then
+         if not inflictor or inflictor and ( value > 0 or char:isDamageAllowed( inflictor ) ) then
             if statName:find("Percentage") then
                statName = statName:gsub("Percentage", "")
-               local statMax = char:getStatCount(statName .. "Max")
+               local statMax = char:getStatCount( statName .. "Max" )
                if statMax then
-                  value = ((value * self:getStackCount()) / 100) * statMax
+                  value = ( ( value * self:getStackCount() ) / 100 ) * statMax
                end
             else
                value = value * self:getStackCount()
             end
-            char:changeStatCount(statName, (value/denominator) * tickAmount, allowOverflow)
+            char:changeStatCount( statName, value/denominator )
 
             if char ~= getPlayer() and inflictor == getPlayer()
-               and (gameplayUI.hudUI.enemyStatus.char == char or not gameplayUI.hudUI.enemyStatus.char) then
+               and ( gameplayUI.enemyStatus.char == char or not gameplayUI.enemyStatus.char ) then
                runTimer(0, nil, function()
-                  gameplayUI.hudUI:showEnemyStatus(char)
+                  gameplayUI:showEnemyStatus(char)
                end, false)
-               if char:getStatCount("health") <= 0 then
+               if char:getStatCount( "health" ) <= 0 then
                   char.killer = getPlayer()
                end
             end
@@ -245,32 +190,19 @@ function CStatusEffectBase:tick(tickAmount, allowOverflow)
       end
    end
 
-   self.params.timeLeft = self.params.timeLeft - self.params.interval * tickAmount
-end
-
-function CStatusEffectBase:onFastForwardTime(event, ...)
-   local stepsToCatchUp = math.floor(event.elapsed:getAs("rMSecond") / self.params.interval)
-   stepsToCatchUp = math.min(stepsToCatchUp, self.params.timeLeft/self.params.interval)
-   self:tick(stepsToCatchUp, true)
+   self.params.timeLeft = round( self.params.timeLeft - self.params.interval, 2 )
 end
 
 function CStatusEffectBase:getTimeLeft()
-   return self.params.timeLeft and self.params.timeLeft / 100
+   return self.params.timeLeft
 end
 
-function CStatusEffectBase:setTimeLeft(newTime)
+function CStatusEffectBase:setTimeLeft( newTime )
    self.params.timeLeft = newTime
 end
 
 function CStatusEffectBase:onDestroy()
    local char = self.owner.owner
-
-   if char == getMC() then
-      gameplayUI.characterUI:removeEffectFromUI(self)
-   end
-
-   self:removeStatModifiers()
-
    for _,aspect in pairs(self.emitters) do
       char:destroyAspect(aspect)
    end
@@ -280,18 +212,20 @@ function CStatusEffectBase:onDestroy()
    end
    self.emitters = {}
 
-   for _,aspect in pairs(self.soundAspects) do
-      aspect:stop()
+   for _,soundName in pairs(self.sounds) do
+      char.sounds[soundName]:stop()
    end
 
-   SkySystem:unsubscribeFastForwardTime(self.ffCallback)
+   if char == getDefaultPlayer() then
+      gameplayUI:removeEffectFromUI( self )
+   end
 end
 
 function CStatusEffectBase:destroy()
-   self.owner:destroyEffectByID(self.ID)
+   self.owner:destroyEffectByID( self.ID )
 end
 
-function CStatusEffectBase:OnSaveState(state)
+function CStatusEffectBase:OnSaveState( state )
    if self.static then
       state.stackCount = self.params.stackCount
       state.impactPos = self.params.impactPos
@@ -302,9 +236,7 @@ function CStatusEffectBase:OnSaveState(state)
    end
 
    state.name = self:getName()
-   if self.params.timeLeft then
-      state.timeLeft = self.params.timeLeft / 100
-   end
+   state.timeLeft = self.params.timeLeft
 end
 
 return CStatusEffectBase

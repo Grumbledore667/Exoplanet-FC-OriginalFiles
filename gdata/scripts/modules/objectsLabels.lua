@@ -608,17 +608,6 @@ local ObjectsLabels =
             eng = "pick up",
          },
       },
-      ["antigravium_crystal"] =
-      {
-         label =
-         {
-            eng = "Antigravium crystal",
-         },
-         interactLabel =
-         {
-            eng = "pick up",
-         },
-      },
       ["hollow_stone"] =
       {
          label =
@@ -661,182 +650,6 @@ local ObjectsLabels =
          interactLabel =
          {
             eng = "loot",
-         },
-      },
-      ["dead_bitebug"] =
-      {
-         label =
-         {
-            eng = "Dead bitebug",
-         },
-         interactLabel =
-         {
-            eng = "pick",
-         },
-      },
-      ["old_backpack"] =
-      {
-         label =
-         {
-            eng = "Old backpack",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["lost_backpack"] =
-      {
-         label =
-         {
-            eng = "Lost backpack",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["old_bag"] =
-      {
-         label =
-         {
-            eng = "Old bag",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["lost_bag"] =
-      {
-         label =
-         {
-            eng = "Lost bag",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["backpack"] =
-      {
-         label =
-         {
-            eng = "Backpack",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["old_metal_crate"] =
-      {
-         label =
-         {
-            eng = "Old metal crate",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["lost_metal_crate"] =
-      {
-         label =
-         {
-            eng = "Lost metal crate",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["metal_crate"] =
-      {
-         label =
-         {
-            eng = "Metal crate",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["old_box"] =
-      {
-         label =
-         {
-            eng = "Old box",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["lost_box"] =
-      {
-         label =
-         {
-            eng = "Lost box",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["old_basket"] =
-      {
-         label =
-         {
-            eng = "Old basket",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["lost_basket"] =
-      {
-         label =
-         {
-            eng = "Lost basket",
-         },
-         interactLabel =
-         {
-            eng = "loot",
-         },
-      },
-      ["damaged_terminal"] =
-      {
-         label =
-         {
-            eng = "Damaged terminal",
-         },
-         interactLabel =
-         {
-            eng = "use",
-         },
-      },
-      ["door"] =
-      {
-         label =
-         {
-            eng = "Door",
-         },
-         interactLabel =
-         {
-            eng = "open",
-         },
-      },
-      ["led_torch"] =
-      {
-         label =
-         {
-            eng = "'LED torch'",
-         },
-         interactLabel =
-         {
-            eng = "pick up",
          },
       },
       ["q_my_clothes_pants"] =
@@ -894,41 +707,30 @@ local ObjectsLabels =
             eng = "place",
          },
       },
-      ["q_lemonade_wade_food"] =
-      {
-         label =
-         {
-            eng = "Lemonade Wade's Drink",
-         },
-         interactLabel =
-         {
-            eng = "poison",
-         },
-      },
    }
 
-local function getLabel(objectName)
-   if not objectName then
+local function getLabel( objectName )
+   if ( not objectName ) then
       return ""
    end
 
    local info = ObjectsLabels[objectName]
 
-   if info then
+   if ( info ) then
       return info.label.eng
    end
 
    return ""
 end
 
-local function getInteractLabel(objectName)
-   if not objectName then
+local function getInteractLabel( objectName )
+   if ( not objectName ) then
       return ""
    end
 
    local info = ObjectsLabels[objectName]
 
-   if info then
+   if ( info ) then
       return info.interactLabel.eng
    end
 

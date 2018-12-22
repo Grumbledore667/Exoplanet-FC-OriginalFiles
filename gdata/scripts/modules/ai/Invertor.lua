@@ -1,14 +1,8 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
 local Decorator = require "ai.Decorator"
 local NodeState = require "ai.NodeState"
 
----@class ai.Invertor : ai.Decorator
-local Invertor = oo.class({
-   className = className,
-}, Decorator)
+local Invertor = oo.class({}, Decorator)
 
 function Invertor:running()
    local childStatus = self.child:update()

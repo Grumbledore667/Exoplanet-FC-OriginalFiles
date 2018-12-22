@@ -1,7 +1,6 @@
 local oo = require "loop.simple"
 local CTrigger = (require "trigger").CTrigger
 
----@class CTriggerSwim : CTrigger
 local CTriggerSwim = oo.class({}, CTrigger)
 
 function CTriggerSwim:loadParameters()
@@ -28,7 +27,7 @@ function CTriggerSwim:OnCreate()
    spos.y = spos.y + (50 * yscale) - 125
    boxpose:setPos(spos)
 
-   boxpose:setRot(srot)
+   boxpose:setRot( srot )
 
    self.swimBox:setCollisionCharacters(true, true)
    self.swimBox:setCollisionObjects(true)
@@ -41,7 +40,7 @@ function CTriggerSwim:OnDestroy()
    self.swimBox = nil
 end
 
-function CTriggerSwim:OnEnter(char)
+function CTriggerSwim:OnEnter( char )
    CTrigger.OnEnter(self, char)
    if char and char == getPlayer() then
       char:startSwim(self)
@@ -54,7 +53,7 @@ function CTriggerSwim:OnEnter(char)
    end
 end
 
-function CTriggerSwim:OnLeave(char)
+function CTriggerSwim:OnLeave( char )
    CTrigger.OnLeave(self, char)
    if char and char == getPlayer() then
       char:stopSwim(self)

@@ -17,7 +17,6 @@ local obj1 = {
 	["message_00002"] = {
 		["ID"] = 2;
 		["actor"] = 2;
-		["animation"] = "dl_righthand_wave_med";
 		["connectID"] = 35;
 		["posX"] = 780;
 		["posY"] = 390;
@@ -29,7 +28,6 @@ local obj1 = {
 	["message_00003"] = {
 		["ID"] = 3;
 		["actor"] = 2;
-		["animation"] = "dl_count_to_one";
 		["connectID"] = 35;
 		["posX"] = 1320;
 		["posY"] = 240;
@@ -41,7 +39,6 @@ local obj1 = {
 	["message_00004"] = {
 		["ID"] = 4;
 		["actor"] = 2;
-		["animation"] = "dl_righthand_wave_med";
 		["connectID"] = 6;
 		["posX"] = 780;
 		["posY"] = 240;
@@ -63,7 +60,6 @@ end\
 	["message_00006"] = {
 		["ID"] = 6;
 		["actor"] = 1;
-		["animation"] = "dl_point_left";
 		["connectID"] = 3;
 		["posX"] = 1050;
 		["posY"] = 240;
@@ -77,7 +73,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 12;
 		["posX"] = 1890;
-		["posY"] = -60;
+		["posY"] = 30;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -98,7 +94,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 13;
 		["posX"] = 2430;
-		["posY"] = -60;
+		["posY"] = 30;
 		["script"] = "";
 		["text"] = "Why the hell do your goods have blood on them? Where do you get your stock?";
 		["time"] = 9;
@@ -107,10 +103,9 @@ end\
 	["message_00010"] = {
 		["ID"] = 10;
 		["actor"] = 2;
-		["animation"] = "dl_point_right";
 		["connectID"] = 93;
 		["posX"] = 3240;
-		["posY"] = -30;
+		["posY"] = 30;
 		["script"] = "";
 		["text"] = "I prefer the term \"recycling\"! Anyway, where else are you going to find goods for such a good price?";
 		["time"] = 10.5;
@@ -121,7 +116,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 10;
 		["posX"] = 2970;
-		["posY"] = -60;
+		["posY"] = 30;
 		["script"] = "";
 		["text"] = "So you're a marauder?";
 		["time"] = 3;
@@ -130,10 +125,9 @@ end\
 	["message_00012"] = {
 		["ID"] = 12;
 		["actor"] = 2;
-		["animation"] = "dl_cough";
 		["connectID"] = 9;
 		["posX"] = 2160;
-		["posY"] = -60;
+		["posY"] = 30;
 		["script"] = "";
 		["text"] = "Uh... No, of course not. You have some good eyes, huma. It's just dried blood! Ok, for an attentive customer a special price - two times ten!";
 		["time"] = 14.5;
@@ -144,7 +138,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 11;
 		["posX"] = 2700;
-		["posY"] = -60;
+		["posY"] = 30;
 		["script"] = "";
 		["text"] = "Well, it's all legal! Sort of. I get my stock from dead bodies, mostly. The cycle of life. What, you think I should leave perfectly functioning items just laying there? What a waste!";
 		["time"] = 17.5;
@@ -153,10 +147,9 @@ end\
 	["message_00014"] = {
 		["ID"] = 14;
 		["actor"] = 2;
-		["animation"] = "dl_shrug_long";
 		["connectID"] = 19;
 		["posX"] = 2700;
-		["posY"] = 90;
+		["posY"] = 180;
 		["script"] = "";
 		["text"] = "*sigh* Lately - not so great, mostly because of this whole Stone Heads business. We don't have many visitors and I'm not that eager to go out there either, it's dangerous.";
 		["time"] = 16.5;
@@ -167,7 +160,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 18;
 		["posX"] = 2160;
-		["posY"] = 90;
+		["posY"] = 180;
 		["script"] = "";
 		["text"] = "Why wouldn't they? I pay my \"taxes\". And they're all my regular customers when they need a lighter, a screwdriver, booze and whatnot.";
 		["time"] = 12.5;
@@ -178,7 +171,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 16;
 		["posX"] = 1890;
-		["posY"] = 90;
+		["posY"] = 180;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -199,7 +192,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 14;
 		["posX"] = 2430;
-		["posY"] = 90;
+		["posY"] = 180;
 		["script"] = "";
 		["text"] = "And how's the trade?";
 		["time"] = 3;
@@ -210,7 +203,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 93;
 		["posX"] = 2970;
-		["posY"] = 90;
+		["posY"] = 180;
 		["script"] = "";
 		["text"] = "And my stock isn't going to refill itself, you know.";
 		["time"] = 6;
@@ -221,7 +214,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 22;
 		["posX"] = 2160;
-		["posY"] = 570;
+		["posY"] = 420;
 		["script"] = "";
 		["text"] = "Well, I sort of was a member of free prospectors guild, so I do know something about how to work a mine. Nothing fancy, just the basics. But I can give you a couple of tips. For a price, of course.";
 		["time"] = 21.5;
@@ -232,7 +225,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 36;
 		["posX"] = 2700;
-		["posY"] = 570;
+		["posY"] = 420;
 		["script"] = "";
 		["text"] = "That's right! For just a bunch of tens ol' Kwagga would teach you how to mine greens, huma.";
 		["time"] = 10;
@@ -243,7 +236,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 21;
 		["posX"] = 2430;
-		["posY"] = 570;
+		["posY"] = 420;
 		["script"] = "";
 		["text"] = "So it's ten for mining too, I guess?";
 		["time"] = 5;
@@ -254,7 +247,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 34;
 		["posX"] = 1890;
-		["posY"] = 900;
+		["posY"] = 690;
 		["script"] = "";
 		["text"] = "I'll see you later.";
 		["time"] = 3;
@@ -265,7 +258,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 20;
 		["posX"] = 1890;
-		["posY"] = 570;
+		["posY"] = 420;
 		["script"] = "function message:onStart()\
    self:setParam(\"teach\", true)\
 end\
@@ -287,7 +280,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 36;
 		["posX"] = 1890;
-		["posY"] = 720;
+		["posY"] = 540;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -306,9 +299,8 @@ end\
 	["message_00034"] = {
 		["ID"] = 34;
 		["actor"] = 2;
-		["animation"] = "dl_hand_at_mouth_yelling";
 		["posX"] = 2160;
-		["posY"] = 900;
+		["posY"] = 690;
 		["script"] = "";
 		["text"] = "Godspeed, huma! Come back and don't forget to tell your friends that \"Kwagga's 10 for anything\" is the best... and the only shop in Windscream Canyon!";
 		["time"] = 14;
@@ -319,7 +311,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 66;
 		["posX"] = 3210;
-		["posY"] = 750;
+		["posY"] = 570;
 		["script"] = "";
 		["text"] = "";
 		["time"] = 1;
@@ -330,7 +322,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 93;
 		["posX"] = 3210;
-		["posY"] = 630;
+		["posY"] = 450;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -338,7 +330,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return getMC().skillsManager:get(\"mining\") >= 60\
+   return getPlayer().skillsManager:get( \"mining\" ) >= 60\
 end\
 \
 ";
@@ -351,7 +343,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 93;
 		["posX"] = 3750;
-		["posY"] = 870;
+		["posY"] = 690;
 		["script"] = "";
 		["text"] = "\\[BACK]";
 		["time"] = 1.5;
@@ -362,15 +354,14 @@ end\
 		["actor"] = 2;
 		["connectID"] = 87;
 		["posX"] = 4320;
-		["posY"] = 570;
-		["script"] = "local random = require \"random\"\
-function message:onStart()\
-   giveItemFromPlayerTo(\"antigravium_shards.itm\", getObj(\"kwagga\"), 20 * self:getParam(\"skillup\"))\
+		["posY"] = 450;
+		["script"] = "function message:onStart()\
+   removeItemFromPlayer(\"antigravium_shards.itm\", 20 * self:getParam(\"skillup\"))\
 \
-   local cur = getMC().skillsManager:get(\"mining\")\
+   local cur = getPlayer().skillsManager:get( \"mining\" )\
    local up = self:getParam(\"skillup\")\
 \
-   getMC().skillsManager:inc(\"mining\", up)\
+   getPlayer().skillsManager:inc( \"mining\", up )\
 \
    if cur < 20 and cur + up >= 20 then\
       self:setParam(\"say20\", true)\
@@ -379,14 +370,14 @@ function message:onStart()\
    elseif cur < 60 and cur + up >= 60 then\
       self:setParam(\"say60\", true)\
    end\
-   self:setParam(\"sayRandom\", random.random(5))\
+   self:setParam(\"sayRandom\", math.random(5))\
 end\
 \
 function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return hasPlayerItem(\"antigravium_shards.itm\", 20 * self:getParam(\"skillup\"))\
+   return hasPlayerItemCount(\"antigravium_shards.itm\", 20 * self:getParam(\"skillup\"))\
 end\
 \
 ";
@@ -399,7 +390,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 77;
 		["posX"] = 3750;
-		["posY"] = 630;
+		["posY"] = 450;
 		["script"] = "function message:onStart()\
    self:setParam(\"skillup\", 1)\
 end\
@@ -408,12 +399,12 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return getMC().skillsManager:get(\"mining\") < 60\
+   return getPlayer().skillsManager:get( \"mining\" ) < 60\
 end\
 \
 ";
 		["text"] = "(mining + 1 for 20 antigravium shards)";
-		["time"] = 4.5;
+		["time"] = 3.5;
 		["type"] = "message";
 	};
 	["message_00072"] = {
@@ -421,7 +412,7 @@ end\
 		["actor"] = 1;
 		["connectID"] = 77;
 		["posX"] = 3750;
-		["posY"] = 750;
+		["posY"] = 570;
 		["script"] = "function message:onStart()\
    self:setParam(\"skillup\", 5)\
 end\
@@ -430,12 +421,12 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return getMC().skillsManager:get(\"mining\") <= 55\
+   return getPlayer().skillsManager:get( \"mining\" ) <= 55\
 end\
 \
 ";
 		["text"] = "(mining + 5 for 100 antigravium shards)";
-		["time"] = 4.5;
+		["time"] = 4;
 		["type"] = "message";
 	};
 	["message_00078"] = {
@@ -443,17 +434,17 @@ end\
 		["actor"] = 2;
 		["connectID"] = 66;
 		["posX"] = 4320;
-		["posY"] = 780;
+		["posY"] = 600;
 		["script"] = "";
 		["text"] = "Well... come again when you have them.";
-		["time"] = 4.5;
+		["time"] = 1;
 		["type"] = "message";
 	};
 	["message_00079"] = {
 		["ID"] = 79;
 		["actor"] = 1;
 		["posX"] = 1890;
-		["posY"] = 240;
+		["posY"] = 300;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -475,7 +466,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 85;
 		["posX"] = 4860;
-		["posY"] = 1200;
+		["posY"] = 1020;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -496,7 +487,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 85;
 		["posX"] = 4860;
-		["posY"] = 960;
+		["posY"] = 780;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -509,7 +500,7 @@ end\
 \
 ";
 		["text"] = "Keep it up! Practice makes perfect!";
-		["time"] = 4;
+		["time"] = 3.5;
 		["type"] = "message";
 	};
 	["message_00082"] = {
@@ -517,7 +508,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 85;
 		["posX"] = 4860;
-		["posY"] = 480;
+		["posY"] = 300;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -538,7 +529,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 85;
 		["posX"] = 4860;
-		["posY"] = 1080;
+		["posY"] = 900;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -559,7 +550,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 92;
 		["posX"] = 4860;
-		["posY"] = 600;
+		["posY"] = 420;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -581,7 +572,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 66;
 		["posX"] = 5760;
-		["posY"] = 600;
+		["posY"] = 420;
 		["script"] = "function message:onStart()\
    self:setParam(\"say20\", nil)\
    self:setParam(\"say40\", nil)\
@@ -605,7 +596,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 85;
 		["posX"] = 5100;
-		["posY"] = 360;
+		["posY"] = 180;
 		["script"] = "";
 		["text"] = "Now look: mining antigravium depends on endurance as well as precision. Take a good look at the node - you should notice a difference in coloring. You should hit the brighter spots - those are cracks and impurities. This way you're going to extract more using less force.";
 		["time"] = 25;
@@ -616,7 +607,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 85;
 		["posX"] = 4860;
-		["posY"] = 840;
+		["posY"] = 660;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -637,7 +628,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 85;
 		["posX"] = 4860;
-		["posY"] = 720;
+		["posY"] = 540;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -658,7 +649,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 85;
 		["posX"] = 4860;
-		["posY"] = 240;
+		["posY"] = 60;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -671,7 +662,7 @@ end\
 \
 ";
 		["text"] = "Before taking a lazer drill you should first get comfortable with a pickaxe. You're gonna be surprized how much a skillful miner can accomplish with one! Hold it firmly and strike one point until a good shard breaks away. Shatter it and out it through a sieve - you'll get a bunch of pure crystals. Doesn't sound so hard, does it?";
-		["time"] = 31.5;
+		["time"] = 32;
 		["type"] = "message";
 	};
 	["message_00091"] = {
@@ -679,7 +670,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 86;
 		["posX"] = 4860;
-		["posY"] = 360;
+		["posY"] = 180;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -700,7 +691,7 @@ end\
 		["actor"] = 2;
 		["connectID"] = 93;
 		["posX"] = 5100;
-		["posY"] = 600;
+		["posY"] = 420;
 		["script"] = "function message:onStart()\
    self:setParam(\"say20\", nil)\
    self:setParam(\"say40\", nil)\
@@ -730,82 +721,6 @@ end\
 		["time"] = 0;
 		["type"] = "message";
 	};
-	["message_00094"] = {
-		["ID"] = 94;
-		["actor"] = 1;
-		["connectID"] = 95;
-		["posX"] = 1890;
-		["posY"] = 390;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return getQuestTopicVisible(\"scarecrow\", \"kwagga_about_special_booze\")\
-end\
-\
-";
-		["text"] = "I heard about your special booze. Can I have some?";
-		["time"] = 6;
-		["type"] = "message";
-	};
-	["message_00095"] = {
-		["ID"] = 95;
-		["actor"] = 2;
-		["connectID"] = 97;
-		["posX"] = 2130;
-		["posY"] = 390;
-		["script"] = "";
-		["text"] = "I don't have any right now. Don't really want to get my hands dirty today.";
-		["time"] = 8.5;
-		["type"] = "message";
-	};
-	["message_00096"] = {
-		["ID"] = 96;
-		["actor"] = 2;
-		["connectID"] = 99;
-		["posX"] = 2850;
-		["posY"] = 390;
-		["script"] = "";
-		["text"] = "[t_recipes:learn_recipe_kwagga_special_1]My special is just regular booze, absinthe and a special ingredient - a bit of Arphant's poop. Just don't tell anyone.";
-		["time"] = 11.5;
-		["type"] = "message";
-	};
-	["message_00097"] = {
-		["ID"] = 97;
-		["actor"] = 1;
-		["connectID"] = 98;
-		["posX"] = 2370;
-		["posY"] = 390;
-		["script"] = "";
-		["text"] = "What do you mean? I'll pay.";
-		["time"] = 4;
-		["type"] = "message";
-	};
-	["message_00098"] = {
-		["ID"] = 98;
-		["actor"] = 2;
-		["connectID"] = 96;
-		["posX"] = 2610;
-		["posY"] = 390;
-		["script"] = "";
-		["text"] = "I mean what I mean. Frankly, you can mix it yourself.";
-		["time"] = 6.5;
-		["type"] = "message";
-	};
-	["message_00099"] = {
-		["ID"] = 99;
-		["actor"] = 1;
-		["connectID"] = 93;
-		["posX"] = 3090;
-		["posY"] = 390;
-		["script"] = "";
-		["text"] = "[t_scarecrow:kwagga_about_special_booze]Yeah, I get it now. Thanks...";
-		["time"] = 4;
-		["type"] = "message";
-	};
 	["switch_00001"] = {
 		["ID"] = 1;
 		["connectionsID"] = {
@@ -822,16 +737,13 @@ end\
 			[1] = 8;
 			[2] = 17;
 			[3] = 79;
-			[4] = 94;
-			[5] = 28;
-			[6] = 29;
-			[7] = 27;
+			[4] = 28;
+			[5] = 29;
+			[6] = 27;
 		};
-		["h"] = 180;
 		["posX"] = 1680;
 		["posY"] = 330;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 	["switch_00036"] = {
 		["ID"] = 36;
@@ -840,7 +752,7 @@ end\
 			[2] = 39;
 		};
 		["posX"] = 3060;
-		["posY"] = 720;
+		["posY"] = 540;
 		["type"] = "switch";
 	};
 	["switch_00066"] = {
@@ -851,7 +763,7 @@ end\
 			[3] = 61;
 		};
 		["posX"] = 3540;
-		["posY"] = 750;
+		["posY"] = 570;
 		["type"] = "switch";
 	};
 	["switch_00077"] = {
@@ -861,7 +773,7 @@ end\
 			[2] = 78;
 		};
 		["posX"] = 4110;
-		["posY"] = 690;
+		["posY"] = 510;
 		["type"] = "switch";
 	};
 	["switch_00087"] = {
@@ -877,17 +789,9 @@ end\
 			[8] = 83;
 			[9] = 80;
 		};
-		["h"] = 220;
 		["posX"] = 4650;
-		["posY"] = 570;
+		["posY"] = 390;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 }
-local obj2 = {
-	["actor_prefab"] = {
-		[1] = "human_male";
-		[2] = "abori";
-	};
-}
-return obj1 ,obj2
+return obj1

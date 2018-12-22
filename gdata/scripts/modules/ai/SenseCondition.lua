@@ -1,14 +1,9 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
 local Node = require "ai.Node"
 local NodeState = require "ai.NodeState"
 
----@class ai.SenseCondition : ai.Node
 local SenseCondition = oo.class({
    senseName = nil,
-   className = className,
 }, Node)
 
 function SenseCondition:__init()
@@ -23,7 +18,7 @@ end
 
 function SenseCondition:running()
    local result = self:condition(self.entity)
-   if result then
+   if (result) then
       return NodeState.SUCCESS
    else
       return NodeState.FAILURE

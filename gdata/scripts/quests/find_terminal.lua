@@ -38,8 +38,8 @@ local obj1 = {
 			["event"] = "discuss";
 			["posX"] = 1710;
 			["posY"] = 150;
-			["script"] = "function Condition:onCheck(name, obj)\
-   addItemToPlayer(\"revolver_ammo.itm\", 20)\
+			["script"] = "function Condition:onCheck(obj)\
+   addItemsToPlayer(\"revolver_ammo.itm\", 20)\
    return true\
 end\
 \
@@ -84,7 +84,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = -270;
 			["posY"] = 0;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setTopicVisible(\"vasily_give_booze\", false)\
    return true\
 end\
@@ -131,14 +131,14 @@ end\
 			["event"] = "discuss";
 			["posX"] = 690;
 			["posY"] = 60;
-			["script"] = "function Condition:onCheck(name, obj)\
-   addItemToPlayer(\"power_cell.itm\", 1)\
+			["script"] = "function Condition:onCheck(obj)\
+   addItemsToPlayer(\"power_cell.itm\", 1)\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "msasi_returned_battery_before";
+			["targetsAny"] = "msasi_done_little_helpers";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -178,8 +178,8 @@ end\
 			["event"] = "discuss";
 			["posX"] = 1710;
 			["posY"] = 0;
-			["script"] = "function Condition:onCheck(name, obj)\
-   addItemToPlayer(\"22_ammo.itm\", 25)\
+			["script"] = "function Condition:onCheck(obj)\
+   addItemsToPlayer(\"22_ammo.itm\", 25)\
    return true\
 end\
 \
@@ -197,8 +197,8 @@ end\
 			["event"] = "discuss";
 			["posX"] = 1710;
 			["posY"] = 300;
-			["script"] = "function Condition:onCheck(name, obj)\
-   addItemToPlayer(\"shotgun_ammo.itm\", 12)\
+			["script"] = "function Condition:onCheck(obj)\
+   addItemsToPlayer(\"shotgun_ammo.itm\", 12)\
    return true\
 end\
 \
@@ -215,7 +215,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = 330;
 			["posY"] = 0;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setTopicVisible(\"msasi_find_battery_first\", false)\
    self:setTopicVisible(\"msasi_find_battery_second\", true)\
    return true\
@@ -234,7 +234,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = 90;
 			["posY"] = 0;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setTopicVisible(\"vasily_find_battery\", false)\
    return true\
 end\
@@ -253,7 +253,7 @@ end\
 			["event"] = "find";
 			["posX"] = -210;
 			["posY"] = -420;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    if not self:getParam(\"FoundTerminalBefore\") then\
       self:setParam(\"FoundTerminalBefore\", true)\
    end\
@@ -408,23 +408,23 @@ end\
 end\
 \
 function Step:onStart()\
-   local player = getMC()\
-   player:setState(\"blockItemUse\", true)\
-   player:setState(\"disableAttack\", true)\
-   player:setState(\"disableMove\", true)\
-   player:setState(\"disableJump\", true)\
-   player:setState(\"disableInteraction\", true)\
-   removeBoozeFromPlayer(2, \"strong\")\
+   local player = getPlayer()\
+   player:setState( \"blockItemUse\", true )\
+   player:setState( \"disableAttack\", true )\
+   player:setState( \"disableMove\", true )\
+   player:setState( \"disableJump\", true )\
+   player:setState( \"disableInteraction\", true )\
+   removeBoozeFromPlayer( 2, \"strong\" )\
    runTimer(0, nil, function()\
-      gameplayUI:startFadeToBlackSequence(1, 1, 1)\
+      gameplayUI:startFadeToBlackSequence( 1, 1, 1 )\
    end, false)\
    runTimer(1.5, self.q, function(self)\
-      player:setDisableActionStates(false)\
-      getObj(\"vasily\"):activate(getMC())\
+      getPlayer():startTalk( getObj(\"vasily\") )\
+      player:setDisableActionStates( false )\
       disableObject(self.terminalBroken)\
       hideObject(self.terminalBroken)\
       disableObjectCollisions(self.terminalBroken)\
-      hideDisableObjectGroup(self.terminalBrokenTools, true)\
+      hideDisableObjectGroup( self.terminalBrokenTools, true )\
 \
       showObject(self.terminalFixed)\
    end, false)\
@@ -469,7 +469,7 @@ end\
 function Step:onStart()\
    self:setTopicVisible(\"finish\", true)\
    self:writeLog(\"TerminalFixed\")\
-   showEnableObjectGroup(self.terminalFixedHolo, true)\
+   showEnableObjectGroup( self.terminalFixedHolo )\
 end\
 \
 function Step:onFinish()\
@@ -494,17 +494,12 @@ end\
    self:setTopicVisible(\"msasi_find_battery_second\", false)\
    self:setTopicVisible(\"msasi_lost_battery\", true)--these four hidden by find_battery and custom\
    self:setTopicVisible(\"msasi_do_little_helpers\", true)\
-   self:setTopicVisible(\"msasi_returned_battery_before\", false)\
+   self:setTopicVisible(\"msasi_done_little_helpers\", true)\
    self:setTopicVisible(\"msasi_found_battery\", true)\
    self:setTopicVisible(\"finish\", false)\
    self:setTopicVisible(\"msasi_ammo_22\", true) --these three are hidden by finish\
    self:setTopicVisible(\"msasi_ammo_revolver\", true)\
    self:setTopicVisible(\"msasi_ammo_shotgun\", true)\
-\
-   local markers = {\
-      start = {{pos = {x=8800, y=1111, z=165715}, radius = 50, tip = \"Stolen Terminal\"}},\
-   }\
-   self:declareQuestMarkers(markers)\
 end\
 \
 function Quest:onStart()\
@@ -520,22 +515,26 @@ function Quest:onFinish()\
 end\
 \
 function Quest:OnLoadState()\
-   if self:isStepPassed(\"need_booze\") then\
-      hideDisableObjectGroup(self.terminalBrokenTools, true)\
+   if self:isStepPassed( \"need_booze\" ) then\
+      hideDisableObjectGroup( self.terminalBrokenTools, true )\
    end\
-   if self:isStepPassed(\"plug_battery\") then\
-      showEnableObjectGroup(self.terminalFixedHolo, true)\
+   if self:isStepPassed( \"plug_battery\" ) then\
+      showEnableObjectGroup( self.terminalFixedHolo, true )\
    end\
 end\
 \
 function Quest:getTopicVisible_vasily_give_booze()\
-   return hasPlayerBooze(2, \"strong\")\
+   return hasPlayerBooze( 2, \"strong\" )\
 end\
 \
 function Quest:getTopicVisible_msasi_lost_battery()\
    return not isQuestActive(self.prereq)\
           and not isQuestFinished(self.prereq)\
           and not hasPlayerItem(\"power_cell.itm\")\
+end\
+\
+function Quest:getTopicVisible_msasi_done_little_helpers()\
+   return isQuestFinished(self.prereq)\
 end\
 \
 function Quest:getTopicVisible_msasi_do_little_helpers()\

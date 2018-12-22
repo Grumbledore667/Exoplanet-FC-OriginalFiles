@@ -32,18 +32,18 @@ function classManager.registerObjectName(name, obj)
    objTable[name] = obj
 end
 
-function classManager.getClass(name)
+function classManager.getClass( name )
    return classTable[name]
 end
 
-function classManager.getAllByClassName(className)
+function classManager.getAllByClassName( className )
    return objByClassesTable[className]
 end
 
-function classManager.getAllByClassNameWithin(className, position, radius)
+function classManager.getAllByClassNameWithin( className, position, radius )
    local t = {}
-   for _,obj in pairs(objByClassesTable[className]) do
-      if obj.getPose and objInDist(position, obj:getPose():getPos(), radius) then
+   for _,obj in pairs( objByClassesTable[className] ) do
+      if obj.getPose and objInDist( position, obj:getPose():getPos(), radius) then
          table.insert(t, obj)
       end
    end

@@ -1,14 +1,8 @@
-local stringx = require "pl.stringx"
-local className = select(3, stringx.rpartition((...), '.'))
-
 local oo = require "loop.simple"
 local Node = require "ai.Node"
 
----@class ai.Decorator : ai.Node
----@field child ai.Node
 local Decorator = oo.class({
    child = nil,
-   className = className,
 }, Node)
 
 function Decorator:__init()
@@ -17,10 +11,6 @@ function Decorator:__init()
    end
 end
 
-function Decorator:finish()
-   self.child:finish()
-   Node.finish(self)
-end
 
 function Decorator:reset()
    self.status = nil

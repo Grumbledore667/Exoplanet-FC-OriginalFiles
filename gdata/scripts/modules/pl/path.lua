@@ -21,8 +21,7 @@ local assert_arg,assert_string,raise = utils.assert_arg,utils.assert_string,util
 local attrib
 local path = {}
 
---local res,lfs = _G.pcall(_G.require,'lfs')
-local res,lfs = true, {}
+local res,lfs = _G.pcall(_G.require,'lfs')
 if res then
     attributes = lfs.attributes
     currentdir = lfs.currentdir
@@ -304,7 +303,7 @@ function path.normpath(P)
     else
         -- According to POSIX, in path start '//' and '/' are distinct,
         -- but '///+' is equivalent to '/'.
-        if P:match '^//' and at(P, 3) ~= '/' then
+        if P:match '^//' and at(P, 3) ~= '/' then 
             anchor = '//'
             P = P:sub(3)
         elseif at(P, 1) == '/' then

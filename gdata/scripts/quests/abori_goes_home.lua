@@ -3,12 +3,12 @@ local multiRefObjects = {
 
 } -- multiRefObjects
 local obj1 = {
-	["description"] = "I've encountered an old aborigine being attacked by the same group of looters who has robbed me. After I've dealt with the pair of bastards, the old abori asked if I can help him get back home in one piece.";
+	["description"] = "I've encountered an old aborigine being attacked by the same group of looters who has robbed mel. After I've dealt with the pair of bastards, the old abori asked if I can help him get back home in one piece.";
 	["hidden"] = false;
 	["logs"] = {
-		["EscortStart"] = "I promised the poor abori to help him get back to his hideout. He will lead the way and I must protect him from wild beasts and mad outcasts wandering out there.";
-		["Finish"] = "Old Outcast rewarded me for saving his life and helping him reach his home. In addition, I can stay in his hideout whenever I want.";
-		["FirstEncounter"] = "Encountered some crucasses blocking our way. Had to take care of them.";
+		["EscortStart"] = "I promised the poor abori to help him get back to his hideout. He will lead the way and I must protect him from wild beasts and mad outcasts wandering out there";
+		["Finish"] = "Old Outcast rewarded me for saving his life and stuff. In addition, I can stay in his hideout whenever I want.";
+		["FirstEncounter"] = "We encountered some crucasses blocking our way. Had to take care of them.";
 		["Safety"] = "We have reached the hideout. The entrance is very well hidden in the rocks, I doubt I would find it on my own. Old abori is safe now.";
 		["SecondEncounter"] = "A couple of mad outcasts attacked us on our way. I've made a short work of them.";
 	};
@@ -33,73 +33,57 @@ local obj1 = {
 				[1] = 3;
 			};
 			["event"] = "activate";
-			["posX"] = 1560;
-			["posY"] = 240;
+			["posX"] = 1920;
+			["posY"] = 390;
 			["script"] = "";
 			["targetsAll"] = "";
-			["targetsAny"] = "var:wp_end_5";
+			["targetsAny"] = "q_abori_goes_home_wp_5_end";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
 		["condition_00015"] = {
 			["ID"] = 15;
 			["connectionsID"] = {
+				[1] = 7;
 			};
 			["event"] = "dead";
-			["posX"] = 1020;
+			["posX"] = 990;
 			["posY"] = 90;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    local abori = getObj(self.q.old_outcast)\
-   abori:OnFeelOut(obj)\
+   abori:OnFeelOut( obj )\
    if getObj(self.q.spawn_1):getAliveCount() > 0 then\
       return false\
    end\
-\
-   abori.idleAnimation = \"idle\"\
-   if not abori:patrol_() and not abori:fear_() then\
-      abori:idle_start()\
-   end\
-   gameplayUI.subtitlesUI:addSubtitle(\"Oh thank god...\", 3, abori)\
-   abori.subtitles = {self.q.abori_sub_move}\
-   addExpToPlayer(200)\
-   self:writeLog(\"FirstEncounter\")\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "var:spawn_1";
+			["targetsAny"] = "q_abori_goes_home_encounter_1";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
 		["condition_00018"] = {
 			["ID"] = 18;
 			["connectionsID"] = {
+				[1] = 8;
 			};
 			["event"] = "dead";
-			["posX"] = 1290;
-			["posY"] = 150;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["posX"] = 1470;
+			["posY"] = 30;
+			["script"] = "function Condition:onCheck(obj)\
    local abori = getObj(self.q.old_outcast)\
-   abori:OnFeelOut(obj)\
+   abori:OnFeelOut( obj )\
    if getObj(self.q.spawn_2):getAliveCount() > 0 then\
       return false\
    end\
-\
-   abori.idleAnimation = \"idle\"\
-   if not abori:patrol_() and not abori:fear_() then\
-      abori:idle_start()\
-   end\
-   gameplayUI.subtitlesUI:addSubtitle(\"Holy shit, huma! You're definitely something.\", 5, abori)\
-   abori.subtitles = {self.q.abori_sub_move}\
-   addExpToPlayer(200)\
-   self:writeLog(\"SecondEncounter\")\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "var:spawn_2";
+			["targetsAny"] = "q_abori_goes_home_encounter_2";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -110,11 +94,11 @@ end\
 			["event"] = "activate";
 			["posX"] = 600;
 			["posY"] = -180;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    local abori = getObj(self.q.old_outcast)\
-   if inList(obj.chars, abori) then\
+   if inList( obj.chars, abori ) then\
       if not self.q:isStepPassed(\"escort_start\") then\
-         gameplayUI.subtitlesUI:addSubtitle(self.q.abori_sub_1, 7, abori)\
+         gameplayUI:addSubtitle(self.q.abori_sub_1, 7, abori)\
          abori:pausePatrol(3)\
          return true\
       end\
@@ -124,7 +108,7 @@ end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "var:wp_end_1";
+			["targetsAny"] = "q_abori_goes_home_wp_1_end";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -135,11 +119,11 @@ end\
 			["event"] = "activate";
 			["posX"] = 840;
 			["posY"] = -180;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    local abori = getObj(self.q.old_outcast)\
-   if inList(obj.chars, abori) then\
+   if inList( obj.chars, abori ) then\
       if not self.q:isStepPassed(\"encounter_1_clear\") then\
-         gameplayUI.subtitlesUI:addSubtitle(self.q.abori_sub_2, 7, abori)\
+         gameplayUI:addSubtitle(self.q.abori_sub_2, 7, abori)\
          abori:pausePatrol(3)\
          return true\
       end\
@@ -149,7 +133,7 @@ end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "var:wp_end_2";
+			["targetsAny"] = "q_abori_goes_home_wp_2_end";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -160,10 +144,10 @@ end\
 			["event"] = "activate";
 			["posX"] = 1080;
 			["posY"] = -180;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    local abori = getObj(self.q.old_outcast)\
-   if inList(obj.chars, abori) then\
-      gameplayUI.subtitlesUI:addSubtitle(self.q.abori_sub_3, 3, abori)\
+   if inList( obj.chars, abori ) then\
+      gameplayUI:addSubtitle(self.q.abori_sub_3, 3, abori)\
       return true\
    end\
    return false\
@@ -171,7 +155,7 @@ end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "var:wp_end_3";
+			["targetsAny"] = "q_abori_goes_home_wp_3_end";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -182,10 +166,10 @@ end\
 			["event"] = "activate";
 			["posX"] = 1320;
 			["posY"] = -180;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    local abori = getObj(self.q.old_outcast)\
-   if inList(obj.chars, abori) then\
-      gameplayUI.subtitlesUI:addSubtitle(self.q.abori_sub_4, 5, abori)\
+   if inList( obj.chars, abori ) then\
+      gameplayUI:addSubtitle(self.q.abori_sub_4, 5, abori)\
       return true\
    end\
    return false\
@@ -193,7 +177,7 @@ end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "var:wp_end_4";
+			["targetsAny"] = "q_abori_goes_home_wp_4_end";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -204,24 +188,82 @@ end\
 			["event"] = "talk_start";
 			["posX"] = 960;
 			["posY"] = -360;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    local abori = getObj(self.q.old_outcast)\
-   abori:OnFeelIn(getMC())\
+   abori:OnFeelIn( getPlayer() )\
    return false\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "var:old_outcast";
+			["targetsAny"] = "old_outcast";
 			["targetsCount"] = 1;
 			["type"] = "condition";
+		};
+		["encounter_1_clear"] = {
+			["ID"] = 7;
+			["connectionsID"] = {
+				[1] = 13;
+				[2] = 18;
+			};
+			["name"] = "encounter_1_clear";
+			["posX"] = 1230;
+			["posY"] = 120;
+			["script"] = "function Step:onCheck()\
+   return true\
+end\
+\
+function Step:onStart()\
+   local abori = getObj(self.q.old_outcast)\
+   abori.idleAnimation = \"idle\"\
+   if not abori:patrol_() and not abori:fear_() then\
+      abori:idle_start()\
+   end\
+   gameplayUI:addSubtitle( \"Oh thank god...\", 3, abori )\
+   abori.subtitles = {self.q.abori_sub_move}\
+   self:writeLog(\"FirstEncounter\")\
+end\
+\
+function Step:onFinish()\
+end\
+\
+";
+			["type"] = "step";
+		};
+		["encounter_2_clear"] = {
+			["ID"] = 8;
+			["connectionsID"] = {
+				[1] = 13;
+			};
+			["name"] = "encounter_2_clear";
+			["posX"] = 1710;
+			["posY"] = 60;
+			["script"] = "function Step:onCheck()\
+   return true\
+end\
+\
+function Step:onStart()\
+   local abori = getObj(self.q.old_outcast)\
+   abori.idleAnimation = \"idle\"\
+   if not abori:patrol_() and not abori:fear_() then\
+      abori:idle_start()\
+   end\
+   gameplayUI:addSubtitle( \"Holy shit, huma! You're definitely something.\", 5, abori )\
+   abori.subtitles = {self.q.abori_sub_move}\
+   self:writeLog(\"SecondEncounter\")\
+end\
+\
+function Step:onFinish()\
+end\
+\
+";
+			["type"] = "step";
 		};
 		["escort_start"] = {
 			["ID"] = 4;
 			["connectionsID"] = {
 				[1] = 13;
 				[2] = 15;
-				[3] = 18;
 			};
 			["name"] = "escort_start";
 			["posX"] = 780;
@@ -255,8 +297,8 @@ end\
 			["connectionsID"] = {
 			};
 			["name"] = "finish";
-			["posX"] = 1800;
-			["posY"] = 270;
+			["posX"] = 2160;
+			["posY"] = 420;
 			["script"] = "";
 			["type"] = "step";
 		};
@@ -279,11 +321,6 @@ end\
    self:declareVar(\"wp_group_3\", \"q_abori_goes_home_wp_3_\")\
    self:declareVar(\"wp_group_4\", \"q_abori_goes_home_wp_4_\")\
    self:declareVar(\"wp_group_5\", \"q_abori_goes_home_wp_5_\")\
-   self:declareVar(\"wp_end_1\", \"q_abori_goes_home_wp_1_end\")\
-   self:declareVar(\"wp_end_2\", \"q_abori_goes_home_wp_2_end\")\
-   self:declareVar(\"wp_end_3\", \"q_abori_goes_home_wp_3_end\")\
-   self:declareVar(\"wp_end_4\", \"q_abori_goes_home_wp_4_end\")\
-   self:declareVar(\"wp_end_5\", \"q_abori_goes_home_wp_5_end\")\
    self:declareVar(\"spawn_1\", \"q_abori_goes_home_encounter_1\")\
    self:declareVar(\"spawn_2\", \"q_abori_goes_home_encounter_2\")\
    self:declareVar(\"abori_sub_1\", \"Down there is a pair of young crucasses lurking. Damn pests are stupid enough to take us for an easy prey, so keep your weapon ready, huma.\")\

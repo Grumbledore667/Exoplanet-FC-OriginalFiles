@@ -1,56 +1,36 @@
 local oo = require "loop.simple"
 local tablex = require "pl.tablex"
 local CSpawn = (require "rigids.spawn").CSpawn
-local SpawnLists = require "spawnList"
 
 local members = {
    spawnDist = 10000,
    savedState = nil,
    firstSpawn = true,
 }
-
----@class CSmartSpawn : CSpawn
 local CSmartSpawn = oo.class(members, CSpawn)
-
-local function nilIfEmpty(t)
-   if t == nil or next(t) == nil then
-      return nil
-   else
-      return t
-   end
-end
 
 function CSmartSpawn:OnCreate()
    CSpawn.OnCreate(self)
 
    self.spawnDist = loadParamNumber(self, "spawnDist", 10000)
-   -- loadParamItemCounts never returns nil!
-   self.lootItems = nilIfEmpty(loadParamItemCounts(self, "lootItems", nil))
-   self.weapons   = nilIfEmpty(loadParamStrings(self, "weapons", nil))
-   self.styles    = nilIfEmpty(loadParamStrings(self, "styles", nil))
+   self.lootItems = loadParamItemCounts(self, "lootItems", nil)
+   self.weapons   = loadParamStrings(self, "weapons", nil)
+   self.styles    = loadParamStrings(self, "styles", nil)
 
-   local spawnList = SpawnLists[self.spawnListName]
+   -- try to load spawnList, and if it has errors loudly complain in logs
+   local spawnList = loadrequire("spawnList", true) or {}
 
-   self.parametersRest = {}
-   if spawnList then
-      self.healthMax        = spawnList.healthMax or self.healthMax
-      self.walkSpeed        = spawnList.walkSpeed
-      self.runSpeed         = spawnList.runSpeed
-      self.energyMax        = spawnList.energyMax
-      self.spawnDist        = spawnList.spawnDist or self.spawnDist
-      self.lootItems        = spawnList.lootItems or self.lootItems
-      self.weapons          = spawnList.weapons   or self.weapons
-      self.styles           = spawnList.styles    or self.styles
-      self.customLabel      = spawnList.customLabel
-      self.zoneSize         = spawnList.zoneSize
-      self.viewDist         = spawnList.viewDist
-      self.feelRadiusCutoff = spawnList.feelRadiusCutoff
-      self.blockChirping    = spawnList.blockChirping
-      self.attackDist       = spawnList.attackDist
-      self.weaponDamage     = spawnList.weaponDamage
-      for _, key in ipairs{"patrolPoints", "patrolAllowed", "patrolLoop"} do
-         self.parametersRest[key] = spawnList[key]
-      end
+   if spawnList[self.spawnListName] then
+      self.healthMax      = spawnList[self.spawnListName].healthMax or self.healthMax
+      self.energyMax      = spawnList[self.spawnListName].energyMax
+      self.spawnDist      = spawnList[self.spawnListName].spawnDist or self.spawnDist
+      self.lootItems      = spawnList[self.spawnListName].lootItems or self.lootItems
+      self.weapons        = spawnList[self.spawnListName].weapons   or self.weapons
+      self.styles         = spawnList[self.spawnListName].styles    or self.styles
+      self.customLabel    = spawnList[self.spawnListName].customLabel
+      self.zoneSize       = spawnList[self.spawnListName].zoneSize
+      self.viewDist       = spawnList[self.spawnListName].viewDist
+      self.attackDist     = spawnList[self.spawnListName].attackDist
    end
 
    self.interactor = self:createAspect("interactor")
@@ -62,9 +42,10 @@ function CSmartSpawn:OnCreate()
 end
 
 function CSmartSpawn:OnInteractTriggerBegin(obj)
-   local spawnList = SpawnLists[self.spawnListName]
+   -- try to load spawnList, and if it has errors loudly complain in logs
+   local spawnList = loadrequire("spawnList", true) or {}
 
-   if (spawnList and spawnList.active) or loadParam(self, "active", true) then
+   if (spawnList[self.spawnListName] and spawnList[self.spawnListName].active) or loadParam( self, "active", true ) then
       if obj == getPlayer() and objInDist(obj:getPose():getPos(), self:getPose():getPos(), self.spawnDist) then
          if self.firstSpawn then -- first time spawning
             self:activate()
@@ -77,58 +58,41 @@ end
 function CSmartSpawn:OnInteractTriggerEnd(obj)
 end
 
-function CSmartSpawn:spawnEntity(params)
-   if not params then
-      params = {
-         lootItems = self.lootItems,
-         weapons = self.weapons,
-         styles = self.styles,
-
-         customLabel = self.customLabel,
-         zoneSize = self.zoneSize,
-         viewDist = self.viewDist,
-         feelRadiusCutoff = self.feelRadiusCutoff,
-         blockChirping = self.blockChirping,
-
-         attackDist = self.attackDist,
-         energyMax = self.energyMax,
-         healthMax = self.healthMax,
-         walkSpeed = self.walkSpeed,
-         runSpeed = self.runSpeed,
-         weaponDamage = self.weaponDamage,
-      }
-      for key, value in pairs(self.parametersRest) do
-         params[key] = value
-      end
-      if not next(params) then
-         params = nil
-      end
+function CSmartSpawn:spawn()
+   if ( self:isSpawningComplete() ) then
+      return
    end
-
-   return CSpawn.spawnEntity(self, params)
+   CSpawn.spawn( self )
+   local char = self.charactersSpawned[#self.charactersSpawned]
+   if char and char.initWithParams then
+      local params = {  lootItems = self.lootItems, weapons = self.weapons, styles = self.styles,
+                        customLabel = self.customLabel, zoneSize = self.zoneSize, viewDist = self.viewDist,
+                        attackDist = self.attackDist, energyMax = self.energyMax, healthMax = self.healthMax }
+      char:initWithParams( params )
+   end
 end
 
 function CSmartSpawn:getLootTable()
    local t = {}
    if self.lootItems then
-      t = tablex.deepcopy(self.lootItems)
+      t = tablex.deepcopy( self.lootItems )
    end
    if self.weapons then
       for _,itemName in pairs(self.weapons) do
-         t[itemName] = (t[itemName] or 0) + 1
+         t[itemName] = ( t[itemName] or 0 ) + 1
       end
    end
    return t
 end
 
 function CSmartSpawn:OnSaveState(state)
-   CSpawn.OnSaveState(self, state)
+   CSpawn.OnSaveState( self, state )
    state.spawnDist = self.spawnDist
    state.firstSpawn = self.firstSpawn
 end
 
 function CSmartSpawn:OnLoadState(state)
-   CSpawn.OnLoadState(self, state)
+   CSpawn.OnLoadState( self, state )
    self.spawnDist = state.spawnDist
    self.firstSpawn = state.firstSpawn
 end

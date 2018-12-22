@@ -3,7 +3,7 @@ local multiRefObjects = {
 
 } -- multiRefObjects
 local obj1 = {
-	["description"] = "Eli the warehouse keeper in the Fort asked me to bring him a couple of aboriginal workers to help him take care of the mess that was left by the previous superintendant. To do that I need a permission of Master Phil which is most probably in the cemetery outside the Fort. I can reach it by exiting through the west gate and going along the path.";
+	["description"] = "Eli the warehouse keeper in the Fort asked me to bring him a couple of aboriginal workers to help him take care of the mess that was left by the previous superintendant. To do that I need a premission of Master Phil which is most probably in the cemetery outside the Fort. I can reach it be exiting through the west gate and going along the path.";
 	["hidden"] = false;
 	["logs"] = {
 		["reward"] = "Eli was very satisfied with additional help and showed his appreciation with a pile of shinies.";
@@ -76,7 +76,7 @@ local obj1 = {
 			["event"] = "discuss";
 			["posX"] = 510;
 			["posY"] = -150;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setParam(\"w1\", true)\
    self:setTopicVisible(\"worker1_phil_said\", false)\
    self:writeLog(\"worker1\")\
@@ -97,7 +97,7 @@ end\
 			["event"] = "discuss";
 			["posX"] = 780;
 			["posY"] = -150;
-			["script"] = "function Condition:onCheck(name, obj)\
+			["script"] = "function Condition:onCheck(obj)\
    self:setParam(\"w2\", true)\
    self:setTopicVisible(\"worker2_phil_said\", false)\
    self:writeLog(\"worker2\")\
@@ -125,7 +125,7 @@ end\
 function Step:onStart()\
    self:setTopicVisible(\"finish\", false)\
    self:writeLog(\"reward\")\
-   addItemToPlayer(self.reward_item, self.reward_count)\
+   addItemsToPlayer(self.reward_item, self.reward_count)\
 end\
 \
 function Step:onFinish()\
@@ -147,8 +147,8 @@ end\
 end\
 \
 function Step:onStart()\
-   moveCharTo(self.worker1, self.worker1_wp)\
-   moveCharTo(self.worker2, self.worker2_wp)\
+   moveObjectTo(self.worker1, self.worker1_wp)\
+   moveObjectTo(self.worker2, self.worker2_wp)\
    self:setTopicVisible(\"finish\", true)\
    self:writeLog(\"talked_workers\")\
 end\

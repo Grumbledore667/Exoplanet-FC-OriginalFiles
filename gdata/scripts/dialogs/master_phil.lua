@@ -69,7 +69,6 @@ end\
 	["message_00010"] = {
 		["ID"] = 10;
 		["actor"] = 1;
-		["animation"] = "dl_look_down";
 		["connectID"] = 11;
 		["posX"] = 1410;
 		["posY"] = 540;
@@ -310,7 +309,6 @@ end\
 	["message_00033"] = {
 		["ID"] = 33;
 		["actor"] = 1;
-		["animation"] = "dl_look_down_long";
 		["connectID"] = 34;
 		["posX"] = 3990;
 		["posY"] = 660;
@@ -322,7 +320,6 @@ end\
 	["message_00034"] = {
 		["ID"] = 34;
 		["actor"] = 2;
-		["animation"] = "dl_righthand_wave_short";
 		["connectID"] = 35;
 		["posX"] = 4260;
 		["posY"] = 660;
@@ -432,7 +429,6 @@ end\
 	["message_00044"] = {
 		["ID"] = 44;
 		["actor"] = 2;
-		["animation"] = "dl_hands_strike";
 		["connectID"] = 27;
 		["posX"] = 5520;
 		["posY"] = -180;
@@ -488,7 +484,6 @@ end\
 	["message_00049"] = {
 		["ID"] = 49;
 		["actor"] = 1;
-		["animation"] = "dl_hands_dontknow";
 		["connectID"] = 51;
 		["posX"] = 3630;
 		["posY"] = 60;
@@ -500,7 +495,6 @@ end\
 	["message_00050"] = {
 		["ID"] = 50;
 		["actor"] = 1;
-		["animation"] = "dl_count_to_one";
 		["connectID"] = 55;
 		["posX"] = 3630;
 		["posY"] = 180;
@@ -512,7 +506,6 @@ end\
 	["message_00051"] = {
 		["ID"] = 51;
 		["actor"] = 2;
-		["animation"] = "dl_talk_2";
 		["connectID"] = 52;
 		["posX"] = 3900;
 		["posY"] = 60;
@@ -524,7 +517,6 @@ end\
 	["message_00052"] = {
 		["ID"] = 52;
 		["actor"] = 2;
-		["animation"] = "dl_look_right";
 		["connectID"] = 53;
 		["posX"] = 4170;
 		["posY"] = 60;
@@ -613,7 +605,6 @@ end\
 	["message_00060"] = {
 		["ID"] = 60;
 		["actor"] = 2;
-		["animation"] = "dl_hand_chopslow";
 		["connectID"] = 61;
 		["posX"] = 3900;
 		["posY"] = 300;
@@ -647,7 +638,6 @@ end\
 	["message_00063"] = {
 		["ID"] = 63;
 		["actor"] = 2;
-		["animation"] = "dl_hand_negative";
 		["connectID"] = 27;
 		["posX"] = 4710;
 		["posY"] = 300;
@@ -719,17 +709,9 @@ end\
 			[6] = 59;
 			[7] = 64;
 		};
-		["h"] = 180;
 		["posX"] = 3450;
 		["posY"] = 0;
 		["type"] = "switch";
-		["w"] = 100;
 	};
 }
-local obj2 = {
-	["actor_prefab"] = {
-		[1] = "human_male";
-		[2] = "human_male";
-	};
-}
-return obj1 ,obj2
+return obj1
