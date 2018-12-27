@@ -4,7 +4,7 @@ local utils = require "pl.utils"
 
 local deb = {}
 
-deb.versionStr = "Alersteam ( Early Access Alpha build 0.27.0 )"
+deb.versionStr = "Alersteam ( Early Access Alpha build 0.27.1 )"
 deb.versionInt = 10
 deb.pcallProtection = true
 
