@@ -126,6 +126,9 @@ return {
     dialog = "molly",
     subscribeToFFTime = true
   },
+  bamba = {
+    defaultAnimation = "idle_armcross"
+  },
   barnie = {
     defaultAnimation = "shotgun_idle_2"
   },
@@ -347,6 +350,15 @@ return {
     dialog = "default_outcast_1",
     style = "abori_outcast_15"
   },
+  outcast_21 = {
+    defaultAnimation = "revolver_kneel_idle",
+    dialog = "default_outcast_1",
+    orientateToPlayer = false
+  },
+  outcast_22 = {
+    defaultAnimation = "idle_4",
+    dialog = "default_outcast_1"
+  },
   outcast_3 = {
     dialog = "default_outcast_1",
     style = "abori_outcast_5"
@@ -439,10 +451,39 @@ return {
     dialog = "outcast_guard",
     style = "outcast_guard_light_7"
   },
+  outcast_guard_17 = {
+    defaultAnimation = "1hm_idle_melee_3",
+    dialog = "outcast_guard",
+    orientateToPlayer = false,
+    weaponList = "abori_knife.wpn"
+  },
+  outcast_guard_18 = {
+    defaultAnimation = "1hm_idle_melee_4",
+    dialog = "outcast_guard",
+    orientateToPlayer = false,
+    weaponList = "abori_axe.wpn"
+  },
+  outcast_guard_19 = {
+    defaultAnimation = "shield_block_idle",
+    dialog = "outcast_guard",
+    orientateToPlayer = false,
+    weaponList = "abori_axe.wpn"
+  },
   outcast_guard_2 = {
     defaultAnimation = "1hm_idle",
     dialog = "outcast_guard",
     style = "outcast_guard_heavy_wounded"
+  },
+  outcast_guard_20 = {
+    defaultAnimation = "pistol_aim_idle",
+    dialog = "outcast_guard",
+    orientateToPlayer = false,
+    weaponList = "alien_cactus_bat.wpn"
+  },
+  outcast_guard_21 = {
+    defaultAnimation = "idle_hurt_2",
+    dialog = "outcast_guard",
+    orientateToPlayer = false
   },
   outcast_guard_3 = {
     defaultAnimation = "1hm_idle",
@@ -644,7 +685,7 @@ return {
     defaultAnimation = "sleep_ground_idle",
     headLooking = false,
     orientateToPlayer = false,
-    subscribeToFFTime = true,
+    subscribeToFFTime = true
   },
   shop_guard = {
     defaultAnimation = "idle_armcross"
@@ -722,7 +763,6 @@ return {
   },
   waga_the_tumbleweed = {
     defaultAnimation = "bag_1hm_idle",
-    dialog = "waga_the_tumbleweed"
   },
   wandering_merchant = {
     defaultAnimation = "bag_1hm_idle",

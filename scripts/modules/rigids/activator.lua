@@ -1,18 +1,23 @@
-local oo = require "loop.simple"
+local oo = require "loop.multiple"
 local CRigid = require "rigids.rigid".CRigid
 
 local ItemsData = (require "itemsData")
 local ItemsLists = (require "itemsLists")
 local ObjectsLabels = (require "objectsLabels")
-local Installation = (require "items.installation")
+local CInteractable = require "mixins.interactable"
 
 local tablex = require "pl.tablex"
+local hlp = require "helpers"
 
 ---@class CActivator : CRigid
-local CActivator = oo.class({}, CRigid)
+local CActivator = oo.class({}, CInteractable, CRigid)
 
-function CActivator:OnCreate()
+function CActivator:OnCreate(params)
    getmetatable(self)["__tostring"] = function(t) return "activator" end
+
+   CInteractable.OnCreate(self, params)
+
+   self.toggle = loadParam(self, "toggle", false)
 
    self.enabled = true
 
@@ -39,11 +44,7 @@ function CActivator:OnCreate()
 
    self.itemPickup = loadParam(self, "itemPickup", false)
 
-   self.interactor = self:createAspect("interactor")
-   self.interactor:setObject(self)
    self.interactor:setRaycastRadius(self.raycastRadius)
-   self.interactor:getPose():setParent(self:getPose())
-   self.interactor:getPose():resetLocalPose()
    self.interactor:setRaycastActive(self.activateByPlayer)
 
    if self.activatorEnabled then
@@ -53,6 +54,8 @@ function CActivator:OnCreate()
    end
 
    getScene():subscribeOnLocationEnter(self.loadNamedObjectParams, self)
+
+   self.interactAnchor = self:getMeshByName("anchor_1")
 end
 
 function CActivator:loadNamedObjectParams()
@@ -75,29 +78,6 @@ function CActivator:loadNamedObjectParams()
 end
 
 function CActivator:OnDestroy()
-end
-
-function CActivator:checkRemoveItems()
-   if self.removeItems then
-      local hasAllItems = true
-      for itemName, count in pairs(self.removeItems) do
-         local item = getPlayer():getInventory():getItemByName(itemName)
-         if not item then
-            gameplayUI:showInventoryDropInfo("Missing ".. count .. " " ..  ItemsData.getItemLabel(itemName))
-            hasAllItems = false
-         elseif item:getCount() < count then
-            gameplayUI:showInventoryDropInfo("Missing ".. (count - item:getCount()) .. " " .. ItemsData.getItemLabel(itemName))
-            hasAllItems = false
-         end
-      end
-
-      if not hasAllItems then return false end
-
-      for itemName, count in pairs(self.removeItems) do
-         removeItemFromObj(itemName, getPlayer(), count)
-      end
-   end
-   return true
 end
 
 function CActivator:addItemsToPlayer()
@@ -144,16 +124,24 @@ function CActivator:isEnabled()
    return self.enabled
 end
 
-function CActivator:activate(obj)
-   if not self.enabled then
-      return false
+function CActivator:preActivate(char)
+   if self.toggle then
+      if self.activated then
+         self:playAnimation("close", false)
+      else
+         self:playAnimation("open", false)
+      end
    end
+end
 
-   if not self:checkRemoveItems() then
-      return false
+function CActivator:activate(char)
+   if not self.enabled then return end
+
+   if self.toggle then
+      self.activated = not self.activated
+   else
+      self.activated = true
    end
-
-   questSystem:fireEvent("activate", self:getName())
 
    if not self.activateMultiple then
       self:disable()
@@ -213,15 +201,13 @@ function CActivator:activate(obj)
    end
 
    self:addItemsToPlayer()
-
-   return true
 end
 
 function CActivator:pickupItem(inventory)
    self:activate(inventory.owner)
 end
 
-function CActivator:getType()
+function CActivator:getInteractType(char)
    if self.itemPickup then
       return "pickup"
    else
@@ -261,8 +247,33 @@ function CActivator:getInteractLabel()
    return label
 end
 
-function CActivator:getInteractTime(interactType)
-   return self.interactTime
+function CActivator:getInteractData(char)
+   local prefabName = self:getPrefabName()
+   local data = {
+      time = self.interactTime,
+      animations = {},
+   }
+   if self.interactAnchor then
+      data.anchorPos = self.interactAnchor:getPose():getPos()
+      data.anchorDir = vec3RotateQuat({x=0,y=0,z=-1}, self.interactAnchor:getPose():getRotQuat())
+   end
+   if prefabName == "lever_wall.sbg" then
+      data.animations.activate = self.activated and "idle_lever_front_off" or "idle_lever_front_on"
+   elseif prefabName == "lever_ground.sbg" then
+      data.holster = true
+      data.animations.activate = self.activated and "idle_lever_down_off" or "idle_lever_down_on"
+   elseif prefabName == "button_tech.sbg" then
+      data.animations.activate = "idle_button_press_fist"
+   elseif prefabName == "button_stone_1.sbg" or prefabName == "button_stone_2.sbg" or prefabName == "button_stone_3.sbg" then
+      data.animations.activate = "idle_button_press_hard"
+   elseif prefabName == "abori_lock.sbg" then
+      data.holster = true
+      data.animations.activate = self.activated and "idle_abori_lock_close" or "idle_abori_lock_open"
+   end
+   if self.itemPickup then
+      data.animations.activate = hlp.getPickupAnimationFor(char, self)
+   end
+   return data
 end
 
 function CActivator:OnSaveState(state)

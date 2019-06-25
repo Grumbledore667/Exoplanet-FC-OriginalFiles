@@ -1,16 +1,12 @@
-local oo = require "loop.simple"
+local oo = require "loop.multiple"
 local _rootRigid = (require "roots")._rootRigid
+local CInteractable = require "mixins.interactable"
 
 ---@class COpenClose : shRigidEntity
-local COpenClose = oo.class({}, _rootRigid)
+local COpenClose = oo.class({}, _rootRigid, CInteractable)
 
 function COpenClose:OnCreate()
-   self.interactor = self:createAspect("interactor")
-   self.interactor:setObject(self)
-   self.interactor:setRaycastRadius(100.0)
-   self.interactor:getPose():setParent(self:getPose())
-   self.interactor:getPose():resetLocalPose()
-   self.interactor:setRaycastActive(true)
+   CInteractable.OnCreate(self)
 
    self.sounds = {}
    self.sounds.open = self:createAspect("Play_door_slide_open")
@@ -21,7 +17,7 @@ function COpenClose:OnCreate()
 
    self:subscribeAnimationStop(self.animStop, self)
 
-   self.opened    = false
+   self.opened = false
    self.animating = false
 end
 
@@ -29,51 +25,23 @@ function COpenClose:animStop()
    self.animating = false
 end
 
-function COpenClose:activate(obj)
-   if self.animating then
-      return false
-   end
-
+function COpenClose:activate(char)
    self.animating = true
-   if not self.opened then
-      self:playAnimation("open", false)
-      -- TODO: FIXME: WORKAROUND: bug with some rigids not calling subscribeAnimationStop
-      -- function after the animation stops!
-      runTimer(3, self, self.animStop, false)
-      self.opened = true
-   else
+   self.sounds.open:play()
+   if self.opened then
       self:playAnimation("close", false)
-      runTimer(3, self, self.animStop, false)
-      self.opened = false
+   else
+      self:playAnimation("open", false)
    end
-
-
-   self.sounds.open:play()
-
-   return true
+   self.opened = not self.opened
 end
 
-function COpenClose:deactivate(obj)
-   return true
-end
-
-function COpenClose:closeDoor()
-   if not self.opened or self.animating then
-      return false
+function COpenClose:getInteractType(char)
+   if self.animating then
+      return "no_interaction"
+   else
+      return "door"
    end
-
-   self.animating = true
-   self:playAnimation("close", false)
-   runTimer(3, self, self.animStop, false)
-
-   self.sounds.open:play()
-
-   self.opened = false
-   return true
-end
-
-function COpenClose:getType()
-   return "activator"
 end
 
 function COpenClose:getLabel()

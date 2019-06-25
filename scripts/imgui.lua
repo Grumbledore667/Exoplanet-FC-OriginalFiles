@@ -17,11 +17,15 @@ local function ShowHelpMarker(desc)
    end
 end
 
-local accuracy, states, taid
+local callbacks = {}
+function runTimerImgui(func)
+   table.insert(callbacks, func)
+end
+
+local accuracy, states, taid, quests
 
 ---Global event that is called every render frame, including paused game
 function OnImGui()
-   local WindowFlags = imgui.constant.WindowFlags
    do
       imgui.Begin("Debug widgets")
       local function Checkbox(name, checked)
@@ -33,6 +37,7 @@ function OnImGui()
       accuracy = Checkbox("Accuracy", accuracy); imgui.SameLine(); ShowHelpMarker("Requires character in CVAR or main character present with equipped gun.")
       states = Checkbox("States", states); imgui.SameLine(); ShowHelpMarker("Requires character in CVAR or main character present.")
       taid = Checkbox("Ai ticks", taid); imgui.SameLine(); ShowHelpMarker("Requires character in CVAR with behavior tree or main character present.")
+      quests = Checkbox("Quests", quests); imgui.SameLine(); ShowHelpMarker("Show current quests state.")
       imgui.End()
    end
 
@@ -43,7 +48,7 @@ function OnImGui()
    if accuracy and targetCharacter then
       local gun = targetCharacter:getWeaponSlotItem()
       if gun and gun.setAccuracy then
-         imgui.Begin("Gun accuracy", true, {WindowFlags.NoTitleBar, WindowFlags.NoResize})
+         imgui.Begin("Gun accuracy", true, imgui.bor{imgui.WindowFlags_NoTitleBar, imgui.WindowFlags_NoResize})
          imgui.Text(string.format("ItemsData accuracy: %f", ItemsData.getItemAccuracy(gun:getItemName())))
          imgui.Text(string.format("Quality accuracy mod: %f", gun:getQualityBonus("accuracyFlat")))
          imgui.Text("Final accuracy override")
@@ -71,6 +76,92 @@ function OnImGui()
       end
    end
 
+   if quests then
+      imgui.Begin("Quests debug")
+      for name, quest in orderedPairs(_G.quests) do
+         if imgui.CollapsingHeader(name) then
+            local started = quest:isStarted()
+            imgui.Text("is started: " .. tostring(started))
+            if not started then
+               imgui.SameLine(); if imgui.Button("start") then quest:start() end
+            end
+            imgui.Text("is active: " .. tostring(quest:isActive()))
+            imgui.Text("active step name: " .. tostring(quest:getActiveStepName()))
+            imgui.Text("is finished: " .. tostring(quest:isFinished()))
+            imgui.Text("is failed: " .. tostring(quest:isFailed()))
+            if imgui.TreeNode("topics:") then
+               for topic, topicState in orderedPairs(_G.__story_data.quests[name]) do
+                  topic = string.match(topic, "^topic_(.+)")
+                  if topic then
+                     imgui.Text(string.format("%s:", topic))
+                     imgui.SameLine(300)
+                     imgui.PushID(topic)
+                     if imgui.Button(tostring(topicState)) then
+                        quest:setTopicVisible(topic, not topicState)
+                     end
+                     local customFunc = quest["getTopicVisible_" .. topic]
+                     if customFunc and type(customFunc) == "function" then
+                        imgui.SameLine()
+                        ShowHelpMarker("Has custom visibility function")
+                     end
+                     imgui.PopID()
+                  end
+               end
+               imgui.TreePop()
+            end
+            if imgui.TreeNode("variables:") then
+               for variableName, value in orderedPairs(quest._variables) do
+                  if variableName ~= "q" then
+                     imgui.Text(tostring(variableName))
+                     imgui.SameLine(300)
+                     imgui.Text(tostring(value))
+                  end
+               end
+               imgui.TreePop()
+            end
+         end
+      end
+      imgui.End()
+   end
+
+   local ad = dialogSystem.active_dialog
+   if isDebug("dialogDebug") and ad then
+      imgui.SetNextWindowPos(imgui.ImVec2(10, getScreenSize().y - 10), imgui.Cond_Always, imgui.ImVec2(0, 1))
+      imgui.SetNextWindowBgAlpha(0.3)
+      if imgui.Begin("Node data", nil, imgui.bor{
+         imgui.WindowFlags_NoMove,
+         imgui.WindowFlags_NoTitleBar,
+         imgui.WindowFlags_NoResize,
+         imgui.WindowFlags_AlwaysAutoResize,
+         imgui.WindowFlags_NoSavedSettings,
+         imgui.WindowFlags_NoFocusOnAppearing,
+         imgui.WindowFlags_NoNav
+      }) then
+         imgui.Text(ad.name)
+         if ad.active_message then
+            local msg = ad.active_message
+            imgui.Text("ID: " .. tostring(msg.ID))
+            if msg.topic then
+               local quest, topic = splitQuestTopic(msg:getTopic())
+               imgui.Text(string.format("topic:\n %s\n %s", quest, topic))
+            end
+            if msg.animation then
+               imgui.Text("animation: " .. msg.animation)
+            end
+            imgui.Text("time: " .. tostring(msg.time))
+
+            for _, funcName in ipairs{"onStart", "onStop", "isVisible"} do
+               if msg[funcName] then
+                  imgui.Separator()
+                  imgui.Text((string.gsub(msg.script_src, "\n\n+", "\n\n")))
+                  break
+               end
+            end
+         end
+      end
+      imgui.End()
+   end
+
    if taid then
       local history = targetCharacter and targetCharacter.BT and targetCharacter.BT.history
       if history and #history then
@@ -80,21 +171,20 @@ function OnImGui()
          end
 
          local colorMap = {
-            SUCCESS = {0, 1, 0, 1},
-            RUNNING = {1, 1, 0, 1},
-            FAILURE = {1, 0, 0, 1},
-            FRESH   = {1, 1, 1, 1},
+            SUCCESS = imgui.ImVec4(0, 1, 0, 1),
+            RUNNING = imgui.ImVec4(1, 1, 0, 1),
+            FAILURE = imgui.ImVec4(1, 0, 0, 1),
+            FRESH   = imgui.ImVec4(1, 1, 1, 1),
          }
 
          local function writeNodeStatus(node)
             imgui.SameLine(imgui.GetWindowWidth() - 100)
             local nodeStatus = status[node] or "FRESH"
-            local r, g, b, a = unpack(colorMap[nodeStatus])
-            imgui.TextColored(r, g, b, a, nodeStatus)
+            imgui.TextColored(colorMap[nodeStatus], nodeStatus)
          end
 
          imgui.Begin("AI debugger")
-         if imgui.TreeNodeEx("Behavior Tree Root", imgui.constant.TreeNodeFlags.DefaultOpen) then
+         if imgui.TreeNodeEx("Behavior Tree Root", imgui.TreeNodeFlags_DefaultOpen) then
             local function iterateTree(node)
                if not node then
                   return
@@ -104,7 +194,7 @@ function OnImGui()
                   leaf = true
                end
                local treeNodeName = node.className .. ' ' .. node.name
-               local treeNode = imgui.TreeNodeEx(treeNodeName, leaf and imgui.constant.TreeNodeFlags.Leaf or 0)
+               local treeNode = imgui.TreeNodeEx(treeNodeName, leaf and imgui.TreeNodeFlags_Leaf or 0)
                writeNodeStatus(node)
                if treeNode then
                   if node.guard then
@@ -130,5 +220,11 @@ function OnImGui()
          end
       end
       imgui.End()
+   end
+
+   if #callbacks > 0 then
+      for _, callback in ipairs(tablex.copy(callbacks)) do
+         pcall(callback)
+      end
    end
 end

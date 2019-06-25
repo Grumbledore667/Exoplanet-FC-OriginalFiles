@@ -16,42 +16,6 @@ function CLockable:OnCreate(params)
    end
 end
 
-function CLockable:activate(obj)
-   if self:isLocked() then
-      local characterHasKey = self:characterHasKey(obj)
-      if characterHasKey then
-         gameplayUI:showInfoTextEx("Opened with " .. ItemsData.getItemLabel(characterHasKey), "minor", "")
-         self:setLockState(false)
-         return true
-      elseif self.lockObject then
-         gameplayUI:showInfoTextEx("Remotely locked", "minor", "")
-         return false
-      elseif self.code then
-         --Save obj.interactTarget from interactStop
-         runTimer(0, nil, function()
-            if obj then obj.interactTarget = self end
-         end, false)
-         gameplayUI.combLockUI:show(true)
-      else
-         gameplayUI:showInfoTextEx("Locked", "minor", "")
-         return false
-      end
-      self.activated = true
-      self.interactTarget = obj
-   end
-   return true
-end
-
-function CLockable:deactivate(obj)
-   if self:isLocked() then
-      self.activated = false
-      self.interactTarget = nil
-      if obj then obj.interactTarget = nil end
-      gameplayUI.combLockUI:show(false)
-   end
-   return true
-end
-
 function CLockable:setLockState(state)
    self.locked = state
    self:updateLockMeshes()
@@ -67,9 +31,7 @@ function CLockable:setCode(strCode)
 end
 
 function CLockable:tryCode(strCode, silent)
-   local activator = self.interactTarget
    if self.code == strCode then
-      self:deactivate(activator)
       self:setLockState(false)
       if not silent then
          gameplayUI:showInfoTextEx("Access granted", "minor", "")
@@ -114,12 +76,23 @@ function CLockable:getLabel()
    return label
 end
 
-function CLockable:getInteractLabel()
+function CLockable:getInteractLabel(char)
    local label = ""
    if self:isLocked() then
       label = "enter code"
    end
    return label
+end
+
+function CLockable:getInteractType(char)
+   return "lockable"
+end
+
+function CLockable:isInteractionLingering(char)
+   if self.code then
+      return true
+   end
+   return false
 end
 
 function CLockable:OnSaveState(state)

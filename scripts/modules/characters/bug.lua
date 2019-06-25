@@ -255,8 +255,25 @@ function CBug:damaged_finish()
    self:setState("damage", false)
 end
 
-function CBug:getType()
-   return "pickup"
+function CBug:getInteractType(char)
+   if self:getState("dead") then
+      return "pickup"
+   else
+      return "bug"
+   end
+end
+
+function CBug:isInteractionLingering(char)
+   return false
+end
+
+function CBug:getInteractData(char)
+   local data = {
+      animations = {
+         activate = hlp.getPickupAnimationFor(char, self)
+      },
+   }
+   return data
 end
 
 function CBug:getLabel()

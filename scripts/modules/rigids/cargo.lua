@@ -1,15 +1,14 @@
-local oo = require "loop.simple"
+local oo = require "loop.multiple"
 local _rootRigid = (require "roots")._rootRigid
+local CInteractable = require "mixins.interactable"
 
 ---@class CCargo : shRigidEntity
-local CCargo = oo.class({}, _rootRigid)
+local CCargo = oo.class({}, _rootRigid, CInteractable)
 
-function CCargo:OnCreate()
-   self.interactor = self:createAspect("interactor")
-   self.interactor:setObject(self)
+function CCargo:OnCreate(params)
+   CInteractable.OnCreate(self, params)
+
    self.interactor:setRaycastRadius(150.0)
-   self.interactor:getPose():setParent(self:getPose())
-   self.interactor:getPose():resetLocalPose()
    local pos = self:getMeshByName("door_left"):getPose():getLocalPos()
    pos.x = pos.x + 165
    self.interactor:getPose():setLocalPos(pos)
@@ -113,7 +112,7 @@ function CCargo:animation()
    end
 end
 
-function CCargo:activate(obj)
+function CCargo:activate(char)
    if not self:check_name() then return end
    if self.lock_opened then
       if self:animating() then
@@ -130,15 +129,11 @@ function CCargo:activate(obj)
          self.degrees_left = 160
          self.animateTimer = runTimer(0.025, self, self.animation, true)
       end
+      self.interactor:setRaycastActive(false)
    else
       self.lock_opened = true
       self:show_lock_meshes()
    end
-   return true
-end
-
-function CCargo:deactivate(obj)
-   return true
 end
 
 function CCargo:closeDoor()
@@ -153,7 +148,7 @@ function CCargo:closeDoor()
    return true
 end
 
-function CCargo:getType()
+function CCargo:getInteractType(char)
    return "activator"
 end
 

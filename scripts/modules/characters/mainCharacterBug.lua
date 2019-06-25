@@ -174,7 +174,7 @@ function CMainCharacterBug:animatedEvent(eventType)
 
    self:chipStopIdle()
 
-   if eventType == "attack" then
+   if eventType == "attack" or eventType == "attackAlt" then
       self:animateChip(self.chipMeshes.attack.default)
       self:stopMove()
       self:setState("attack", true)
@@ -325,7 +325,6 @@ function CMainCharacterBug:carryItem(smallRigid)
    end
    if smallRigid then
       if not smallRigid.isSpawned then
-         smallRigid:activate()
          self.holdingItem = smallRigid:createSpawnedCopy()
       else
          self.holdingItem = smallRigid

@@ -570,6 +570,7 @@ Rigids =
       description = "Activates/Deactivates different objects set in parameters",
       parameters  =
       {
+         { name = "toggle",        value = false, label = "Toggle", tip = "Is this activator is an on/off switch", },
          { name = "labelId",       value = "", label = "Label ID" , tip = "Lebel ID that should ref to objectsLabels.lua file record", },
          { name = "interactTime",  value = 0,  label = "Interact time",   tip = "Interaction time", },
 

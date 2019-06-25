@@ -88,8 +88,21 @@ function CShroom:OnHit(params)
    end
 end
 
-function CShroom:getType()
+function CShroom:getInteractType(char)
    return "pickup"
+end
+
+function CShroom:isInteractionLingering(char)
+   return false
+end
+
+function CShroom:getInteractData(char)
+   local data = {
+      animations = {
+         activate = hlp.getPickupAnimationFor(char, self)
+      },
+   }
+   return data
 end
 
 function CShroom:getLabel()
@@ -136,10 +149,6 @@ function CShroom:pickupItem(inventory)
    local item = inventory:addItem(self.itemName, count)
    self:cutFruit()
    return item, count
-end
-
-function CShroom:getInteractTime(interactType)
-   return 1
 end
 
 function CShroom:getLootTable()

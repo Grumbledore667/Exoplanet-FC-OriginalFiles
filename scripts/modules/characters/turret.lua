@@ -205,8 +205,8 @@ function CTurret:isFriend(char)
    return CCharacter.isFriend(self, char) and (not self.installer or self.installer == char)
 end
 
-function CTurret:getType()
-   return "activator"
+function CTurret:getInteractType(char)
+   return "container"
 end
 
 function CTurret:getLabel()
@@ -225,43 +225,12 @@ function CTurret:getInteractLabel()
    return "Manage"
 end
 
-function CTurret:getInteractTime(interactType)
-   if interactType == "pick" then
-      return 1
-   end
-
-   return 0
-end
-
-function CTurret:activate(obj)
-   if not self.activated then
-      self.activated = true
-      obj.exchangeTarget = self
-      obj:exchangeStart(self)
-   end
-   return true
-end
-
-function CTurret:deactivate(obj)
-   if self.activated then
-      self.activated = false
-      obj.exchangeTarget = nil
-      obj:exchangeStop(self)
-   end
-   return true
-end
-
-function CTurret:isActivated()
-   return self.activated
-end
-
 function CTurret:pickupItem(inventory)
    local item = inventory:addItem(self.itemName)
 
    if item then
       self:getInventory():giveAllItemsTo(getMC():getInventory())
       getScene():destroyEntity(self)
-      item:setVisible(false)
    end
    return item, 1
 end

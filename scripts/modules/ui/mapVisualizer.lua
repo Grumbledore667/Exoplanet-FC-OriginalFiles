@@ -25,12 +25,12 @@ function CMapVisualizerUI:init()
 
    self.itemsWnd = gameplayUI.mapUI.wnd:createChild("TaharezLook/ScrollablePane", "VisualizerItemsList")
    self.itemsWnd:setProperty("AlwaysOnTop", "true")
-   self.itemsWnd:setProperty("Area", "{{0.83,0},{0,0},{0.99,0},{0.5,0}}")
+   self.itemsWnd:setProperty("Area", "{{0.83,0},{0.03,0},{0.99,0},{0.5,0}}")
    self.itemsWnd:setVisible(false)
    self.classesWnd = gameplayUI.mapUI.wnd:createChild("TaharezLook/ScrollablePane", "VisualizerClassesList")
    self.classesWnd:setText("Classes")
    self.classesWnd:setProperty("AlwaysOnTop", "true")
-   self.classesWnd:setProperty("Area", "{{0.65,0},{0,0},{0.82,0},{0.5,0}}")
+   self.classesWnd:setProperty("Area", "{{0.65,0},{0.03,0},{0.82,0},{0.5,0}}")
    self.classesWnd:setVisible(false)
 
    local i = 0
@@ -252,7 +252,9 @@ function CMapVisualizerUI:onMapVisualizedIconClick(args)
       end}
       if obj:getScriptClass() == "CContainer" then
          optionsList["edit inventory"] = {func = function()
-            player:interactObject("activate", obj, nil)
+            getMC().exchangeTarget = obj
+            gameplayUI.inventoryPlayer:show(true)
+            obj:showInventory(true)
             gameplayUI.mapUI:show(false)
          end}
       end

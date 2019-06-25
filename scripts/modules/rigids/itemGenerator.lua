@@ -24,6 +24,7 @@ function CItemGenerator:OnCreate(params)
    CDestroyable.OnCreate(self, params)
    CInteractable.OnCreate(self, params)
 
+   self.activated = false
    self.itemName, self.itemCount = loadAndGuessItemParam(self, "itemName", {})
    self.hideSource     = loadParam(self, "hideSource", true)
    self.meshRaycast    = loadParam(self, "meshRaycast", false)
@@ -50,8 +51,10 @@ function CItemGenerator:OnCreate(params)
    end
 
    if not self.itemName then return end
-   if ItemsData.isItemTemplate(self.itemName) and not ItemsData.getItemTemplate(self.itemName) then
-      log(string.format(ERROR_BAD_TEMPLATE, self:getScriptClass(), self:getName(), tostring(self.itemName)))
+   if ItemsData.isItemTemplate(self.itemName) then
+      if not ItemsData.getItemTemplate(self.itemName) then
+         log(string.format(ERROR_BAD_TEMPLATE, self:getScriptClass(), self:getName(), tostring(self.itemName)))
+      end
    elseif not ItemsData.getItemsInfo(self.itemName) then
       log(string.format(ERROR_BAD_ITEM, self:getScriptClass(), self:getName(), tostring(self.itemName)))
    end
@@ -59,6 +62,7 @@ end
 
 
 function CItemGenerator:pickupItem(inventory)
+   self.activated = true
    local item = inventory:addItem(self.itemName, self.itemCount)
 
    if item then
@@ -87,22 +91,30 @@ function CItemGenerator:getInteractLabel()
    return "pick up"
 end
 
-function CItemGenerator:getType()
+function CItemGenerator:getInteractType(char)
    return "pickup"
 end
 
-function CItemGenerator:getInteractTime(interactType)
-   return self.interactTime
+function CItemGenerator:getInteractData(char)
+   local data = {
+      time = self.interactTime,
+      animations = {
+         activate = hlp.getPickupAnimationFor(char, self)
+      },
+   }
+   return data
 end
 
 function CItemGenerator:getLootTable()
    if not self.itemName then return end
    local t = {}
-   local template = ItemsData.getItemTemplate(self.itemName)
-   if template then
-      t[template.itemName] = self.itemCount
-   else
-      t[self.itemName] = self.itemCount
+   if not self.activated or self.interactor:getRaycastActive() then
+      local template = ItemsData.getItemTemplate(self.itemName)
+      if template then
+         t[template.itemName] = self.itemCount
+      else
+         t[self.itemName] = self.itemCount
+      end
    end
    return t
 end
@@ -110,6 +122,7 @@ end
 function CItemGenerator:OnSaveState(state)
    state.visible = self:getVisible()
    state.interactor = self.interactor:getRaycastActive()
+   state.activated = self.activated
 end
 
 function CItemGenerator:OnLoadState(state)
@@ -121,6 +134,7 @@ function CItemGenerator:OnLoadState(state)
    if state.interactor ~= nil then
       self.interactor:setRaycastActive(state.interactor)
    end
+   self.activated = state.activated
 end
 
 return {CItemGenerator=CItemGenerator}

@@ -27,8 +27,6 @@ function CTerminal:OnCreate()
 
    self.sounds = {}
 
-   self.activated = false
-
    self:setMaterials("hologram_animated")
 end
 
@@ -50,7 +48,6 @@ function CTerminal:OnInteractTriggerBegin(obj)
 end
 
 function CTerminal:OnInteractTriggerEnd(obj)
-   self:deactivate()
    if self.saverTimer then
       return
    end
@@ -64,55 +61,8 @@ function CTerminal:OnInteractTriggerEnd(obj)
    self.saverTimer = runTimer(4.0, self, self.showSaver, false)
 end
 
-function CTerminal:isActivated()
-   return self.activated
-end
-
-function CTerminal:activate(obj)
-   if self.menuTimer or self.activated then
-      return false
-   end
-
-   terminalsActiveCount = terminalsActiveCount + 1
-   gameplayUI.terminal.activeTerminal = self
-
-   TerminalUI.showCursor()
-   gameplayUI:setCursorVisible(false)
-   blockUserControl()
-   resetCursorPos()
-
-   self.activated = true
-   return true
-end
-
-function CTerminal:deactivate(obj)
-   if not self.activated then
-      return false
-   end
-
-   terminalsActiveCount = terminalsActiveCount - 1
-
-   if TerminalUI.isCursorVisible() and terminalsActiveCount == 0 then
-      TerminalUI.hideCursor()
-      if GUIUtils.interactiveWindowsVisible() then
-         gameplayUI:setCursorVisible(true)
-      else
-         returnUserControl()
-      end
-      gameplayUI.terminal.activeTerminal = nil
-   end
-
-   self.activated = false
-   return true
-end
-
 function CTerminal:showSaver()
-   if self.activated then
-      self:deactivate(getPlayer())
-   end
-   if terminalsActiveCount == 0 then
-      TerminalUI.hideMenu()
-   end
+   TerminalUI.hideMenu()
    self:setTexture(0, "")
    self:setMaterials("hologram_animated")
    self.saverTimer = nil
@@ -159,8 +109,16 @@ function CTerminal:denyElement()
    self.sounds.denied:play()
 end
 
-function CTerminal:getType()
-   return "activator"
+function CTerminal:getInteractType(char)
+   if self.menuTimer then
+      return "no_interaction"
+   else
+      return "terminal"
+   end
+end
+
+function CTerminal:isInteractionLingering(char)
+   return true
 end
 
 function CTerminal:getLabel()

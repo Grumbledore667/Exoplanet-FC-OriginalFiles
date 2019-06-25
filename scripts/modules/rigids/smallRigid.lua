@@ -32,15 +32,12 @@ function CSmallRigid:OnInteractTriggerEnd(obj)
    self:OnFocusEnd(obj)
 end
 
-function CSmallRigid:activate(obj)
-   CItemGenerator.activate(self, obj)
+function CSmallRigid:createSpawnedCopy()
    self:setVisible(false)
    self:setCollisionObjects(false)
    self.interactor:setTriggerActive(false)
    self.interactor:setRaycastActive(false)
-end
 
-function CSmallRigid:createSpawnedCopy()
    local copy = getScene():createEntity(self:getPrefabName(), "CSmallRigid", {itemName = self.itemName, itemCount = self.itemCount})
    copy:setPose(self:getPose())
    copy.isSpawned = true

@@ -66,7 +66,7 @@ function CInventoryContainerUI:onHide()
    local container = getMC().exchangeTarget
    if container then
       container:getInventory():unsubscribeOnChange(self.onInventoryChangeCallback)
-      getMC():interactObject("deactivate", container, nil)
+      getMC():interactStop()
    end
    gameplayUI.itemDelimiterUI:show(false)
 

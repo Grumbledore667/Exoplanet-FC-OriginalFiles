@@ -86,10 +86,10 @@ function CBeacon:OnCreate(params)
 
    --TODO:FIXME: refactor this to work with engine animation loading properly
    --Delay daystate sub and animation play, because engine will prevent animation stop during animation loading
-   runTimer(0.5, nil, function()
+   self.timer = runTimer(0.5, nil, function()
       self:playAnimationSpecial(self.animations.legs.open, false)
       self.dayStateCallback = SkySystem:subscribeDayStateChange("all", partial(self.onDayStateChange, self))
-      runTimer(0.5, nil, function()
+      self.timer = runTimer(0.5, nil, function()
          self:onDayStateChange(SkySystem:getDayState())
       end, false)
    end, false)
@@ -98,6 +98,12 @@ end
 function CBeacon:OnDestroy()
    CDestroyable.OnDestroy(self)
    SkySystem:unsubscribeDayStateChange(self.dayStateCallback)
+
+   if self.timer then
+      self.timer:stop()
+      self.timer = nil
+   end
+
    getScene():destroyEntity(self.collision)
 end
 
@@ -146,8 +152,17 @@ function CBeacon:playAnimationSpecial(anim, cycled)
    end
 end
 
-function CBeacon:getType()
+function CBeacon:getInteractType(char)
    return "pickup"
+end
+
+function CBeacon:getInteractData(char)
+   local data = {
+      animations = {
+         activate = hlp.getPickupAnimationFor(char, self)
+      },
+   }
+   return data
 end
 
 function CBeacon:getLabel()
@@ -162,16 +177,11 @@ function CBeacon:getInteractLabel()
    return "deinstall"
 end
 
-function CBeacon:getInteractTime(interactType)
-   return 1
-end
-
 function CBeacon:pickupItem(inventory)
    local item = inventory:addItem(self.itemName)
 
    if item then
       getScene():destroyEntity(self)
-      item:setVisible(false)
    end
    return item, 1
 end

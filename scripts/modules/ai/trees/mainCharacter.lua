@@ -75,8 +75,8 @@ local obj1 = {
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "attackGuard";
-		["posX"] = 1080;
-		["posY"] = -480;
+		["posX"] = 720;
+		["posY"] = -660;
 		["script"] = "";
 	};
 	["node_autoreload on?_00226"] = {
@@ -223,8 +223,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "canAttack";
-		["posX"] = 1320;
-		["posY"] = -60;
+		["posX"] = -60;
+		["posY"] = -450;
 		["script"] = "";
 	};
 	["node_canInteract_00166"] = {
@@ -275,8 +275,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "canJump";
-		["posX"] = 990;
-		["posY"] = -210;
+		["posX"] = -60;
+		["posY"] = -720;
 		["script"] = "";
 	};
 	["node_canMove_00118"] = {
@@ -355,8 +355,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "climbLadderGuard";
-		["posX"] = 3510;
-		["posY"] = -510;
+		["posX"] = 3420;
+		["posY"] = -630;
 		["script"] = "";
 	};
 	["node_climbLadder_00008"] = {
@@ -485,45 +485,8 @@ end";
 		["link_type"] = false;
 		["name"] = "dead";
 		["posX"] = 990;
-		["posY"] = 90;
+		["posY"] = -150;
 		["script"] = "running_function = true";
-	};
-	["node_dig_00274"] = {
-		["ID"] = 274;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "digging?";
-		["link_type"] = false;
-		["name"] = "dig";
-		["posX"] = 990;
-		["posY"] = 750;
-		["script"] = "function start_function(self)\
-   self:digging_start()\
-end\
-\
-function running_function(self)\
-   return self:getState(\"gathering\")\
-end\
-\
-function finish_function(self)\
-   self:tryStopAnimatedGathering(true)\
-   self:setBBVar(\"gatherObj\", nil)\
-   self:setState(\"digging\", false)\
-end\
-";
-	};
-	["node_digging?_00275"] = {
-		["ID"] = 275;
-		["class"] = "StateCondition";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "digging?";
-		["posX"] = 690;
-		["posY"] = 420;
-		["script"] = "stateName = \"digging\"";
 	};
 	["node_do stuff during talk_00284"] = {
 		["ID"] = 284;
@@ -540,7 +503,7 @@ end\
 		["link_type"] = false;
 		["name"] = "do stuff during talk";
 		["posX"] = 1260;
-		["posY"] = 180;
+		["posY"] = -60;
 		["script"] = "";
 	};
 	["node_dummyRunning_00083"] = {
@@ -564,7 +527,7 @@ end\
 		["link_type"] = "internal";
 		["name"] = "dummyRunning";
 		["posX"] = 1530;
-		["posY"] = 210;
+		["posY"] = -30;
 		["script"] = "running_function = true";
 	};
 	["node_empty magazine?_00225"] = {
@@ -666,7 +629,7 @@ finish_function = Entity.get_up_finish\
 		["link_type"] = false;
 		["name"] = "getting up?";
 		["posX"] = 690;
-		["posY"] = 120;
+		["posY"] = 300;
 		["script"] = "stateName = \"getting up\"";
 	};
 	["node_gun equipped?_00211"] = {
@@ -694,8 +657,8 @@ end";
 		["h"] = 60;
 		["link_type"] = false;
 		["name"] = "hasMeleeWeaponEquipped";
-		["posX"] = 1860;
-		["posY"] = 0;
+		["posX"] = 420;
+		["posY"] = -390;
 		["script"] = "function condition(self)\
    return self:getWeaponSlotItem():isMeleeWeapon()\
 end";
@@ -725,8 +688,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "hasWeaponEquipped";
-		["posX"] = 1320;
-		["posY"] = -180;
+		["posX"] = -60;
+		["posY"] = -570;
 		["script"] = "function condition(self)\
    return self:getWeaponSlotItem() ~= nil\
 end";
@@ -756,37 +719,30 @@ end";
 		["script"] = "running_function = Entity.hit_recovery_running\
 finish_function = Entity.hit_recovery_finish";
 	};
-	["node_interactGuard_00061"] = {
-		["ID"] = 61;
-		["children"] = {
-			[1] = "isNotClimbLadderDown";
-			[2] = "isNotClimbLadder";
-			[3] = "isInteractingOrTalking";
-		};
-		["class"] = "Sequence";
-		["connectionsID"] = {
-			[1] = 63;
-			[2] = 64;
-			[3] = 65;
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "interactGuard";
-		["posX"] = 3030;
-		["posY"] = -510;
-		["script"] = "";
-	};
 	["node_interact_00007"] = {
 		["ID"] = 7;
-		["class"] = "Action";
+		["class"] = "CoroutineAction";
 		["connectionsID"] = {
 		};
-		["guard"] = "interactGuard";
+		["guard"] = "interacting?";
 		["link_type"] = false;
 		["name"] = "interact";
 		["posX"] = 990;
-		["posY"] = 690;
-		["script"] = "start_function = Entity.interact_start";
+		["posY"] = 210;
+		["script"] = "running_function = Entity.interact_running\
+finish_function = Entity.interact_finish";
+	};
+	["node_interacting?_00304"] = {
+		["ID"] = 304;
+		["class"] = "StateCondition";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = false;
+		["name"] = "interacting?";
+		["posX"] = 690;
+		["posY"] = 210;
+		["script"] = "stateName = \"interacting\"";
 	};
 	["node_isAimMode_00108"] = {
 		["ID"] = 108;
@@ -814,8 +770,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isAimPressed";
-		["posX"] = 1860;
-		["posY"] = 60;
+		["posX"] = 420;
+		["posY"] = -330;
 		["script"] = "buttonName = \"AIM\"";
 	};
 	["node_isAimPressed_00216"] = {
@@ -852,8 +808,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isAlive";
-		["posX"] = 480;
-		["posY"] = -600;
+		["posX"] = -570;
+		["posY"] = -1110;
 		["script"] = "";
 	};
 	["node_isAnyAttack_00202"] = {
@@ -870,8 +826,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isAnyAttack";
-		["posX"] = 1320;
-		["posY"] = 0;
+		["posX"] = -60;
+		["posY"] = -390;
 		["script"] = "";
 	};
 	["node_isAttackPressed_00201"] = {
@@ -882,8 +838,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isAttackPressed";
-		["posX"] = 1590;
-		["posY"] = -30;
+		["posX"] = 180;
+		["posY"] = -420;
 		["script"] = "buttonName = \"ATTACK\"";
 	};
 	["node_isAttackPressed_00212"] = {
@@ -952,8 +908,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isAttacking";
-		["posX"] = 750;
-		["posY"] = -180;
+		["posX"] = -300;
+		["posY"] = -480;
 		["script"] = "";
 	};
 	["node_isAttacking_00033"] = {
@@ -964,8 +920,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isAttacking";
-		["posX"] = 1590;
-		["posY"] = -360;
+		["posX"] = 1230;
+		["posY"] = -540;
 		["script"] = "";
 	};
 	["node_isBackButton_00132"] = {
@@ -988,8 +944,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isClimbLadderDown";
-		["posX"] = 750;
-		["posY"] = -480;
+		["posX"] = -300;
+		["posY"] = -990;
 		["script"] = "stateName = \"climbing_ladder_down\"";
 	};
 	["node_isClimbLadderDown_00072"] = {
@@ -1000,8 +956,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isClimbLadderDown";
-		["posX"] = 3750;
-		["posY"] = -510;
+		["posX"] = 3660;
+		["posY"] = -600;
 		["script"] = "stateName = \"climbing_ladder_down\"";
 	};
 	["node_isClimbLadder_00012"] = {
@@ -1012,8 +968,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isClimbLadder";
-		["posX"] = 750;
-		["posY"] = -420;
+		["posX"] = -300;
+		["posY"] = -930;
 		["script"] = "stateName = \"climbing_ladder\"";
 	};
 	["node_isClimbLadder_00070"] = {
@@ -1024,8 +980,8 @@ finish_function = Entity.hit_recovery_finish";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isClimbLadder";
-		["posX"] = 3750;
-		["posY"] = -570;
+		["posX"] = 3660;
+		["posY"] = -660;
 		["script"] = "stateName = \"climbing_ladder\"";
 	};
 	["node_isConsoleVisible_00151"] = {
@@ -1052,8 +1008,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isCooking";
-		["posX"] = 750;
-		["posY"] = -60;
+		["posX"] = -300;
+		["posY"] = -360;
 		["script"] = "stateName = \"cooking\"";
 	};
 	["node_isDead_00097"] = {
@@ -1064,8 +1020,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isDead";
-		["posX"] = 750;
-		["posY"] = -600;
+		["posX"] = -300;
+		["posY"] = -1110;
 		["script"] = "stateName = \"dead\"";
 	};
 	["node_isDebugUIVisible_00153"] = {
@@ -1184,8 +1140,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isHealthAboveZero";
-		["posX"] = 1320;
-		["posY"] = -120;
+		["posX"] = -60;
+		["posY"] = -510;
 		["script"] = "function condition(self)\
    return self:getHealth() > 0\
 end";
@@ -1198,8 +1154,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isHealthAboveZero";
-		["posX"] = 2310;
-		["posY"] = -390;
+		["posX"] = 2220;
+		["posY"] = -510;
 		["script"] = "function condition(self)\
    return self:getHealth() > 0\
 end";
@@ -1244,20 +1200,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isInteractingOrTalking";
-		["posX"] = 750;
-		["posY"] = -360;
-		["script"] = "";
-	};
-	["node_isInteractingOrTalking_00065"] = {
-		["ID"] = 65;
-		["class"] = "Sequence";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = "internal";
-		["name"] = "isInteractingOrTalking";
-		["posX"] = 3270;
-		["posY"] = -510;
+		["posX"] = -300;
+		["posY"] = -870;
 		["script"] = "";
 	};
 	["node_isInteracting_00078"] = {
@@ -1268,8 +1212,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isInteracting";
-		["posX"] = 990;
-		["posY"] = -390;
+		["posX"] = -60;
+		["posY"] = -900;
 		["script"] = "stateName = \"interacting\"";
 	};
 	["node_isJumpPressed_00195"] = {
@@ -1280,8 +1224,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isJumpPressed";
-		["posX"] = 990;
-		["posY"] = -270;
+		["posX"] = -60;
+		["posY"] = -780;
 		["script"] = "buttonName = \"JUMP\"";
 	};
 	["node_isJumping_00015"] = {
@@ -1298,8 +1242,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isJumping";
-		["posX"] = 750;
-		["posY"] = -240;
+		["posX"] = -300;
+		["posY"] = -750;
 		["script"] = "";
 	};
 	["node_isJumping_00039"] = {
@@ -1310,8 +1254,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isJumping";
-		["posX"] = 1830;
-		["posY"] = -390;
+		["posX"] = 1710;
+		["posY"] = -510;
 		["script"] = "";
 	};
 	["node_isLanding_00094"] = {
@@ -1322,8 +1266,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isLanding";
-		["posX"] = 750;
-		["posY"] = -540;
+		["posX"] = -300;
+		["posY"] = -1050;
 		["script"] = "stateName = \"landing\"";
 	};
 	["node_isLeftButton_00130"] = {
@@ -1352,8 +1296,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isMeleeAltAttack";
-		["posX"] = 1590;
-		["posY"] = 30;
+		["posX"] = 180;
+		["posY"] = -360;
 		["script"] = "";
 	};
 	["node_isNonForwardButton_00129"] = {
@@ -1438,8 +1382,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isNotAttacking";
-		["posX"] = 480;
-		["posY"] = -180;
+		["posX"] = -570;
+		["posY"] = -480;
 		["script"] = "";
 	};
 	["node_isNotClimbLadderDown_00020"] = {
@@ -1452,8 +1396,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isNotClimbLadderDown";
-		["posX"] = 480;
-		["posY"] = -480;
+		["posX"] = -570;
+		["posY"] = -990;
 		["script"] = "";
 	};
 	["node_isNotClimbLadderDown_00028"] = {
@@ -1464,8 +1408,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotClimbLadderDown";
-		["posX"] = 1350;
-		["posY"] = -630;
+		["posX"] = 990;
+		["posY"] = -810;
 		["script"] = "";
 	};
 	["node_isNotClimbLadderDown_00037"] = {
@@ -1476,8 +1420,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotClimbLadderDown";
-		["posX"] = 1830;
-		["posY"] = -630;
+		["posX"] = 1710;
+		["posY"] = -750;
 		["script"] = "";
 	};
 	["node_isNotClimbLadderDown_00044"] = {
@@ -1488,8 +1432,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotClimbLadderDown";
-		["posX"] = 2310;
-		["posY"] = -630;
+		["posX"] = 2220;
+		["posY"] = -750;
 		["script"] = "";
 	};
 	["node_isNotClimbLadderDown_00048"] = {
@@ -1500,20 +1444,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotClimbLadderDown";
-		["posX"] = 2790;
-		["posY"] = -630;
-		["script"] = "";
-	};
-	["node_isNotClimbLadderDown_00064"] = {
-		["ID"] = 64;
-		["class"] = "Invertor";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = "internal";
-		["name"] = "isNotClimbLadderDown";
-		["posX"] = 3270;
-		["posY"] = -630;
+		["posX"] = 2700;
+		["posY"] = -720;
 		["script"] = "";
 	};
 	["node_isNotClimbLadder_00021"] = {
@@ -1526,8 +1458,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isNotClimbLadder";
-		["posX"] = 480;
-		["posY"] = -420;
+		["posX"] = -570;
+		["posY"] = -930;
 		["script"] = "";
 	};
 	["node_isNotClimbLadder_00029"] = {
@@ -1538,8 +1470,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotClimbLadder";
-		["posX"] = 1350;
-		["posY"] = -570;
+		["posX"] = 990;
+		["posY"] = -750;
 		["script"] = "";
 	};
 	["node_isNotClimbLadder_00035"] = {
@@ -1550,8 +1482,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotClimbLadder";
-		["posX"] = 1830;
-		["posY"] = -570;
+		["posX"] = 1710;
+		["posY"] = -690;
 		["script"] = "";
 	};
 	["node_isNotClimbLadder_00045"] = {
@@ -1562,8 +1494,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotClimbLadder";
-		["posX"] = 2310;
-		["posY"] = -570;
+		["posX"] = 2220;
+		["posY"] = -690;
 		["script"] = "";
 	};
 	["node_isNotClimbLadder_00050"] = {
@@ -1574,20 +1506,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotClimbLadder";
-		["posX"] = 2790;
-		["posY"] = -570;
-		["script"] = "";
-	};
-	["node_isNotClimbLadder_00063"] = {
-		["ID"] = 63;
-		["class"] = "Invertor";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = "internal";
-		["name"] = "isNotClimbLadder";
-		["posX"] = 3270;
-		["posY"] = -570;
+		["posX"] = 2700;
+		["posY"] = -660;
 		["script"] = "";
 	};
 	["node_isNotConsoleVisible_00157"] = {
@@ -1614,8 +1534,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isNotCooking";
-		["posX"] = 480;
-		["posY"] = -60;
+		["posX"] = -570;
+		["posY"] = -360;
 		["script"] = "";
 	};
 	["node_isNotDebugUIVisible_00159"] = {
@@ -1752,8 +1672,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isNotInteringOrTalking";
-		["posX"] = 480;
-		["posY"] = -360;
+		["posX"] = -570;
+		["posY"] = -870;
 		["script"] = "";
 	};
 	["node_isNotInteringOrTalking_00030"] = {
@@ -1764,8 +1684,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotInteringOrTalking";
-		["posX"] = 1350;
-		["posY"] = -510;
+		["posX"] = 990;
+		["posY"] = -690;
 		["script"] = "";
 	};
 	["node_isNotInteringOrTalking_00036"] = {
@@ -1776,8 +1696,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotInteringOrTalking";
-		["posX"] = 1830;
-		["posY"] = -510;
+		["posX"] = 1710;
+		["posY"] = -630;
 		["script"] = "";
 	};
 	["node_isNotInteringOrTalking_00042"] = {
@@ -1788,8 +1708,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotInteringOrTalking";
-		["posX"] = 2310;
-		["posY"] = -510;
+		["posX"] = 2220;
+		["posY"] = -630;
 		["script"] = "";
 	};
 	["node_isNotInteringOrTalking_00051"] = {
@@ -1800,8 +1720,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotInteringOrTalking";
-		["posX"] = 2790;
-		["posY"] = -510;
+		["posX"] = 2700;
+		["posY"] = -600;
 		["script"] = "";
 	};
 	["node_isNotJumping_00023"] = {
@@ -1814,8 +1734,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isNotJumping";
-		["posX"] = 480;
-		["posY"] = -240;
+		["posX"] = -570;
+		["posY"] = -750;
 		["script"] = "";
 	};
 	["node_isNotJumping_00032"] = {
@@ -1826,8 +1746,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotJumping";
-		["posX"] = 1350;
-		["posY"] = -390;
+		["posX"] = 990;
+		["posY"] = -570;
 		["script"] = "";
 	};
 	["node_isNotNonForwardButton_00133"] = {
@@ -1882,8 +1802,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isNotResting";
-		["posX"] = 480;
-		["posY"] = -300;
+		["posX"] = -570;
+		["posY"] = -810;
 		["script"] = "";
 	};
 	["node_isNotResting_00031"] = {
@@ -1894,8 +1814,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotResting";
-		["posX"] = 1350;
-		["posY"] = -450;
+		["posX"] = 990;
+		["posY"] = -630;
 		["script"] = "";
 	};
 	["node_isNotResting_00034"] = {
@@ -1906,8 +1826,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotResting";
-		["posX"] = 1830;
-		["posY"] = -450;
+		["posX"] = 1710;
+		["posY"] = -570;
 		["script"] = "";
 	};
 	["node_isNotResting_00041"] = {
@@ -1918,8 +1838,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isNotResting";
-		["posX"] = 2310;
-		["posY"] = -450;
+		["posX"] = 2220;
+		["posY"] = -570;
 		["script"] = "";
 	};
 	["node_isNotStateSprintMode_00180"] = {
@@ -2100,8 +2020,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isReloading";
-		["posX"] = 1590;
-		["posY"] = -300;
+		["posX"] = 1230;
+		["posY"] = -480;
 		["script"] = "stateName = \"reloading\"";
 	};
 	["node_isReloading_00252"] = {
@@ -2136,8 +2056,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "isResting";
-		["posX"] = 750;
-		["posY"] = -300;
+		["posX"] = -300;
+		["posY"] = -810;
 		["script"] = "stateName = \"resting\"";
 	};
 	["node_isResting_00052"] = {
@@ -2148,8 +2068,8 @@ end";
 		["guard"] = "";
 		["link_type"] = "internal";
 		["name"] = "isResting";
-		["posX"] = 2790;
-		["posY"] = -450;
+		["posX"] = 2700;
+		["posY"] = -540;
 		["script"] = "stateName = \"resting\"";
 	};
 	["node_isRightButton_00131"] = {
@@ -2452,8 +2372,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "jumpGuard";
-		["posX"] = 1590;
-		["posY"] = -510;
+		["posX"] = 1470;
+		["posY"] = -630;
 		["script"] = "";
 	};
 	["node_jump_00003"] = {
@@ -2465,7 +2385,7 @@ end";
 		["link_type"] = false;
 		["name"] = "jump";
 		["posX"] = 990;
-		["posY"] = 270;
+		["posY"] = 30;
 		["script"] = "start_function = Entity.jump\
 running_function = true";
 	};
@@ -2478,47 +2398,9 @@ running_function = true";
 		["link_type"] = false;
 		["name"] = "landing";
 		["posX"] = 990;
-		["posY"] = 210;
+		["posY"] = -30;
 		["script"] = "running_function = Entity.landing_running\
 finish_function = Entity.landing_finish";
-	};
-	["node_leaveBed_00269"] = {
-		["ID"] = 269;
-		["class"] = "CoroutineAction";
-		["connectionsID"] = {
-		};
-		["guard"] = "leaving bed?";
-		["link_type"] = false;
-		["name"] = "leaveBed";
-		["posX"] = 990;
-		["posY"] = 330;
-		["script"] = "running_function = Entity.leavingBed_running\
-finish_function = Entity.leavingBed_finish\
-";
-	};
-	["node_leaving bed?_00270"] = {
-		["ID"] = 270;
-		["class"] = "StateCondition";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "leaving bed?";
-		["posX"] = 690;
-		["posY"] = 180;
-		["script"] = "stateName = \"leavingBed\"";
-	};
-	["node_lyingInBed_00272"] = {
-		["ID"] = 272;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "lyingInBed";
-		["posX"] = 1260;
-		["posY"] = 420;
-		["script"] = "running_function = true";
 	};
 	["node_melee attack_00002"] = {
 		["ID"] = 2;
@@ -2554,43 +2436,6 @@ finish_function = Entity.attack_melee_finish";
 		["posX"] = 2130;
 		["posY"] = 1110;
 		["script"] = "";
-	};
-	["node_mine_00277"] = {
-		["ID"] = 277;
-		["class"] = "Action";
-		["connectionsID"] = {
-		};
-		["guard"] = "mining?";
-		["link_type"] = false;
-		["name"] = "mine";
-		["posX"] = 990;
-		["posY"] = 810;
-		["script"] = "function start_function(self)\
-   self:mining_start()\
-end\
-\
-function running_function(self)\
-   return self:getState(\"gathering\")\
-end\
-\
-function finish_function(self)\
-   self:tryStopAnimatedGathering(true)\
-   self:setBBVar(\"gatherObj\", nil)\
-   self:setState(\"mining\", false)\
-end\
-";
-	};
-	["node_mining?_00276"] = {
-		["ID"] = 276;
-		["class"] = "StateCondition";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "mining?";
-		["posX"] = 690;
-		["posY"] = 480;
-		["script"] = "stateName = \"mining\"";
 	};
 	["node_misc attack_00219"] = {
 		["ID"] = 219;
@@ -2727,8 +2572,8 @@ end";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "moveGuard";
-		["posX"] = 2070;
-		["posY"] = -510;
+		["posX"] = 1980;
+		["posY"] = -630;
 		["script"] = "-- this guard is mostly useless";
 	};
 	["node_moveRunning_00101"] = {
@@ -2841,8 +2686,8 @@ policy = \"selector\"";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "node_246";
-		["posX"] = 1350;
-		["posY"] = -330;
+		["posX"] = 990;
+		["posY"] = -510;
 		["script"] = "";
 	};
 	["node_playerBT_00000"] = {
@@ -3015,20 +2860,6 @@ orchestrator = \"resume\"";
 		["script"] = "running_function = Entity.reload_running\
 finish_function = Entity.reload_finish";
 	};
-	["node_restAtBed_00267"] = {
-		["ID"] = 267;
-		["class"] = "CoroutineAction";
-		["connectionsID"] = {
-		};
-		["guard"] = "";
-		["link_type"] = false;
-		["name"] = "restAtBed";
-		["posX"] = 1260;
-		["posY"] = 360;
-		["script"] = "running_function = Entity.restAtBed_running\
-finish_function = Entity.restAtBed_finish\
-";
-	};
 	["node_restFinisher_00082"] = {
 		["ID"] = 82;
 		["child"] = "rest";
@@ -3061,8 +2892,8 @@ finish_function = Entity.restAtBed_finish\
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "restGuard";
-		["posX"] = 2550;
-		["posY"] = -510;
+		["posX"] = 2460;
+		["posY"] = -630;
 		["script"] = "";
 	};
 	["node_restIdle_00087"] = {
@@ -3142,17 +2973,13 @@ policy = \"sequence\"";
 			[2] = "talking";
 			[3] = "landing";
 			[4] = "jump";
-			[5] = "leaveBed";
-			[6] = "sleeping";
-			[7] = "get up";
-			[8] = "restFinisher";
-			[9] = "interact";
-			[10] = "dig";
-			[11] = "mine";
-			[12] = "consume";
-			[13] = "climbLadder";
-			[14] = "side_step";
-			[15] = "moveStandDo";
+			[5] = "interact";
+			[6] = "get up";
+			[7] = "restFinisher";
+			[8] = "consume";
+			[9] = "climbLadder";
+			[10] = "side_step";
+			[11] = "moveStandDo";
 		};
 		["class"] = "DynamicGuardSelector";
 		["connectionsID"] = {
@@ -3164,13 +2991,9 @@ policy = \"sequence\"";
 			[6] = 96;
 			[7] = 205;
 			[8] = 260;
-			[9] = 269;
-			[10] = 271;
-			[11] = 274;
-			[12] = 277;
-			[13] = 279;
-			[14] = 282;
-			[15] = 299;
+			[9] = 279;
+			[10] = 282;
+			[11] = 299;
 		};
 		["guard"] = "";
 		["link_type"] = false;
@@ -3284,27 +3107,9 @@ finish_function = Entity.side_step_finish";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "sleepAtBed?";
-		["posX"] = 750;
-		["posY"] = -120;
+		["posX"] = -300;
+		["posY"] = -240;
 		["script"] = "stateName = \"sleepAtBed\"";
-	};
-	["node_sleeping_00271"] = {
-		["ID"] = 271;
-		["children"] = {
-			[1] = "restAtBed";
-			[2] = "lyingInBed";
-		};
-		["class"] = "Sequence";
-		["connectionsID"] = {
-			[1] = 267;
-			[2] = 272;
-		};
-		["guard"] = "sleepAtBed?";
-		["link_type"] = false;
-		["name"] = "sleeping";
-		["posX"] = 990;
-		["posY"] = 390;
-		["script"] = "";
 	};
 	["node_talk start_00273"] = {
 		["ID"] = 273;
@@ -3315,7 +3120,7 @@ finish_function = Entity.side_step_finish";
 		["link_type"] = false;
 		["name"] = "talk start";
 		["posX"] = 1260;
-		["posY"] = 120;
+		["posY"] = -120;
 		["script"] = "start_function = Entity.talking_start";
 	};
 	["node_talk?_00080"] = {
@@ -3326,8 +3131,8 @@ finish_function = Entity.side_step_finish";
 		["guard"] = "";
 		["link_type"] = false;
 		["name"] = "talk?";
-		["posX"] = 990;
-		["posY"] = -330;
+		["posX"] = -60;
+		["posY"] = -840;
 		["script"] = "stateName = \"talk\"";
 	};
 	["node_talking_00282"] = {
@@ -3345,7 +3150,7 @@ finish_function = Entity.side_step_finish";
 		["link_type"] = false;
 		["name"] = "talking";
 		["posX"] = 990;
-		["posY"] = 150;
+		["posY"] = -90;
 		["script"] = "";
 	};
 	["node_tryReload_00228"] = {
@@ -3418,7 +3223,7 @@ finish_function = Entity.unequip_finish";
 		["link_type"] = "internal";
 		["name"] = "unequip";
 		["posX"] = 1530;
-		["posY"] = 150;
+		["posY"] = -90;
 		["script"] = "running_function = Entity.unequip_running\
 finish_function = Entity.unequip_finish";
 	};

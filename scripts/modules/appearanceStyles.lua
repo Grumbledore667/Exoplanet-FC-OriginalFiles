@@ -1640,6 +1640,49 @@ return {
         eye_r = "abori_eye_1_dif.dds"
       }
     },
+    abori_outcast_24 = {
+      attachments = {
+      },
+      body = {
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "whiskers_4"
+        },
+        {
+          "abori_male_top"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "abori_raider_shoulder_1",
+          "abori_raider_legs_2"
+        },
+        {
+          "abori_head_3"
+        },
+        {
+          "abori_slave_top_2"
+        },
+        {
+          "band_uparm_left"
+        }
+      },
+      textures = {
+        abori_head_1 = "abori_head_dif_1.dds",
+        abori_head_3 = "abori_head_dif_1.dds",
+        abori_male_legs = "abori_dif_1.dds",
+        abori_male_top = "abori_dif_1.dds",
+        eye_l = "abori_eye_4_dif.dds",
+        eye_r = "abori_eye_4_dif.dds"
+      }
+    },
     abori_outcast_3 = {
       attachments = {
       },
@@ -3286,13 +3329,125 @@ return {
       textures = {
       }
     },
-    big_hat = {
+    bamba = {
       attachments = {
       },
       body = {
         {
-          "abori_head_1"
+          "eye_l",
+          "eye_r"
         },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "abori_male_top"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "abori_head_2"
+        },
+        {
+          "whiskers_3"
+        },
+        {
+          "oc_guard_shoulder_r"
+        },
+        {
+          "abori_raider_shoulder_2"
+        },
+        {
+          "abori_raider_shoulder_1"
+        },
+        {
+          "band_loarm_right"
+        },
+        {
+          "oc_guard_top"
+        },
+        {
+          "oc_guard_arm_left"
+        },
+        {
+          "oc_guard_base"
+        },
+        {
+          "abori_raider_belt_4"
+        }
+      },
+      textures = {
+        abori_head_1 = "abori_head_dif_2.dds",
+        abori_head_2 = "abori_head_dif_2.dds",
+        abori_male_legs = "abori_dif_2.dds",
+        abori_male_top = "abori_dif_2.dds",
+        band_loarm_right = "abori_bands_dif.dds",
+        eye_l = "abori_eye_2_dif.dds",
+        eye_r = "abori_eye_2_dif.dds"
+      }
+    },
+    big_hat = {
+      attachments = {
+        {
+          bone = "head_slot",
+          name = "abori_big_hat_crown.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        },
+        {
+          bone = "item_slot1",
+          name = "big_hat_stick.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        },
+        {
+          bone = "head_slot",
+          name = "abori_big_hat_glasses.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        }
+      },
+      body = {
         {
           "eye_l",
           "eye_r"
@@ -3310,17 +3465,13 @@ return {
           "abori_male_legs"
         },
         {
-          "abori_raider_shoulder_1",
-          "abori_raider_legs_2"
-        },
-        {
           "abori_head_3"
         },
         {
-          "abori_slave_top_2"
+          "big_hat_coat"
         },
         {
-          "band_uparm_left"
+          "big_hat_shoulders"
         }
       },
       textures = {
@@ -5055,6 +5206,341 @@ return {
         welder_top_1 = "abori_worker_cloth_2_dif.dds"
       }
     },
+    outcast_21 = {
+      attachments = {
+      },
+      body = {
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "abori_male_top"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "whiskers_3"
+        },
+        {
+          "welder_top_1"
+        },
+        {
+          "welder_legs_1"
+        },
+        {
+          "welder_bag_2_full"
+        },
+        {
+          "welder_bag_3_full"
+        },
+        {
+          "welder_belt"
+        },
+        {
+          "welder_bag_1_full"
+        },
+        {
+          "abori_head_2"
+        }
+      },
+      textures = {
+        abori_head_2 = "abori_head_dif_3.dds",
+        abori_male_legs = "abori_dif_3.dds",
+        abori_male_top = "abori_dif_3.dds",
+        welder_legs_1 = "abori_worker_cloth_3_dif.dds",
+        welder_top_1 = "abori_worker_cloth_dif.dds"
+      }
+    },
+    outcast_22 = {
+      attachments = {
+        {
+          bone = "head_slot",
+          name = "abori_welder_mask.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        }
+      },
+      body = {
+        {
+          "abori_head_1"
+        },
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "whiskers_1"
+        },
+        {
+          "abori_male_top"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "welder_legs_1"
+        },
+        {
+          "welder_top_1"
+        },
+        {
+          "welder_belt"
+        },
+        {
+          "welder_glove_r"
+        },
+        {
+          "welder_glove_l"
+        }
+      },
+      textures = {
+        abori_head_1 = "abori_head_dif_2.dds",
+        abori_male_legs = "abori_dif_2.dds",
+        abori_male_top = "abori_dif_2.dds",
+        welder_legs_1 = "barmen_tunic.dds",
+        welder_top_1 = "abori_worker_cloth_2_dif.dds"
+      }
+    },
+    outcast_guard_17 = {
+      attachments = {
+        {
+          bone = "head_slot",
+          name = "oc_guard_hat_2.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        }
+      },
+      body = {
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "whiskers_1"
+        },
+        {
+          "abori_male_top"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "oc_guard_base"
+        },
+        {
+          "oc_guard_armarmour_r"
+        },
+        {
+          "oc_guard_armarmour_l"
+        },
+        {
+          "oc_guard_shoulder_l"
+        },
+        {
+          "oc_guard_legarmour1_r"
+        },
+        {
+          "oc_guard_legarmour2_l"
+        },
+        {
+          "abori_head_3"
+        },
+        {
+          "abori_worker_top_2"
+        },
+        {
+          "abori_raider_belt_4"
+        }
+      },
+      textures = {
+        abori_head_1 = "abori_head_dif_2.dds",
+        abori_head_3 = "abori_head_dif_2.dds",
+        abori_male_legs = "abori_dif_2.dds",
+        abori_male_top = "abori_dif_2.dds"
+      }
+    },
+    outcast_guard_18 = {
+      attachments = {
+        {
+          bone = "head_slot",
+          name = "oc_guard_hat_1.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        }
+      },
+      body = {
+        {
+          "abori_head_1"
+        },
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "abori_male_top"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "whiskers_4"
+        },
+        {
+          "oc_guard_base"
+        },
+        {
+          "oc_guard_arm_left"
+        },
+        {
+          "oc_guard_arm_right"
+        },
+        {
+          "oc_guard_top"
+        },
+        {
+          "abori_slave_bottom_3"
+        },
+        {
+          "welder_glove_l"
+        }
+      },
+      textures = {
+        welder_glove_l = "abori_worker_cloth_3_dif.dds"
+      }
+    },
+    outcast_guard_19 = {
+      attachments = {
+        {
+          bone = "head_slot",
+          name = "oc_guard_hat_1.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        }
+      },
+      body = {
+        {
+          "abori_head_1"
+        },
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "whiskers_1"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "oc_guard_base"
+        },
+        {
+          "oc_guard_armarmour_l"
+        },
+        {
+          "oc_guard_armarmour_r"
+        },
+        {
+          "oc_guard_footarmour1_l"
+        },
+        {
+          "oc_guard_legarmour1_l"
+        },
+        {
+          "oc_guard_legarmour1_r"
+        },
+        {
+          "oc_guard_footarmour1_r"
+        },
+        {
+          "oc_guard_shoulder_l"
+        },
+        {
+          "oc_guard_shoulder_r"
+        },
+        {
+          "oc_guard_top"
+        },
+        {
+          "abori_male_top_hands"
+        }
+      },
+      textures = {
+        abori_head_1 = "abori_head_dif_4.dds",
+        abori_male_legs = "abori_dif_4.dds",
+        abori_male_top = "abori_dif_4.dds",
+        abori_male_top_hands = "abori_dif_4.dds"
+      }
+    },
     outcast_guard_1_noweapon = {
       attachments = {
         {
@@ -5110,6 +5596,129 @@ return {
         abori_head_2 = "abori_head_dif_3.dds",
         abori_male_legs = "abori_dif_3.dds",
         abori_male_top = "abori_dif_3.dds"
+      }
+    },
+    outcast_guard_20 = {
+      attachments = {
+        {
+          bone = "head_slot",
+          name = "oc_guard_hat_1.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        }
+      },
+      body = {
+        {
+          "abori_head_1"
+        },
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "whiskers_1"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "abori_male_top_hands"
+        },
+        {
+          "oc_guard_base"
+        },
+        {
+          "oc_guard_armarmour_l"
+        },
+        {
+          "oc_guard_armarmour_r"
+        },
+        {
+          "oc_guard_top"
+        },
+        {
+          "oc_guard_legarmour2_l"
+        },
+        {
+          "oc_guard_shoulder_l"
+        },
+        {
+          "oc_guard_shoulder_r"
+        },
+        {
+          "oc_guard_legarmour2_r"
+        },
+        {
+          "oc_guard_footarmour1_l"
+        },
+        {
+          "oc_guard_footarmour1_r"
+        },
+        {
+          "welder_bag_3_empty"
+        },
+        {
+          "abori_raider_belt_2"
+        }
+      },
+      textures = {
+        abori_head_1 = "abori_head_dif_3.dds",
+        abori_male_legs = "abori_dif_3.dds",
+        abori_male_top_hands = "abori_dif_3.dds"
+      }
+    },
+    outcast_guard_21 = {
+      attachments = {
+      },
+      body = {
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "whiskers_1"
+        },
+        {
+          "abori_male_top"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "oc_guard_base"
+        },
+        {
+          "abori_head_3"
+        },
+        {
+          "abori_head_2"
+        }
+      },
+      textures = {
+        abori_head_1 = "abori_head_dif_2.dds",
+        abori_head_2 = "abori_head_dif_2.dds",
+        abori_head_3 = "abori_head_dif_2.dds",
+        abori_male_legs = "abori_dif_2.dds",
+        abori_male_top = "abori_dif_2.dds"
       }
     },
     outcast_guard_3_noweapon = {
@@ -7674,6 +8283,47 @@ return {
         eye_r = "abori_eye_2_dif.dds"
       }
     },
+    scalphunter_5_dead_2 = {
+      attachments = {
+      },
+      body = {
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "abori_male_top"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "abori_shunter_top_2"
+        },
+        {
+          "abori_shunter_legarmour_1"
+        },
+        {
+          "abori_shunter_legs_1"
+        },
+        {
+          "abori_head_1"
+        },
+        {
+          "abori_shunter_armour_2"
+        }
+      },
+      textures = {
+        abori_head_1 = "abori_sc_head_dif_1.dds",
+        abori_male_legs = "abori_dead_dif_2.dds",
+        abori_male_top = "abori_dead_dif_2.dds",
+        eye_l = "abori_eye_2_dif.dds",
+        eye_r = "abori_eye_2_dif.dds"
+      }
+    },
     scalphunter_6 = {
       attachments = {
       },
@@ -7924,6 +8574,88 @@ return {
         abori_head_3 = "abori_sc_head_dif_2.dds",
         abori_male_legs = "abori_dif_2.dds",
         abori_male_top = "abori_dif_2.dds",
+        eye_l = "abori_eye_1_dif.dds",
+        eye_r = "abori_eye_1_dif.dds"
+      }
+    },
+    scalphunter_9_dead_2 = {
+      attachments = {
+        {
+          bone = "head_slot",
+          name = "abori_shunter_hat_2.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        },
+        {
+          bone = "head_slot",
+          name = "abori_eyepatch_l.sbg",
+          pos = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          rot = {
+            x = 0,
+            y = 0,
+            z = 0
+          },
+          scale = {
+            x = 1,
+            y = 1,
+            z = 1
+          }
+        }
+      },
+      body = {
+        {
+          "eye_l",
+          "eye_r"
+        },
+        {
+          "abori_teeth_1"
+        },
+        {
+          "abori_male_top"
+        },
+        {
+          "abori_male_legs"
+        },
+        {
+          "abori_head_3"
+        },
+        {
+          "whiskers_1"
+        },
+        {
+          "abori_shunter_back_2"
+        },
+        {
+          "abori_shunter_legs_1"
+        },
+        {
+          "abori_shunter_armour_1"
+        },
+        {
+          "abori_shunter_top_1"
+        }
+      },
+      textures = {
+        abori_head_3 = "abori_sc_head_dif_2.dds",
+        abori_male_legs = "abori_dead_dif_2.dds",
+        abori_male_top = "abori_dead_dif_2.dds",
         eye_l = "abori_eye_1_dif.dds",
         eye_r = "abori_eye_1_dif.dds"
       }

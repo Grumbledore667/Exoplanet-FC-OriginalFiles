@@ -38,7 +38,7 @@ api.meshTextureMaps = {
      textures = { "abori_head_dif_1.dds", "abori_head_dif_2.dds", "abori_head_dif_3.dds", "abori_head_dif_4.dds", "abori_dead_head_dif_1.dds", "abori_dead_head_dif_2.dds", "abori_sc_head_dif_1.dds",
                   "abori_sc_head_dif_2.dds", "abori_sc_head_dif_3.dds", "abori_sc_head_dif_4.dds", "abori_sc_head_dif_5.dds", "abori_sc_head_dif_6.dds", }, },
 
-   { meshes   = { "abori_male_legs", "abori_male_top", },
+   { meshes   = { "abori_male_legs", "abori_male_top", "abori_male_top_arms", "abori_male_top_hands", },
      textures = { "abori_dif_1.dds", "abori_dif_2.dds", "abori_dif_3.dds", "abori_dif_4.dds", "abori_dead_dif_1.dds", "abori_dead_dif_2.dds", "abori_sh_dif.dds", }, },
 
    { meshes   = { "band_uparm_right", "band_loarm_right", "band_head", "band_leg_left", "band_ssleg_left", "band_thigh_left", "band_thigh_right", "band_leg_right",
@@ -88,7 +88,7 @@ api.meshSets = {
      "beard_bushy", "beard_bushy_big", "beard_bushy_fat", "beard_bushy_thin", "beard_stubble", "beard_stubble_big", "beard_stubble_fat",
      "beard_stubble_thin", "beard_whiskers", "beard_whiskers_big", "beard_whiskers_fat", "beard_whiskers_thin", },
    { "eye_r", "eye_l", },
-   { "abori_male_legs", "abori_male_top", "abori_head_1", "abori_head_2", "abori_head_3", },
+   { "abori_male_legs", "abori_male_top", "abori_male_top_arms", "abori_male_top_hands", "abori_head_1", "abori_head_2", "abori_head_3", },
    { "hulk_head_base", "hulk_head_angry", "hulk_head_cunning", "hulk_head_retarded", "hulk_head_serious", "hulk_head_smiley", "hulk_body", "hulk_body_saw", },
 }
 

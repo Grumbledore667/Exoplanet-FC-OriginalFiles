@@ -30,3 +30,5 @@ setGlobalParam("statsUpgradeBonusMul", 1)
 
 setGlobalParam("showQuestMarkers", true)
 setGlobalParam("hideFinishedQuests", false)
+
+setGlobalParam("fast_travel_destinations", {})

@@ -31,16 +31,17 @@ function CFeedbackUI:init()
    end
 end
 
-function CFeedbackUI:show(state)
-   CBaseModule.show(self, state)
+function CFeedbackUI:onShow()
+   CBaseModule.onShow(self)
 
-   if state then
-      getScene():pauseGame(true)
-   else
-      getScene():pauseGame(false)
-   end
-
+   getScene():pauseGame(true)
    self:setup()
+end
+
+function CFeedbackUI:onHide()
+   CBaseModule.onHide(self)
+
+   getScene():pauseGame(false)
 end
 
 function CFeedbackUI:setup()

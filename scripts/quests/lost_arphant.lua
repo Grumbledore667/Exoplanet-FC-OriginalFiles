@@ -872,6 +872,11 @@ function Quest:equipShovelAndDig(char)\
    char:setDefaultAnimation(\"dig_delve_right\")\
    char:setState(\"talkForbidden\", false)\
    char:setIgnoreSleep(false)\
+\
+   local function onDigSoundEventIn()\
+      char.soundManager:OnEventIn(\"dig_dirt\")\
+   end\
+   char.animationsManager:subscribeAnimationEventIn(\"dig_delve_right\", \"dig_sound\", onDigSoundEventIn)\
 end\
 \
 function Quest:unequipShovel(char)\

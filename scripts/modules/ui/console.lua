@@ -1200,7 +1200,7 @@ declareConsoleCommand{
       local t = getGlobalParam("fast_travel_destinations")
       if t then
          for k in pairs(t) do
-            getObj(k):register(true)
+            getObj(k):discover()
          end
          setGlobalParam("fast_travel_all_destinations_activated", true)
       end

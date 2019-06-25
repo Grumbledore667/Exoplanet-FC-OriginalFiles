@@ -30,18 +30,26 @@ function CDoor:OnCreate()
    self.disableOnOpen = loadParam(self, "disableOnOpen", false)
 end
 
-function CDoor:OnInteractTriggerEnd(obj)
+function CDoor:OnInteractTriggerEnd(char)
    if self.disableOnOpen then
       return
-   elseif not self:closeDoor() then
-      runTimer(1, self, self.closeDoor, false)
+   elseif self.opened and not self.animating then
+      self:activate(char)
+   elseif self.opened and self.animating then
+      if not self.timer then
+         self.timer = runTimer(1, nil, function()
+            self:activate(char)
+            self.timer = nil
+         end, false)
+      end
    end
 end
 
-function CDoor:OnFocusEnd(obj)
-   CLockable.OnFocusEnd(self, obj)
-   if self.opened and not objInDist(obj:getPose():getPos(), self:getPose():getPos(), self.interactor:getTriggerRadius()) then
-      self:OnInteractTriggerEnd(obj)
+function CDoor:OnFocusEnd(char)
+   CLockable.OnFocusEnd(self, char)
+
+   if not objInDist(char:getPose():getPos(), self:getPose():getPos(), self.interactor:getTriggerRadius()) then
+      self:OnInteractTriggerEnd(char)
    end
 end
 
@@ -49,48 +57,19 @@ function CDoor:animStop()
    self.animating = false
 end
 
-function CDoor:activate(obj)
-   if self.animating then return false end
-
-   if self:isLocked() then
-      CLockable.activate(self, obj)
-   elseif self.opened then
-      self:closeDoor()
-   else
-      self.opened = true
+function CDoor:activate(char)
+   if not self:isLocked() then
       self.animating = true
-      self:playAnimation("open", false)
       self.sounds.open:play()
-      if self.disableOnOpen then
-         self.interactor:setTriggerActive(false)
+      if self.opened then
+         self:playAnimation("close", false)
+      else
+         self:playAnimation("open", false)
+         if self.disableOnOpen then
+            self.interactor:setTriggerActive(false)
+         end
       end
-   end
-
-   return true
-end
-
-function CDoor:deactivate(obj)
-   if self.locked then
-      CLockable.deactivate(self, obj)
-   end
-   return true
-end
-
-function CDoor:closeDoor()
-   if not self.opened or self.animating then return false end
-
-   self.opened = false
-   self.animating = true
-   self:playAnimation("close", false)
-
-   self.sounds.open:play()
-
-   return true
-end
-
-function CDoor:tryCode(strCode)
-   if CLockable.tryCode(self, strCode) then
-      self:activate()
+      self.opened = not self.opened
    end
 end
 
@@ -102,6 +81,24 @@ end
 
 function CDoor:getInteractLabel()
    return "open"
+end
+
+function CDoor:getInteractType(char)
+   if self.animating then
+      return "no_interaction"
+   elseif self:isLocked() then
+      return CLockable.getInteractType(self, char)
+   else
+      return "door"
+   end
+end
+
+function CDoor:isInteractionLingering(char)
+   if self:isLocked() then
+      return CLockable.isInteractionLingering(self, char)
+   else
+      return false
+   end
 end
 
 function CDoor:OnSaveState(state)

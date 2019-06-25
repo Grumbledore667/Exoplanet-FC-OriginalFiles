@@ -76,8 +76,12 @@ function CRigidTalker:onStopDialog()
    end
 end
 
-function CRigidTalker:getType()
-   return "activator"
+function CRigidTalker:getInteractType(char)
+   if not self.dialog then
+      return "no_interaction"
+   else
+      return "rigid_talker"
+   end
 end
 
 function CRigidTalker:getLabel()

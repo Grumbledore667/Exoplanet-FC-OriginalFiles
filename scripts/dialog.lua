@@ -40,16 +40,47 @@ local function hasCustomScript(msg)
    return result
 end
 
-local function isMessageVisible(msg)
+local function isMessageVisible(msg, skipTextTimeCheck)
    local visible = true
    if msg.isVisible then
       visible = msg:isVisible()
    end
-
+   if msg.topic_check_visible and msg:getTopic() then
+      visible = visible and msg:isTopicVisible()
+   end
+   if skipTextTimeCheck then
+      return visible
+   end
    if msg.text == "" or msg.time == 0 then
       visible = false
    end
    return visible
+end
+
+local function fireDiscussEvent(msg)
+   local topic = msg.getTopic and msg:getTopic()
+   if topic then
+      msg:fireDiscussEvent(topic)
+   end
+end
+
+local function onStartMessage(msg)
+   if msg.onStart then
+      msg:onStart()
+   end
+   --supports old format without specifiers
+   if msg.topic_fire_event == nil or msg.topic_fire_event == "onStart" then
+      fireDiscussEvent(msg)
+   end
+end
+
+local function onStopMessage(msg)
+   if msg.onStop then
+      msg:onStop()
+   end
+   if msg.topic_fire_event == "onStop" then
+      fireDiscussEvent(msg)
+   end
 end
 
 local function messageAllowsVisitedColoring(msg, passedIDs)
@@ -142,7 +173,7 @@ end
 
 function CMessage:hasVisibleChildren()
    for _,v in pairs(self.messages) do
-      if v.isVisible and v:isVisible() and not isTextBack(v.text) then
+      if isMessageVisible(v, true) and not isTextBack(v.text) then
          return true
       end
    end
@@ -157,72 +188,92 @@ CMessage.setParam = CMessage.setDialogParam
 CMessage.getParam = CMessage.getDialogParam
 
 
-function dialogSystem:findReference(messages, id)
-   for mk,mv in pairs(messages) do
-      if mv["ID"] == id then
-         return mv
-      end
-   end
-   return nil
-end
-
 function dialogSystem:restoreConnections(messages)
+   local idMap = {}
+   for _, node in pairs(messages) do
+      idMap[node.ID] = node
+   end
+
    local idsWithInputs = {}
    for _,mv in pairs(messages) do
       mv.messages = {}
       if mv["connectID"] then
          idsWithInputs[mv["connectID"]] = true
-         mv.messages[1] = self:findReference(messages, mv["connectID"])
+         mv.messages[1] = idMap[mv.connectID]
       elseif mv["connectionsID"] then
          for i=1,#mv["connectionsID"] do
             if mv["connectionsID"][i] ~= -1 then
                idsWithInputs[mv["connectionsID"][i]] = true
-               mv.messages[#mv.messages+1] = self:findReference(messages, mv["connectionsID"][i])
+               mv.messages[#mv.messages+1] = idMap[mv.connectionsID[i]]
             end
          end
       end
    end
 
-   -- overwrite switches to direct messages
-   for _,mv in pairs(messages) do
-      if #mv.messages > 0 and mv.messages[1].type == "switch" then
-         mv.messages = mv.messages[1].messages
-      end
-   end
-
-   -- collapse guiding nodes (1 slot switches) (up to 10 consequtive)
-   for _ = 1, 10 do
-      for _,mv in pairs(messages) do
-         if mv.type == "message" then
-            if #mv.messages == 1 then
-               if mv.messages[1].time == 0 and mv.messages[1].text == "" then
-                  mv.messages = mv.messages[1].messages
-               end
-            elseif #mv.messages > 1 then
-               local new_messages = {}
-               for _,v in pairs(mv.messages) do
-                  if v.time == 0 and v.text == "" then
-                     if #v.messages > 0 then
-                        table.insert(new_messages, v.messages[1])
-                     end
-                  else
-                     table.insert(new_messages, v)
-                  end
-               end
-               mv.messages = new_messages
-            end
-         end
-      end
-   end
-
-   -- find root
+   local roots = {}
    for _, msg in pairs(messages) do
       if not idsWithInputs[msg.ID] and msg.type == "message" then
-         return msg
+         table.insert(roots, msg)
       end
    end
 
-   return nil
+   local rootsCount = #roots
+   if rootsCount == 0 then
+      return nil, "dialog has no roots!"
+   elseif rootsCount > 1 then
+      return nil, "dialog has multiple roots!"
+   end
+
+   local root = roots[1]
+
+   local function isSwitch(node)
+      return node.type == "switch" or (node.text == "" and node.time == 0)
+   end
+
+   local switchMap = {}
+   local function getSwitchMessages(rootSwitch)
+      if switchMap[rootSwitch] then
+         return switchMap[rootSwitch]
+      end
+      local newChildren = {}
+      local nodeStack = {rootSwitch}
+      local visitedNodes = {}
+      while #nodeStack > 0 do
+         local node = table.remove(nodeStack)
+         if not visitedNodes[node] then
+            visitedNodes[node] = true
+            if isSwitch(node) then
+               for i = #node.messages, 1, -1 do
+                  table.insert(nodeStack, node.messages[i])
+               end
+            else
+               table.insert(newChildren, node)
+            end
+         end
+      end
+      switchMap[rootSwitch] = newChildren
+      return newChildren
+   end
+
+   -- overwrite switches and guide nodes to direct messages
+   local visited = {}
+   local upNext = {root}
+   while #upNext > 0 do
+      local currentMessage = table.remove(upNext, 1)
+      if not visited[currentMessage] then
+         visited[currentMessage] = true
+         local children = currentMessage.messages
+         local child = children[1]
+         if #children == 1 and isSwitch(child) then
+            currentMessage.messages = getSwitchMessages(child)
+         end
+         for _, message in ipairs(currentMessage.messages) do
+            table.insert(upNext, message)
+         end
+      end
+   end
+
+   return root
 end
 
 function dialogSystem:loadMessageScript(message, root)
@@ -233,8 +284,8 @@ function dialogSystem:loadMessageScript(message, root)
    if message.script ~= "" then
       --log("load script for: " .. message.text)
       --Remove blank methods
-      message.script = message.script:gsub("function message:onStart%(%)%\nend", "")
-      message.script = message.script:gsub("function message:onStop%(%)%\nend", "")
+      message.script = message.script:gsub("function message:onStart%(%)%s*end", "")
+      message.script = message.script:gsub("function message:onStop%(%)%s*end", "")
       local chunkName = string.format("dialog: %s node script ID: %d", root.name, message.ID)
       local chunk, err = loadstring(message.script, chunkName)
       if chunk then
@@ -257,6 +308,7 @@ function dialogSystem:loadMessageScript(message, root)
 
    setmetatable(message, {["__index"] = CMessage})
 
+   message.script_src = message.script
    message.script = nil
 
    -- set message topic
@@ -293,8 +345,12 @@ function dialogSystem:createDialog(dialog_name, unique_name)
       return nil
    end
 
-   local root = self:restoreConnections(dialog)
+   local root, err = self:restoreConnections(dialog)
 
+   if not root then
+      log(string.format("ERROR: processing '%s': %s", dialog_name, err))
+      return nil
+   end
    root.actors = {}
    root.name = unique_name
 
@@ -330,10 +386,6 @@ end
 local function markAsVisited(msg)
    if msg ~= nil and msg.ID ~= nil and msg.setParam then
       msg:setParam(string.format("n%d", msg.ID), 1)
-      local topic = msg:getTopic()
-      if topic then
-         msg:fireDiscussEvent(topic)
-      end
    end
 end
 
@@ -354,9 +406,7 @@ function dialogSystem:showMessage(msg_obj, skip_onStop)
 
       self:appendHistoryWithId(actorNamePrev, dialog.prev_message.text, dialog.prev_message.ID)
 
-      if dialog.prev_message.onStop then
-         dialog.prev_message:onStop()
-      end
+      onStopMessage(dialog.prev_message)
       self:fireActorEvent(dialog, dialog.actors[dialog.prev_message.actor], "onStopMessage")
 
    end
@@ -364,12 +414,8 @@ function dialogSystem:showMessage(msg_obj, skip_onStop)
    local m = dialog.active_message
    if m.text == "" or m.time == 0 then
       markAsVisited(m)
-      if m.onStart then
-         m:onStart()
-      end
-      if m.onStop then
-         m:onStop()
-      end
+      onStartMessage(m)
+      onStopMessage(m)
    end
 
 
@@ -381,9 +427,7 @@ function dialogSystem:showMessage(msg_obj, skip_onStop)
    end
 
    markAsVisited(msg_obj)
-   if msg_obj.onStart then
-      msg_obj:onStart()
-   end
+   onStartMessage(msg_obj)
    self:fireActorEvent(dialog, dialog.actors[msg_obj.actor], "onStartMessage", msg_obj.animation)
 
    if not skip_onStop then
@@ -416,13 +460,7 @@ function dialogSystem:showActiveMessage(msg_array)
          msg = msg.reference
       end
 
-      local visible = true
-
-      if msg.isVisible then
-         visible = msg:isVisible()
-      end
-
-      if visible then
+      if isMessageVisible(msg, true) then
          self:showMessage(msg)
          return
       end
@@ -437,9 +475,7 @@ function dialogSystem:showReplies(msg_array)
 
       self:appendHistoryWithId(actorNamePrev, self.active_dialog.prev_message.text, self.active_dialog.prev_message.ID)
 
-      if self.active_dialog.prev_message.onStop then
-         self.active_dialog.prev_message:onStop()
-      end
+      onStopMessage(self.active_dialog.prev_message)
 
       self:fireActorEvent(self.active_dialog, self.active_dialog.actors[self.active_dialog.prev_message.actor], "onStopMessage")
    end
@@ -447,12 +483,8 @@ function dialogSystem:showReplies(msg_array)
    local m = self.active_dialog.active_message
    if m.text == "" or m.time == 0 then
       markAsVisited(m)
-      if m.onStart then
-         m:onStart()
-      end
-      if m.onStop then
-         m:onStop()
-      end
+      onStartMessage(m)
+      onStopMessage(m)
    end
 
    --log("---------------------------------------------")
@@ -511,11 +543,7 @@ function dialogSystem:findVisibleMessage(messages)
          msg = msg.reference
       end
 
-      if msg.isVisible then
-         if msg:isVisible() then
-            return msg
-         end
-      else
+      if isMessageVisible(msg, true) then
          return msg
       end
    end
@@ -578,7 +606,7 @@ function dialogSystem:selectAnswer(answerNum)
             msg = msg.reference
          end
 
-         if not msg.isVisible or msg:isVisible() then
+         if isMessageVisible(msg, true) then
             if isTextTrade(msg.text) then
                visibleReplies.tradeMsg = msg
             else
@@ -596,9 +624,7 @@ function dialogSystem:selectAnswer(answerNum)
          end
 
          markAsVisited(msg)
-         if msg.onStart then
-            msg:onStart()
-         end
+         onStartMessage(msg)
          self:fireActorEvent(dialog, dialog.actors[msg.actor], "onStartMessage", msg.animation)
 
 
@@ -683,8 +709,8 @@ end
 function dialogSystem:stopDialog(dialog)
    local active_dialog = self.active_dialog
    if active_dialog and (active_dialog == dialog or not dialog) then
-      if active_dialog.prev_message and active_dialog.prev_message.onStop then
-         active_dialog.prev_message:onStop()
+      if active_dialog.prev_message then
+         onStopMessage(active_dialog.prev_message)
       end
 
       if active_dialog.prev_message then

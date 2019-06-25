@@ -649,10 +649,10 @@ function CScene:loadFromPersistentData()
             local ftData = saveData.Story.globals.fast_travel_destinations
             if ftData then
                for name, objState in pairs(ftData) do
-                  if objState.activated then
+                  if objState.discovered or objState.activated then --Supports legacy parameter 'activated'
                      local obj = getObj(name)
-                     if obj and obj.register then
-                        obj:register(true)
+                     if obj and obj.discover then
+                        obj:discover()
                         if not q:isStarted() then
                            q:startImediate()
                         end

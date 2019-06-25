@@ -9,7 +9,7 @@ local CWater = oo.class({}, _rootRigid)
 function CWater:OnCreate()
    self.volume = loadParamNumber(self, "volume", 3.0)
    self.distance = loadParamNumber(self, "distance", 1200)
-   self.soundNames = loadParamStrings(self, "sounds", {"river_1.wav"})
+   self.soundNames = loadParamStrings(self, "sounds", {"Play_river_1"})
 
    self.cameraCollider = getScene():createEntity("collision_box.sbg", "")
    local spose = self:getPose()

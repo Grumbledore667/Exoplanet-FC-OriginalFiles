@@ -31,14 +31,6 @@ function CDigSite:OnCreate(params)
    self.spawnedContainer = nil
 end
 
-function CDigSite:activate(char)
-   if char:getInventory():getItemByName("shovel.wpn") then
-      char:startDigging(self)
-   else
-      gameplayUI:showInfoTextEx("I need a shovel to dig here", "minor", "")
-   end
-end
-
 function CDigSite:getActivationsLeft()
    return self.digsToOpen - self.digsDone
 end
@@ -90,8 +82,21 @@ function CDigSite:getDigSound()
    return self.digSound
 end
 
-function CDigSite:getType()
-   return "activator"
+function CDigSite:getInteractType(char)
+   return "dig"
+end
+
+function CDigSite:isInteractionLingering(char)
+   return true
+end
+
+function CDigSite:getInteractData(char)
+   local data = {
+      anchorPos = char:getPose():getPos(),
+      anchorDir = vec3Normalize(vec3Sub(self:getPose():getPos(), char:getPose():getPos())),
+      animations = {loop = "dig_delve_right"},
+   }
+   return data
 end
 
 function CDigSite:getLabel()

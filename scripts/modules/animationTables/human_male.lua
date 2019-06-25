@@ -769,14 +769,13 @@ assignEvent "idle_to_ladder_bottom"             "end" {11}
 assignEvent "idle_to_ladder_top"                "end" {23}
 
 --Interactions
-assignEvent "idle_takeobj_down_fast"     "obj_taken"    {10} "end" {25}
-assignEvent "idle_takeobj_front"    "obj_taken"    {15} "end" {25}
-assignEvent "idle_takeobj_up"      "obj_taken"    {10} "end" {25}
-assignEvent "idle_to_chest_idle"            "end"          {25}
-assignEvent "chest_idle_to_idle"           "end"          {25}
-assignEvent "dig_delve_right"           "dust"         {25} "dig_sound" {20} "dig" {70} "end" {98}
-assignEvent "mine_down"                 "mine_sound"   {42} "mine_success" {42} "hit" {42} "end" {100}
-assignEvent "mine_front"                "mine_sound"   {30} "mine_success" {30} "hit" {30} "end" {50}
+assignEvent "idle_takeobj_down_fast"     "activate"    {10} "preemptive_end" {25}
+assignEvent "idle_takeobj_front"         "activate"    {15} "preemptive_end" {25}
+assignEvent "idle_takeobj_up"            "activate"    {10} "preemptive_end" {25}
+assignEvent "idle_to_chest_idle"         "activate"    {25}
+assignEvent "dig_delve_right"           "dust"         {25} "dig_sound" {20} "dig" {70}
+assignEvent "mine_down"                 "mine_sound"   {42} "mine_success" {42} "hit" {42}
+assignEvent "mine_front"                "mine_sound"   {30} "mine_success" {30} "hit" {30}
 
 --Combat
 assignEvent "hit__default"                 "hurt"         {0}

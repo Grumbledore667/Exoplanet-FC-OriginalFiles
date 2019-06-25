@@ -82,17 +82,6 @@ function CLadder:bottom()
    end
 end
 
-function CLadder:activate(obj)
-   if self.interactor_top then
-      obj:climbLadder(self)
-      return true
-   end
-end
-
-function CLadder:deactivate(obj)
-   return true
-end
-
 function CLadder:enable()
    self.enabled = true
    self.interactor:setRaycastActive(self.enabled)
@@ -109,8 +98,12 @@ function CLadder:isEnabled()
    return self.enabled
 end
 
-function CLadder:getType()
-   return "activator"
+function CLadder:getInteractType(char)
+   return "ladder"
+end
+
+function CLadder:isInteractionLingering(char)
+   return true
 end
 
 function CLadder:getLabel()

@@ -51,7 +51,16 @@ local function OnInit()
          "loading_background4/16x9",
          "loading_background5/16x9",
       }
-      wndLoading:getChild("Back"):setProperty("Image", random.choice(backgrounds))
+      local aspectModes = {
+         "Expand",
+         "Expand",
+         "Shrink",
+         "Shrink",
+         "Shrink",
+      }
+      local index = random.random(1, #backgrounds)
+      wndLoading:getChild("Back"):setProperty("Image", backgrounds[index])
+      wndLoading:getChild("Back"):setProperty("AspectMode", aspectModes[index])
 
       local tips = {}
       for _, tip in pairs(i18n"loading_screen.tips_keys") do

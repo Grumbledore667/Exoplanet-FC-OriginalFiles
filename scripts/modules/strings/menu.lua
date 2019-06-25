@@ -26,10 +26,10 @@ return {
          system = {
             labels = {
                audio = "Audio",
-               master = "Master",
-               sfx = "SFX",
-               voice = "Voice",
-               music = "Music",
+               master = "Master Volume",
+               sfx = "SFX Volume",
+               voice = "Voice Volume",
+               music = "Music Volume",
                graphics = "Graphics",
                view_distance = "View Distance",
                triple_buffering = "Triple Buffering",
@@ -46,6 +46,9 @@ return {
                input = "Input",
                invert_y = "Invert Y Axis",
                mouse_sensitivity = "Mouse Sensitivity",
+            },
+            buttons = {
+               audio_defaults = "Restore Defaults",
             },
          },
          game = {

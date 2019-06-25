@@ -34,46 +34,30 @@ function CContainer:OnCreate(params)
          bottom:setTexture(0, self.textureName)
       end
    end
-   self.animAnchor = self:getMeshByName("anchor_1")
-end
-
-function CContainer:isInteractionAnimated()
-   return self.animAnchor ~= nil and self:getPrefabName() == "chest.sbg"
+   self.interactAnchor = self:getMeshByName("anchor_1")
 end
 
 function CContainer:showInventory(state)
    gameplayUI.inventoryContainer:show(state)
 end
 
-function CContainer:activate(obj)
-   if self.locked then
-      CLockable.activate(self, obj)
-   elseif not self.activated then
-      self.activated = true
-      obj.exchangeTarget = self
-      if self:isInteractionAnimated() then
-         obj:openLootbox(self)
-      else
-         self:playAnimation("open", false)
-         obj:exchangeStart(self)
-      end
+function CContainer:preActivate(char)
+   if not self:isLocked() then
+      self:playAnimation("open", false)
    end
-   return true
 end
 
-function CContainer:deactivate(obj)
-   if self.locked then
-      CLockable.deactivate(self, obj)
-   elseif self.activated then
-      self.activated = false
-      self:playAnimation("close", false)
-      obj.exchangeTarget = nil
-      obj:exchangeStop(self)
-      if self:isInteractionAnimated() then
-         obj:closeLootbox(self)
-      end
+function CContainer:activate(char)
+   if not self:isLocked() then
+      self.open = true
    end
-   return true
+end
+
+function CContainer:deactivate(char)
+   if not self:isLocked() and self.open then
+      self:playAnimation("close", false)
+      self.open = false
+   end
 end
 
 function CContainer:getLabel()
@@ -122,6 +106,41 @@ function CContainer:getLabelPos()
    local pos = self.interactor:getPose():getPos()
    pos.y = pos.y + 60
    return pos
+end
+
+function CContainer:getInteractType(char)
+   if self:isLocked() then
+      return CLockable.getInteractType(self, char)
+   end
+   return "container"
+end
+
+function CContainer:isInteractionLingering(char)
+   if self:isLocked() then
+      return CLockable.isInteractionLingering(self, char)
+   else
+      return true
+   end
+end
+
+function CContainer:getInteractData(char)
+   if not self:isLocked() and self.interactAnchor ~= nil and self:getPrefabName() == "chest.sbg" then
+      local data = {
+         anchorPos = self.interactAnchor:getPose():getPos(),
+         anchorDir = vec3RotateQuat({x=0,y=0,z=-1}, self:getPose():getRotQuat()),
+         animations = {
+            activate = "idle_to_chest_idle",
+            loop = "chest_idle",
+            deactivate = "chest_idle_to_idle",
+         },
+      }
+      return data
+   else
+      local data = {
+         holster = false,
+      }
+      return data
+   end
 end
 
 function CContainer:OnSaveState(state)

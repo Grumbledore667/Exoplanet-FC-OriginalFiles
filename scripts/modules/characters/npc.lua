@@ -450,10 +450,10 @@ function CNPC:knockout_start()
    self:setState("talkForbidden", true)
    self:setCollisionCharacters(false)
 
-   local side = random.choice({"front", "back"})
-   if not self:getBBVar("knockoutSide") then --Allows to preset direction
-      self:setBBVar("knockoutSide", side)
-   end
+   --Allows to preset direction
+   local side = self:getBBVar("knockoutSide") or random.choice({"front", "back"})
+   self:setBBVar("knockoutSide", side)
+
    local anims = self:getAnimationFor("knockout", side)
 
    self.animationsManager:playCycle(anims.idle)
@@ -485,7 +485,9 @@ function CNPC:knockoutGetup_finish()
    self:setState("talkForbidden", false)
    self:setCollisionCharacters(true)
    local health = self:getStatCount("healthMax") * (self.parameters.knockoutHealthPercent + 5)/ 100 --5% over the threshold
-   self:setStatCount("health", health)
+   if self:getStatCount("health") < health then
+      self:setStatCount("health", health)
+   end
 
    if self.defaultAnimation then
       self.animationsManager:playCycle(self.defaultAnimation)
@@ -923,6 +925,7 @@ function CNPC:startTalk(char)
    dialogSystem:subscribeOnStopDialog(self.setHasNoEnemiesOverride, self, self.hasNoEnemiesOverride)
    self:setHasNoEnemiesOverride(true)
    questSystem:fireEvent("talk_start", self:getName(), self)
+   self.talkChar = char
    return true
 end
 
@@ -960,6 +963,7 @@ function CNPC:onStopDialog()
    end
    self:setState("inDialog", false)
    self:setDialogInitiator(false)
+   self.talkChar = nil
 end
 
 function CNPC:setupTimers(freq)
@@ -1011,6 +1015,8 @@ function CNPC:OnIdle()
 
       self.rotateBones = false
       self.rotateBonesAngles = nil
+   else
+      CCharacter.OnIdle(self)
    end
 end
 
@@ -1036,8 +1042,15 @@ function CNPC:setDialogInitiator(value)
    self.dialogInitiator = value
 end
 
-function CNPC:getType()
-   return "activator"
+
+function CNPC:getInteractType(char)
+   if self:getState("dead") then
+      return "container"
+   elseif self:isEnemy(char) or not self.dialog or self:getState("talkForbidden") then
+      return "no_interaction"
+   else
+      return "talker"
+   end
 end
 
 function CNPC:getLabel()
@@ -1085,10 +1098,8 @@ function CNPC:getInteractLabel()
    return label
 end
 
-function CNPC:activate(obj)
-   if self:getState("dead") then
-      CCharacter.activate(self, obj)
-   elseif not self:isEnemy(obj) and not self:getState("talkForbidden") then
+function CNPC:activate(char)
+   if not self:isEnemy(char) and not self:getState("talkForbidden") then
       self:setState("activate", true)
    end
 end

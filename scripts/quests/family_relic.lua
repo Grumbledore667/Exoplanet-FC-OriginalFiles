@@ -8,7 +8,7 @@ local obj1 = {
    ["logs"] = {
       ["FoundHatchet"] = "I have found a weathered hatchet in a dead aborigine's head. These locals seems to be tough creatures: he managed to survive and function for at least a couple of hours with a huge piece of steel in his brains.";
       ["FoundHatchetBefore"] = "I managed to find the axe beforehand.";
-      ["finish"] = "The family relic has been delivered to Carry the Stone. It seems the relationships between two brothres are quite tense, so Carry cares little for Swift Strider's fate and offered no special reward for my efforts. What was I expecting, playing errand boy for aborigines on this shitty planet?\
+      ["finish"] = "The family relic has been delivered to Carry the Stone. It seems the relationships between two brothers are quite tense, so Carry cares little for Swift Strider's fate and offered no special reward for my efforts. What was I expecting, playing errand boy for aborigines on this shitty planet?\
 ";
       ["strider_show_hatchet"] = "I showed the old weathered hatchet to the Swift Strider and it appeared to be his. He refused to take it back so in order to get some reward for my troubles the weapon must be handed over to his brother Carry the Stone.";
    };

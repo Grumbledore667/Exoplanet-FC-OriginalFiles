@@ -36,6 +36,9 @@ local animations = {
    attack = {
       default = "suck"
    },
+   attackAlt = {
+      default = "suck"
+   },
    hit = {
       default = "hit",
    },

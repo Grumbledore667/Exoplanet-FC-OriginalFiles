@@ -1,7 +1,9 @@
 local oo = require "loop.simple"
 
 ---@class CInteractable
-local CInteractable = oo.class({activated = false, highlightingAllowed = true})
+local CInteractable = oo.class({
+   highlightingAllowed = true,
+})
 
 function CInteractable:OnCreate(params)
    params = params or {}
@@ -27,20 +29,6 @@ end
 
 function CInteractable:isHighlightingAllowed()
    return self.highlightingAllowed
-end
-
-function CInteractable:isActivated()
-   return self.activated
-end
-
-function CInteractable:activate(obj)
-   self.activated = true
-   return true
-end
-
-function CInteractable:deactivate(obj)
-   self.activated = false
-   return true
 end
 
 function CInteractable:setInteractorActive(state)
@@ -85,8 +73,12 @@ function CInteractable:stopHighlightTimer()
    end
 end
 
-function CInteractable:getType()
+function CInteractable:getInteractType(char)
    return "activator"
+end
+
+function CInteractable:isInteractionLingering(char)
+   return false
 end
 
 function CInteractable:getLabelPos()

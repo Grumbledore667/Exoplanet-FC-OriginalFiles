@@ -43,7 +43,7 @@ function CTravelUI:setupTravel(obj)
    local t = getGlobalParam("fast_travel_destinations")
    local i = 1
    for objName, entry in pairs(t) do
-      if entry.activated then
+      if entry.discovered then
          if not obj or entry.prettyName ~= obj.prettyName then
             local item = CEGUI.createListboxTextItem(entry.prettyName)
             item:setTextColours(ListItemColour)
@@ -60,8 +60,10 @@ function CTravelUI:setupTravel(obj)
    self:show(true)
 end
 
-function CTravelUI:onShow()
-   CBaseModule.onShow(self)
+function CTravelUI:onClose()
+   CBaseModule.onClose(self)
+
+   getMC():interactStop()
 end
 
 --Callbacks
@@ -75,18 +77,15 @@ function CTravelUI:onTravelItemMouseClick(args)
    local timeSkip = (getDistance(player:getPose():getPos(), obj:getPose():getPos()) / player:getRunSpeed()) * 1.5 --In real seconds
 
    gameplayUI:closeUI()
-   player:setDisableActionStates(true)
-   player:setState("fastTravel", true)
+   player:setState("interactStopUponActivate", false)
+
    local callbacks = {
       onPause = {["func"] = function()
          SkySystem:fastForwardTime(CTime(timeSkip, "rSecond"))
          local pos = localPointToWorld({x=0,y=0,z=-100}, obj:getPose())
          local dir = vec3RotateQuat({x=0,y=0,z=1}, obj:getPose():getRotQuat())
          player:moveAndOrientate(pos, dir, 0)
-      end},
-      onFadeOutEnd = {["func"] = function()
-         player:setDisableActionStates(false)
-         player:setState("fastTravel", false)
+         getMC():interactStop()
          if obj.ambientToPlay then
             getScene():playAmbient(obj.ambientToPlay, getMC())
          end

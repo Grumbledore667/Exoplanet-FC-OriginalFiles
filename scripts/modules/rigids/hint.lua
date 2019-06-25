@@ -37,29 +37,31 @@ function CHint:OnCreate()
    self:setMaterialVisible(self.highlight_material, false)
 end
 
-function CHint:OnInteractTriggerBegin(obj)
-   if obj == getPlayer() and self.proximity_activate and self.show_hint_right_away then
-      self:activate(obj)
+function CHint:OnInteractTriggerBegin(char)
+   if char == getPlayer() and self.proximity_activate and self.show_hint_right_away then
+      char:onObjectActivate(self, self:getInteractType(char))
    end
 end
 
-function CHint:OnInteractTriggerEnd(obj)
-   if obj == getPlayer() then
-      self:deactivate(obj)
+function CHint:OnInteractTriggerEnd(char)
+   if char == getPlayer() then
+      char:onObjectDeactivate(self, self:getInteractType(char))
    end
 end
 
-function CHint:OnInteractHighlightBegin(obj)
+function CHint:OnInteractHighlightBegin(char)
    self.show_hint_right_away = true
    self.interactor:setRaycastRadius(self.defaultRaycastRadius)
    self.interactor:setRaycastActive(self.enabled)
 
    self:setMaterialVisible(self.highlight_material, true)
    if self.highlight_timer > 0 then
-      runTimer(self.highlight_timer, self, function (self) self:setMaterialVisible(self.highlight_material, false) end, false)
+      runTimer(self.highlight_timer, nil, function()
+         self:setMaterialVisible(self.highlight_material, false)
+      end, false)
    end
-   if obj == getPlayer() and self.proximity_activate and objInDist(self:getPose():getPos(), obj:getPose():getPos(), self.interactor:getTriggerRadius()) then
-      self:activate(obj)
+   if char == getPlayer() and self.proximity_activate and objInDist(self:getPose():getPos(), char:getPose():getPos(), self.interactor:getTriggerRadius()) then
+      char:onObjectActivate(self, self:getInteractType(char))
    end
 end
 

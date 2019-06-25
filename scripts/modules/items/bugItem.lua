@@ -95,12 +95,4 @@ function CBugItem:isInstallable()
    return false
 end
 
-function CBugItem:getInteractTime(interactType)
-   if interactType == "drop" then
-      return 1
-   end
-
-   return 0
-end
-
 return {CBugItem=CBugItem}

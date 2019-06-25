@@ -251,14 +251,17 @@ function CEnergyFence:recreateField()
    end]]
 end
 
-function CEnergyFence:activate(obj)
-   self.sounds.open:play()
-   self:playAnimation("Open", false)
-   return true
+function CEnergyFence:getInteractType(char)
+   return "pickup"
 end
 
-function CEnergyFence:getType()
-   return "pickup"
+function CEnergyFence:getInteractData(char)
+   local data = {
+      animations = {
+         activate = hlp.getPickupAnimationFor(char, self)
+      },
+   }
+   return data
 end
 
 function CEnergyFence:getLabel()
@@ -269,16 +272,11 @@ function CEnergyFence:getInteractLabel()
    return "deinstall"
 end
 
-function CEnergyFence:getInteractTime(interactType)
-   return 1
-end
-
 function CEnergyFence:pickupItem(inventory)
    local item = inventory:addItem(self.itemName)
 
    if item then
       getScene():destroyEntity(self)
-      item:setVisible(false)
    end
    return item, 1
 end

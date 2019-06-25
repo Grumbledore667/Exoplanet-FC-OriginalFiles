@@ -344,6 +344,7 @@ assignEvent "idle_eat_long"           "eat_sound"    {0}  "spawn_item"   {0}  "b
 assignEvent "idle_drink"              "drink_sound"  {0}  "spawn_item"   {0}  "buff_apply"   {30}
 assignEvent "swift_sit_idle_drink"    "drink_sound"  {0}  "spawn_item"   {0}  "buff_apply"   {30}
 assignEvent "swift_sit_idle_smoke"    "spawn_item"   {0}  "smoking_draw" {80} "smoking_blow" {115} "buff_apply"  {115} "item_change" {125}
+assignEvent "dig_delve_right"         "dust"         {25} "dig_sound"    {20} "dig" {70}
 
 --equip
 assignEvent "equip__1hm_idle"   "equip"        {12}
@@ -399,8 +400,12 @@ event "eat_sound"        {"Play_human_male_eat"}
 
 eventUnassigned "step_dirt"    {"Play_step_dirt"}
 eventUnassigned "step_metal"   {"Play_step_metal"}
+eventUnassigned "dig_dirt"     {"Play_shovel_digging_dirt"}
+eventUnassigned "dig_shit"     {"Play_shovel_digging_shit"}
 
 -- set sound parameters here
+sound "Play_shovel_digging_dirt"     {distance = 2000, channel = 0, priority= 1}
+sound "Play_shovel_digging_shit"     {distance = 2000, channel = 0, priority= 1}
 sound "Play_human_male_smoking_draw" {distance = 500, channel = 0, priority = 1}
 sound "Play_human_male_smoking_blow" {distance = 500, channel = 0, priority = 1}
 sound "Play_human_male_drink"        {distance = 500, channel = 0, priority = 1}

@@ -14,12 +14,12 @@ end
 function CContainerStash:activate(obj)
    self:getInventory().items = {}
    self:getInventory():deserialize(self.gStash:get() or {})
-   return CContainer.activate(self, obj)
+   CContainer.activate(self, obj)
 end
 
 function CContainerStash:deactivate(obj)
    self.gStash:set(self:getInventory():serialize() or {})
-   return CContainer.deactivate(self, obj)
+   CContainer.deactivate(self, obj)
 end
 
 function CContainerStash:getLabel()

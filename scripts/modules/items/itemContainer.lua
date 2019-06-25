@@ -23,7 +23,7 @@ end
 --TODO: think of adding a small inventory later
 function CItemContainer:OnActivate()
    if self:isLocked() then
-      CLockable.activate(self, self.owner.owner)
+      self.owner.owner:tryInteract(self)
    elseif not self:isEmpty() then
       for itemName,count in pairs(self.lootItems) do
          addItemToObj(itemName, self.owner.owner, count)
@@ -75,5 +75,16 @@ function CItemContainer:getLootTable()
    return tablex.deepcopy(self.lootItems)
 end
 
+function CItemContainer:getInteractType(char)
+   return "lockable"
+end
+
+function CItemContainer:isInteractionLingering(char)
+   return true
+end
+
+function CItemContainer:getInteractData(char)
+   return {}
+end
 
 return {CItemContainer=CItemContainer}

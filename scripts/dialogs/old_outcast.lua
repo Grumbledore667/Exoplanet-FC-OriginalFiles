@@ -132,6 +132,8 @@ end\
 		["text"] = "Does it matter now? But if you really want to hear the story of this insignificant aborigine, then kindly accompany me to my refuge. ";
 		["time"] = 13.5;
 		["topic"] = "abori_goes_home:start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00009"] = {
@@ -841,6 +843,8 @@ end\
 		["text"] = "About the scalp hunters thing.";
 		["time"] = 3.5;
 		["topic"] = "angry_bugs:old_outcast_about_scalpers";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00075"] = {
@@ -865,6 +869,8 @@ end\
 		["text"] = "They aren't going to trouble anyone ever again.";
 		["time"] = 5;
 		["topic"] = "angry_bugs:old_outcast_finish";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00076"] = {
@@ -1207,12 +1213,14 @@ end\
 		["ID"] = 103;
 		["actor"] = 2;
 		["connectID"] = 196;
-		["posX"] = -3030;
-		["posY"] = 480;
+		["posX"] = -3000;
+		["posY"] = 360;
 		["script"] = "";
 		["text"] = "Bring me two pieces of cloth - we need to protect your tender heels. Wouldn't hurt to cover your pink belly from the sun as well, or you'll turn red like a bitebug on a stick in a heartbeat. Also, you're gonna need a better weapon.";
 		["time"] = 24;
 		["topic"] = "junk_clothes:start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00105"] = {
@@ -1235,6 +1243,8 @@ end\
 		["text"] = "\\[Give 2 Cloth]Yeah.";
 		["time"] = 2.5;
 		["topic"] = "junk_clothes:old_outcast_give_cloth";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00106"] = {
@@ -1292,6 +1302,8 @@ end\
 		["text"] = "I feel like an ancient Greek. Practically an argonaut!";
 		["time"] = 5.5;
 		["topic"] = "junk_clothes:finish";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00112"] = {
@@ -1370,6 +1382,8 @@ end\
 		["text"] = "You should head for the fort of the humas. It's not far, just north of Windscream Canyon. There you can join a caravan to town. It's much safer that way.";
 		["time"] = 16;
 		["topic"] = "to_fort:start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00122"] = {
@@ -1611,6 +1625,8 @@ end\
 		["text"] = "Yes? Do you still want my advice?";
 		["time"] = 4.5;
 		["topic"] = "junk_clothes:old_outcast_get_cloth";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00161"] = {
@@ -1633,6 +1649,8 @@ end\
 		["text"] = "Look at you! Almost a real Bushman!";
 		["time"] = 4.5;
 		["topic"] = "junk_clothes:old_outcast_real_bushman";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00164"] = {
@@ -1695,8 +1713,8 @@ end\
 		["actor"] = 1;
 		["animation"] = "dl_hand_showforward";
 		["connectID"] = 110;
-		["posX"] = -2640;
-		["posY"] = 390;
+		["posX"] = -2580;
+		["posY"] = 270;
 		["script"] = "function message:onStart()\
 end\
 \
@@ -1711,6 +1729,8 @@ end\
 		["text"] = "\\[Give 2 Cloth]I have this.";
 		["time"] = 3.5;
 		["topic"] = "junk_clothes:old_outcast_give_cloth";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00199"] = {
@@ -1885,6 +1905,8 @@ end\
 		["text"] = "And even though I don't completely trust you, I have to ask you to escort me there. I'll reward you with some of my humble supplies.";
 		["time"] = 14;
 		["topic"] = "abori_goes_home:start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00221"] = {
@@ -1957,8 +1979,8 @@ end\
 		["actor"] = 1;
 		["animation"] = "dl_head_scratch";
 		["connectID"] = 215;
-		["posX"] = -2640;
-		["posY"] = 540;
+		["posX"] = -2580;
+		["posY"] = 420;
 		["script"] = "";
 		["text"] = "Hm...";
 		["time"] = 1.5;
@@ -2399,6 +2421,8 @@ end\
 		["text"] = "Besides, most of the time, we bipedal creatures tend to look at each other and at the ground rather than above. Use this area to safely navigate the cave but be careful - you're not completely invisible there.";
 		["time"] = 20;
 		["topic"] = "angry_bugs:old_outcast_knowledge";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00280"] = {
@@ -2454,6 +2478,8 @@ end\
 		["text"] = "This isn't the right place to talk about that. Could you help me get to my hideout first please?";
 		["time"] = 10.5;
 		["topic"] = "abori_goes_home:start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00286"] = {
@@ -2477,6 +2503,8 @@ end\
 		["text"] = "Just be careful not to break a leg or something. On the other side of these ledges you will find the second entrance to the scalphunters lair. Unguarded, I hope.";
 		["time"] = 16;
 		["topic"] = "angry_bugs:old_outcast_sneaking";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00289"] = {
@@ -2778,6 +2806,8 @@ end\
 		["text"] = "I will, huma. Those scalphunters make our life unbearable. As you've seen we are already fighting among ourselves for the last scraps we have. This is the worst that could happen with the outcasts like us.";
 		["time"] = 19;
 		["topic"] = "angry_bugs:old_outcast_nature";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00325"] = {
@@ -2813,6 +2843,8 @@ end\
 		["text"] = "Hey, that might just work.";
 		["time"] = 3.5;
 		["topic"] = "angry_bugs:old_outcast_trick";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00328"] = {
@@ -3161,6 +3193,8 @@ end\
 		["text"] = "You know, there was a big group of scalp hunters camping in a cave nearby...";
 		["time"] = 8.5;
 		["topic"] = "angry_bugs:old_outcast_about_scalpers_alt";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00365"] = {
@@ -3197,34 +3231,13 @@ end\
 		["time"] = 4.5;
 		["type"] = "message";
 	};
-	["message_00369"] = {
-		["ID"] = 369;
-		["actor"] = 2;
-		["connectID"] = 377;
-		["posX"] = -3660;
-		["posY"] = 450;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return getQuestTopicVisible(\"junk_clothes\", \"skip\")\
-end\
-\
-";
-		["text"] = "[HAS CLOTHES - JUMP TO MAIN HUB]";
-		["time"] = 0;
-		["type"] = "message";
-	};
 	["message_00371"] = {
 		["ID"] = 371;
 		["actor"] = 1;
 		["animation"] = "dl_head_nod";
 		["connectID"] = 103;
-		["posX"] = -3270;
-		["posY"] = 480;
+		["posX"] = -3240;
+		["posY"] = 360;
 		["script"] = "";
 		["text"] = "Yeah, right. Any ideas?";
 		["time"] = 3;
@@ -3235,8 +3248,8 @@ end\
 		["actor"] = 1;
 		["animation"] = "dl_head_shake";
 		["connectID"] = 378;
-		["posX"] = -3270;
-		["posY"] = 660;
+		["posX"] = -3240;
+		["posY"] = 630;
 		["script"] = "";
 		["text"] = "No, I'm actually fine, I have something for that matter.";
 		["time"] = 6;
@@ -3263,27 +3276,18 @@ end\
 		["time"] = 5.5;
 		["type"] = "message";
 	};
-	["message_00377"] = {
-		["ID"] = 377;
-		["actor"] = 2;
-		["connectID"] = 242;
-		["posX"] = -2790;
-		["posY"] = 660;
-		["script"] = "";
-		["text"] = "";
-		["time"] = 0;
-		["topic"] = "junk_clothes:skip";
-		["type"] = "message";
-	};
 	["message_00378"] = {
 		["ID"] = 378;
 		["actor"] = 2;
-		["connectID"] = 377;
-		["posX"] = -3030;
-		["posY"] = 660;
+		["connectID"] = 242;
+		["posX"] = -3000;
+		["posY"] = 630;
 		["script"] = "";
 		["text"] = "As you want, though bear in mind that you humas get roasted in this sun really fast.";
 		["time"] = 9.5;
+		["topic"] = "junk_clothes:skip";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00379"] = {
@@ -3296,6 +3300,8 @@ end\
 		["text"] = "Guess in won't hurt you to have a backup pair.";
 		["time"] = 6;
 		["topic"] = "junk_clothes:finish";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00381"] = {
@@ -3307,6 +3313,20 @@ end\
 		["script"] = "";
 		["text"] = "Thanks, I guess.";
 		["time"] = 2.5;
+		["type"] = "message";
+	};
+	["message_00382"] = {
+		["ID"] = 382;
+		["actor"] = 2;
+		["connectID"] = 242;
+		["posX"] = -3660;
+		["posY"] = 420;
+		["script"] = "";
+		["text"] = "I could make you some basic clothes, but it wouldn't be any better than yours.";
+		["time"] = 8.5;
+		["topic"] = "junk_clothes:skip";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["switch_00162"] = {
@@ -3467,8 +3487,8 @@ end\
 			[1] = 197;
 			[2] = 239;
 		};
-		["posX"] = -2790;
-		["posY"] = 480;
+		["posX"] = -2730;
+		["posY"] = 360;
 		["type"] = "switch";
 	};
 	["switch_00200"] = {
@@ -3588,7 +3608,7 @@ end\
 	["switch_00368"] = {
 		["ID"] = 368;
 		["connectionsID"] = {
-			[1] = 369;
+			[1] = 382;
 			[2] = 102;
 		};
 		["posX"] = -3810;

@@ -37,19 +37,6 @@ function CAntigraviumMine:OnCreate(params)
    self:updateMeshes()
 end
 
-function CAntigraviumMine:activate(char)
-   CInteractable.activate(self, char)
-   if self.resource <= 0 then
-      gameplayUI:showInfoTextEx("There is nothing to mine here", "minor", "")
-   elseif not hasObjItem("pickaxe.wpn", char) then
-      gameplayUI:showInfoTextEx("I need a pickaxe to mine", "minor", "")
-   else
-      char:startMining(self)
-      return true
-   end
-   return false
-end
-
 function CAntigraviumMine:updateMeshes()
    local depletion = self.initialResource - self.resource
    if depletion > 0 then
@@ -64,6 +51,10 @@ function CAntigraviumMine:tryHideMesh(meshName)
    if mesh then
       mesh:setVisible(false)
    end
+end
+
+function CAntigraviumMine:isDepleted(char)
+   return self.resource <= 0
 end
 
 function CAntigraviumMine:onMiningHit(fakeDepletion)
@@ -150,6 +141,32 @@ end
 
 function CAntigraviumMine:getInteractLabel()
    return "mine"
+end
+
+function CAntigraviumMine:getInteractType(char)
+   return "mine"
+end
+
+function CAntigraviumMine:isInteractionLingering(char)
+   return true
+end
+
+function CAntigraviumMine:getInteractData(char)
+   local prefabName = self:getPrefabName()
+   local data = {
+      anchorPos = getMC():getPose():getPos(),
+      anchorDir = vec3Normalize(vec3Sub(self:getPose():getPos(), char:getPose():getPos())),
+      animations = {},
+   }
+   if self:getPose():getPos().y - char:getPose():getPos().y > 50
+         or prefabName == "shard_4.sbg"
+         or prefabName == "shard_5.sbg"
+         or prefabName == "shard_6.sbg" then
+      data.animations.loop = "mine_front"
+   else
+      data.animations.loop = "mine_down"
+   end
+   return data
 end
 
 function CAntigraviumMine:OnSaveState(state)

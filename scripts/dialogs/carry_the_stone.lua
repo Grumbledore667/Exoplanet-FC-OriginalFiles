@@ -362,7 +362,7 @@ end\
 		["posX"] = 6150;
 		["posY"] = -870;
 		["script"] = "";
-		["text"] = "Here you go, huma: the best Carry could do with his limited resources here. You are lucky to have a T280-S! Just look how compact and lightweight it is. My boss gave me this huge backpack instead of a wrist-worn gear of yours!";
+		["text"] = "Here you go, huma: the best Carry could do with his limited resources here. You are lucky to have a T280-S! Just look how compact and lightweight it is. Carry's boss gave him this huge backpack instead of a wrist-worn gear of yours!";
 		["time"] = 22.5;
 		["topic"] = "scan_it:recieve_detector";
 		["type"] = "message";
@@ -1013,7 +1013,7 @@ end\
 		["posX"] = 3000;
 		["posY"] = 600;
 		["script"] = "";
-		["text"] = "It's not me, it's Professor Lemfather himself. And if Carry were you, huma, he would not stick his long nose in any of Lemfather's affairs. When Professor sends Carry to find this stuff - Carry obeys.";
+		["text"] = "It's not Carry, it's Professor Lemfather himself. And if Carry were you, huma, he would not stick his long nose in any of Lemfather's affairs. When Professor sends Carry to find this stuff - Carry obeys.";
 		["time"] = 19;
 		["type"] = "message";
 	};
@@ -1649,7 +1649,7 @@ end\
 		["posX"] = 2910;
 		["posY"] = -870;
 		["script"] = "";
-		["text"] = "The Scalphunters are a superstitious bunch, huma, they fear the anomalies like crystal moss fears water. Just watch for the bubbles and activate my module near them.";
+		["text"] = "The Scalphunters are a superstitious bunch, huma, they fear the anomalies like crystal moss fears water. Just watch for the bubbles and activate Carry's module near them.";
 		["time"] = 14.5;
 		["type"] = "message";
 	};
@@ -2320,7 +2320,7 @@ end\
 		["posX"] = 2100;
 		["posY"] = 2490;
 		["script"] = "";
-		["text"] = "Don't look at Carry like that, huma! We shall talk about my worthless brother later in fort, If Carry manages to get there in one piece.";
+		["text"] = "Don't look at Carry like that, huma! You and Carry shall talk about his worthless brother later in fort, if Carry manages to get there in one piece.";
 		["time"] = 14;
 		["type"] = "message";
 	};
@@ -2492,7 +2492,7 @@ end\
 		["posX"] = -720;
 		["posY"] = 990;
 		["script"] = "";
-		["text"] = "True pros use only the old school holo-display and laser projectors! Touchscreens and tactile keyboards, huma, that's what I'm talking about!";
+		["text"] = "True pros use only the old school holo-display and laser projectors! Touchscreens and tactile keyboards, huma, that's what Carry's talking about!";
 		["time"] = 11.5;
 		["type"] = "message";
 	};
@@ -2694,7 +2694,7 @@ end\
 		["posX"] = 4230;
 		["posY"] = -960;
 		["script"] = "";
-		["text"] = "Wait... really? Let Carry see... Oh it's nothing! I'll just use this...";
+		["text"] = "Wait... really? Let Carry see... Oh it's nothing! Carry will simply use this...";
 		["time"] = 7;
 		["type"] = "message";
 	};
@@ -2739,7 +2739,7 @@ end\
 		["posX"] = 5190;
 		["posY"] = -960;
 		["script"] = "";
-		["text"] = "Just don't let me down with the task.";
+		["text"] = "Just don't let Carry down with the task.";
 		["time"] = 5;
 		["type"] = "message";
 	};

@@ -102,7 +102,7 @@ function CPopupMenuUI:setupItemPopupMenu(item)
    end
 
    if item.isInstallable and item:isInstallable() and not player:getState("resting") then
-      popupMenuOptions["install"] = {func = player.interactObject, args = {player, "drop", self.item}}
+      popupMenuOptions["install"] = {func = player.tryInteract, args = {player, self.item}}
    end
 
    if item:isItemContainer() then

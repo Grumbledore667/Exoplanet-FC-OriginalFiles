@@ -83,17 +83,16 @@ function CFireplace:OnCreate(params)
    self:setBurning(self.burning)
 end
 
-function CFireplace:activate(obj)
-   if self.activated then return false end
-
+function CFireplace:activate(char)
    if not self:isBurning() then
-      if CActivator.checkRemoveItems(self) then
-         self:setBurning(true)
-      end
+      self:setBurning(true)
    else
-      return CRestCamp.activate(self, obj)
+      self.occupied = true
    end
-   return false
+end
+
+function CFireplace:deactivate(char)
+   self.occupied = false
 end
 
 function CFireplace:isBurning()
@@ -128,7 +127,7 @@ end
 function CFireplace:onBurningEnd(forced)
    SkySystem:unsubscribeDayTime(self.burningCallback) --safe
    self.burningCallback = nil
-   if not self.activated or forced then
+   if not self.occupied or forced then
       self.interactor:setTriggerActive(false)
       self.effects.fire_base:stop()
       self.effects.fire_main:stop()
@@ -192,6 +191,22 @@ end
 
 function CFireplace:getLabel()
    return "Campfire"
+end
+
+function CFireplace:getInteractType(char)
+   if self:isBurning() or char:getState("resting") then --State check allows to properly exit upon fire extinction
+      return "rest_camp"
+   else
+      return "activator"
+   end
+end
+
+function CFireplace:isInteractionLingering(char)
+   if self:isBurning() then
+      return true
+   else
+      return false
+   end
 end
 
 function CFireplace:OnSaveState(state)

@@ -54,12 +54,8 @@ function CBugGreen:die()
    self:hideBait()
 end
 
-function CBugGreen:pickupItem(inventory)
-   local item, count = CBug.pickupItem(self, inventory)
-   if item then
-      self:hideBait()
-   end
-   return item, count
+function CBugGreen:activate(char)
+   self:hideBait()
 end
 
 function CBugGreen:hideBait()

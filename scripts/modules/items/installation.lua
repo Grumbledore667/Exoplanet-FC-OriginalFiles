@@ -67,10 +67,6 @@ function CInstallation:hasAltActivation()
    return true
 end
 
-function CInstallation:getInteractTime(interactType)
-   return 1
-end
-
 function CInstallation:isInstallable()
    return true
 end

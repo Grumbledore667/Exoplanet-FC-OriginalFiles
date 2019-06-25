@@ -9,35 +9,10 @@ function CRestCamp:OnCreate()
    CInteractable.OnCreate(self)
 
    self.interactor:setRaycastRadius(100)
-   self.activated = false
 end
 
-function CRestCamp:isActivated()
-   return self.activated
-end
-
-function CRestCamp:activate(obj)
-   if self.activated then return false end
-
-   if obj:restAtCamp(self) then
-      self.activated = true
-      return true
-   end
-   return false
-end
-
-function CRestCamp:deactivate(obj)
-   if not self.activated then return false end
-
-   if obj:leaveCamp(self) then
-      self.activated = false
-      return true
-   end
-   return false
-end
-
-function CRestCamp:getType()
-   return "activator"
+function CRestCamp:getInteractType(char)
+   return "rest_camp"
 end
 
 function CRestCamp:getLabel()

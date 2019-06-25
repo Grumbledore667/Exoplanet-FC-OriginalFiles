@@ -38,9 +38,7 @@ end
 function CCombLockUI:onHide()
    CBaseModule.onHide(self)
 
-   if getPlayer().interactTarget then
-      getPlayer().interactTarget:deactivate(getPlayer())
-   end
+   getPlayer():interactStop()
 end
 
 function CCombLockUI:editBoxHasFocus()
@@ -68,15 +66,18 @@ end
 
 function CCombLockUI:onCombLockApply(args)
    local click_args = CEGUI.toMouseEventArgs(args)
-   if click_args.button == CEGUI.LeftButton then
-      getPlayer().interactTarget:tryCode(self.editbox:getText())
+   local obj = getMC():getBBVar("interactObject")
+   if click_args.button == CEGUI.LeftButton and obj then
+      if obj:tryCode(self.editbox:getText()) then
+         getMC():interactStop()
+      end
    end
 end
 
 function CCombLockUI:onCombLockCancel(args)
    local click_args = CEGUI.toMouseEventArgs(args)
    if click_args.button == CEGUI.LeftButton then
-      self:show(false)
+      getMC():interactStop()
    end
 end
 

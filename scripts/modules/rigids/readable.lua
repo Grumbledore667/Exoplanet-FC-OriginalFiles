@@ -1,18 +1,16 @@
-local oo = require "loop.simple"
+local oo = require "loop.multiple"
 local _rootRigid = (require "roots")._rootRigid
+local CInteractable = require "mixins.interactable"
 
 ---@class CReadable : shRigidEntity
-local CReadable = oo.class({}, _rootRigid)
+local CReadable = oo.class({}, _rootRigid, CInteractable)
 
-function CReadable:OnCreate()
-   self.interactor = self:createAspect("interactor")
-   self.interactor:setObject(self)
+function CReadable:OnCreate(params)
+   CInteractable.OnCreate(self, params)
+
    self.interactor:setTriggerRadius(300.0)
    self.interactor:setRaycastRadius(100.0)
-   self.interactor:getPose():setParent(self:getPose())
-   self.interactor:getPose():resetLocalPose()
    self.interactor:setTriggerActive(true)
-   self.interactor:setRaycastActive(true)
 
    self.title = loadParam(self, "title", "Title")
    self.contents = loadParam(self, "contents", "Contents")
@@ -24,31 +22,14 @@ function CReadable:OnCreate()
    self.interactor:setRaycastActive(self.enabled)
 end
 
-function CReadable:activate(obj)
-   if self.window then
-      gameplayUI.messageUI:showText(true, self.title, self.contents)
-   else
-      gameplayUI.billboardUI:setup(self.title, self.contents)
+function CReadable:OnInteractTriggerEnd(char)
+   if char == getPlayer() then
+      char:onObjectDeactivate(self, self:getInteractType(char))
    end
-   return true
 end
 
-function CReadable:deactivate(obj)
-   if self.window then
-      gameplayUI.messageUI:show(false)
-   else
-      gameplayUI.billboardUI:show(false)
-   end
-   return true
-end
-
-function CReadable:OnInteractTriggerEnd(obj)
-   self:deactivate(obj)
-end
-
-
-function CReadable:getType()
-   return "activator"
+function CReadable:getInteractType(char)
+   return "readable"
 end
 
 function CReadable:getLabel()

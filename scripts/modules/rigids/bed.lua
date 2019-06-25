@@ -7,32 +7,22 @@ local CBed = oo.class({}, _rootRigid, CInteractable)
 
 function CBed:OnCreate()
    CInteractable.OnCreate(self)
-   self.owner = loadParam(self, "owner", "")
+   self.ownerName = loadParam(self, "owner", nil)
 end
 
-function CBed:activate(obj)
-   if self:isActivated() then return false end
-   if self.owner == "" or self.owner == "player" then
-      if obj:restAtBed(self) then
-         self.activated = true
-         self:setCollisionCharacters(false, false)
-         return true
-      end
-   else
-      gameplayUI:showInfoTextEx("It's not your bed", "minor", "")
-   end
-   return false
+function CBed:preActivate(char)
+   self:setCollisionCharacters(false, false)
 end
 
-function CBed:deactivate(obj)
-   if not self:isActivated() then return false end
+function CBed:activate(char)
+end
 
-   if obj:leaveBed(self) then
-      self.activated = false
-      self:setCollisionCharacters(true, true)
-      return true
-   end
-   return false
+function CBed:deactivate(char)
+   self:setCollisionCharacters(true, true)
+end
+
+function CBed:getOwnerName()
+   return self.ownerName
 end
 
 function CBed:getLabel()
@@ -41,6 +31,27 @@ end
 
 function CBed:getInteractLabel()
    return "sleep"
+end
+
+function CBed:getInteractType(char)
+   return "bed"
+end
+
+function CBed:isInteractionLingering(char)
+   return true
+end
+
+function CBed:getInteractData(char)
+   local data = {
+      anchorPos = localPointToWorld({x=0,y=0,z=-80}, self:getPose()),
+      anchorDir = vec3RotateQuat({x=0,y=0,z=-1}, self:getPose():getRotQuat()),
+      animations = {
+         activate = "idle_to_sleep_bed_idle",
+         loop = "sleep_bed_idle",
+         deactivate = "sleep_bed_idle_to_idle",
+      },
+   }
+   return data
 end
 
 return {CBed=CBed}

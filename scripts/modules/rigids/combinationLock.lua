@@ -11,6 +11,9 @@ function CCombinationLock:OnCreate()
 
    getScene():subscribeOnLocationEnter(function()
       self.lockedObjects = loadParamObjects(self, "lockedObjects", "")
+      for _, obj in pairs(self.lockedObjects) do
+         obj.lockObject = self
+      end
       table.insert(self.lockedObjects, 1, self)
       CLockable.OnCreate(self)
    end, self)

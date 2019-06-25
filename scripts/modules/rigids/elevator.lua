@@ -11,29 +11,15 @@ function CElevator:OnCreate()
    CInteractable.OnCreate(self)
 
    self.interactor:getPose():setLocalPos({x=0,y=150,z=0})
-   self.destinationObj = loadParamObjects(self, "obj", nil)[1]
+   getScene():subscribeOnLocationEnter(self.onLocationEnter, self)
 
    self.sounds = {}
 
    self.disabled = false
 end
 
-function CElevator:activate(obj)
-   if self.disabled or not self.destinationObj then return false end
-   obj:setState("disableAttack", true)
-   obj:setState("disableMove", true)
-   obj:setState("disableJump", true)
-   obj:setState("disableInteraction", true)
-   gameplayUI:startFadeToBlackSequence(0.5, 1, 0.5)
-   runTimer(1, nil, function()
-      obj:getPose():setPos(self.destinationObj:getPose():getPos())
-      obj:setState("disableAttack", false)
-      obj:setState("disableMove", false)
-      obj:setState("disableJump", false)
-      obj:setState("disableInteraction", false)
-   end, false)
-
-   return true
+function CElevator:onLocationEnter()
+   self.destinationObj = loadParamObjects(self, "obj", nil)[1]
 end
 
 function CElevator:getLabel()
@@ -46,6 +32,26 @@ end
 
 function CElevator:getInteractLabel()
    return "Activate"
+end
+
+function CElevator:getInteractType(char)
+   if self.disabled or not self.destinationObj then
+      return "no_interaction"
+   else
+      return "elevator"
+   end
+end
+
+function CElevator:isInteractionLingering(char)
+   return true
+end
+
+function CElevator:getInteractData(char)
+   local data = {
+      holster = false,
+      noEscape = true,
+   }
+   return data
 end
 
 function CElevator:OnSaveState(state)

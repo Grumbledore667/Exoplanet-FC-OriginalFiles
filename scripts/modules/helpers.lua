@@ -184,6 +184,33 @@ function helpers.safeCreateEntity(entityName, entityClass, params)
    return entity, nil
 end
 
+--- a safe entity.preActivate wrapper
+function helpers.safePreActivateEntity(entity, activator)
+   if entity.preActivate then entity:preActivate(activator) end
+end
+
+--- a safe entity.activate wrapper
+function helpers.safeActivateEntity(entity, activator)
+   if entity.activate then entity:activate(activator) end
+end
+
+--- a safe entity.deactivate wrapper
+function helpers.safeDeactivateEntity(entity, activator)
+   if entity.deactivate then entity:deactivate(activator) end
+end
+
+function helpers.getPickupAnimationFor(char, obj)
+   if char:getState("inAir") then return nil end --During air time it's allowed to pickup one item with no animation
+   local difference = obj:getPose():getPos().y - char:getPose():getPos().y
+   if difference > 130 then
+      return "idle_takeobj_up"
+   elseif difference > 70 then
+      return "idle_takeobj_front"
+   else
+      return "idle_takeobj_down_fast"
+   end
+end
+
 ---@param parent shCharacter @spawner entity
 ---@return CCorpseDummy
 function helpers.spawnCorpseDummy(parent)
@@ -248,6 +275,14 @@ end
 function helpers.isCharacter(instance)
    local CCharacter = (require "character").CCharacter
    return oo.issubclassof(oo.getclass(instance), CCharacter)
+end
+
+---check if instance is an instance descended from CDestroyable
+---@param instance any
+---@return boolean
+function helpers.isDestroyable(instance)
+   local CDestroyable = require "mixins.destroyable"
+   return oo.issubclassof(oo.getclass(instance), CDestroyable)
 end
 
 function helpers.getNameAndClass(obj)

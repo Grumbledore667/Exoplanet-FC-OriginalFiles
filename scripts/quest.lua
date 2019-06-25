@@ -399,16 +399,21 @@ function CQuest:leadsToStep(stepFrom, stepTo)
       return false
    end
 
-   for i=1,#stepFrom.connections do
-      if stepFrom.connections[i] == stepTo then
-         return true
-      else
-         if self:leadsToStep(stepFrom.connections[i], stepTo) then
-            return true
+   local visited = {}
+   local upNext = {stepFrom}
+   while #upNext > 0 do
+      local node = table.remove(upNext, 1)
+      if not visited[node] then
+         visited[node] = true
+         for _, connectedNode in ipairs(node.connections) do
+            if connectedNode == stepTo then
+               return true
+            else
+               table.insert(upNext, connectedNode)
+            end
          end
       end
    end
-
    return false
 end
 
@@ -866,6 +871,47 @@ function questSystem:init()
       end
    end
    for _, q in pairs(quests) do
+      if q.topics then
+         for _, topic in ipairs(q.topics) do
+            q.topics[topic.name] = topic
+            q:setTopicVisible(topic.name, topic.visible)
+         end
+      end
+      if q.variables then
+         local objects, groups = {}, {}
+         for _, var in ipairs(q.variables) do
+            if var.kind == "object" then
+               table.insert(objects, var)
+            elseif var.kind == "group" then
+               table.insert(groups, var)
+            else
+               if var.kind == "item" and not ItemsData.isCorrectItemName(var.value) then
+                  local wrong_item_name = "ERROR: wrong item name in quest '%s' variable '%s': %s"
+                  log(string.format(wrong_item_name, q.name, var.name, var.value))
+               end
+            end
+            q:declareVar(var.name, var.value)
+         end
+         if #objects > 0 or #groups > 0 then
+            getScene():subscribeOnLocationEnter(function()
+               local object_instances = {}
+               q._variables.objects = object_instances
+               for _, object_var in ipairs(objects) do
+                  if object_var.value then --Support uninitialized vars
+                     object_instances[object_var.name] = getObj(object_var.value)
+                  end
+               end
+
+               local group_instances = {}
+               q._variables.groups = group_instances
+               for _, group_var in ipairs(groups) do
+                  if group_var.value then --Support uninitialized vars
+                     group_instances[group_var.name] = tablex.imap(getObj, getObjectsInGroupOrdered(group_var.value))
+                  end
+               end
+            end)
+         end
+      end
       if q.onCreate then
          q:onCreate()
       end
@@ -973,7 +1019,17 @@ end
 function questSystem:fireEventImmediate(event_name, target_name, target_obj)
    local specificQuest, target = splitQuestTopic(target_name or "")
    if specificQuest ~= nil and target ~= nil then
-      self:processEvent(getQuest(specificQuest), event_name, target, target_obj)
+      local quest = getQuest(specificQuest)
+      self:processEvent(quest, event_name, target, target_obj)
+      local topic_data = quest.topics and quest.topics[target]
+      if event_name == "discuss" and topic_data then
+         if topic_data.log_id ~= "" then
+            quest:writeLog(topic_data.log_id)
+         end
+         if topic_data.single_use then
+            quest:setTopicVisible(topic_data.name, false)
+         end
+      end
    else
       for _,quest in pairs(quests) do
          self:processEvent(quest, event_name, target_name, target_obj)
@@ -1154,23 +1210,21 @@ function isObjectEnabled(object_name)
    return false
 end
 
---Works with groups in which object names end with a number ID
-function getObjectsInGroupOrdered(groupName, silent)
-   local orderedGroup = {}
-   for _, objectName in ipairs(getObjectsInGroup(groupName, true)) do
-      local id = string.match(objectName, "%d+$")
-      if id then
-         orderedGroup[tonumber(id)] = objectName
-      elseif not silent then
-         log("WARNING: getObjectsInGroupOrdered skipped a non-pattern named object: " .. objectName)
-      end
-   end
+---Sorts given table IN-PLACE using natural alphanumeric sorting and returns it
+---@param o table @a list-like table
+---@return table
+local function alphanumsort(o)
+   local function padnum(d) local dec, n = string.match(d, "(%.?)0*(.+)")
+      return #dec > 0 and ("%.12f"):format(d) or ("%s%03d%s"):format(dec, #n, n) end
+   table.sort(o, function(a,b)
+      return tostring(a):gsub("%.?%d+",padnum)..("%3d"):format(#b)
+         < tostring(b):gsub("%.?%d+",padnum)..("%3d"):format(#a) end)
+   return o
+end
 
-   local finalGroup = {}
-   for _,objectName in tablex.sort(orderedGroup) do
-      table.insert(finalGroup, objectName)
-   end
-   return finalGroup
+function getObjectsInGroupOrdered(groupName)
+   local result = getObjectsInGroup(groupName, true)
+   return alphanumsort(result)
 end
 
 
@@ -1377,7 +1431,7 @@ end
 
 ---Teleport to another object or position
 ---@param obj any
----@param target Vector3 | any
+---@param target vec3 | any
 ---@param ignoreRot boolean
 function teleportTo(obj, target, ignoreRot)
    if not obj or not target then return end
@@ -1400,7 +1454,7 @@ end
 
 ---Whether the obj or its new position is not near a player and therefore a teleportation is safe to perform
 ---@param obj any
----@param target Vector3 | any
+---@param target vec3 | any
 ---@param distance number or 2000 by default
 ---@return boolean
 function isObjectTeleportSafe(obj, target, distance)

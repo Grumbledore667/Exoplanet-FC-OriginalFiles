@@ -393,10 +393,6 @@ function CItem:OnUnequip(slotId, silent)
    end
 end
 
-function CItem:getType()
-   return ""
-end
-
 function CItem:getOwner()
    return self.owner
 end
@@ -487,8 +483,23 @@ function CItem:destroy(count, silent, noEvent, searchSimilar)
    end
 end
 
-function CItem:getInteractTime(interactType)
-   return 0
+function CItem:getInteractType(char)
+   return "item"
+end
+
+function CItem:isInteractionLingering(char)
+   return false
+end
+
+function CItem:getInteractData(char)
+   local data = {
+      holdButton = true,
+      time = 1,
+      animations = {
+         loop = "crouch_idle",
+      },
+   }
+   return data
 end
 
 function CItem:isMeleeWeapon()

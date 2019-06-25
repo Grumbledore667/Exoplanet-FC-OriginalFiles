@@ -5,8 +5,8 @@ local tablex = require "pl.tablex"
 
 local deb = {}
 
-deb.versionStr = "Alersteam ( Early Access Alpha build 0.32.0 )"
-deb.versionInt = 11
+deb.versionStr = "Alersteam ( Early Access Alpha build 0.33.0 )"
+deb.versionInt = 12
 deb.pcallProtection = true
 
 deb.inspectOptions = {depth=2}

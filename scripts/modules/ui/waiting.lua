@@ -25,20 +25,6 @@ function CWaitingUI:init()
    GUIUtils.widgetSubscribeEventProtected(self.wnd:getChild("midnight" ), "MouseClick", partial(self.onWaitStart, self))
 end
 
-function CWaitingUI:onShow()
-   CBaseModule.onShow(self)
-end
-
-function CWaitingUI:onHide()
-   CBaseModule.onHide(self)
-
-   local player = getMC()
-   local bedObject = player:getBBVar("bedObject")
-   if player:getState("sleepAtBed") and not player:getState("sleeping") and bedObject then
-      bedObject:deactivate(player)
-   end
-end
-
 function CWaitingUI:isWaitingMode()
    return self.waitMode
 end

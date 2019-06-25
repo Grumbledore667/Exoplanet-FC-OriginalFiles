@@ -75,7 +75,7 @@ function CNpcEditorAttachmentConfigUI:onBoneChanged(args)
       self.boneImage:setVisible(false)
 
       for _, attach in pairs(self.char.style.attachments) do
-         if attach.entity == self.meshEntity then
+         if attach.entity == self.attachmentTable.entity then
             attach.bone = boneName
             break
          end
@@ -109,7 +109,7 @@ function CNpcEditorAttachmentConfigUI:onConfigClick(args)
    self.attachmentTable[coordName][coord] = self.attachmentTable[coordName][coord] + delta
 
    self.char:setupAttachments()
-   self:setup(self.meshEntity)
+   self:setup(self.attachmentTable)
 
    gameplayUI.npcEditorUI:onChangeMade()
 end

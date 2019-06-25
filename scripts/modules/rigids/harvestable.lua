@@ -83,8 +83,17 @@ function CHarvestable:OnCreate()
    end
 end
 
-function CHarvestable:getType()
+function CHarvestable:getInteractType(char)
    return "pickup"
+end
+
+function CHarvestable:getInteractData(char)
+   local data = {
+      animations = {
+         activate = hlp.getPickupAnimationFor(char, self)
+      },
+   }
+   return data
 end
 
 function CHarvestable:getItemName()
@@ -187,10 +196,6 @@ function CHarvestable:onFastForwardTime(event, ...)
    local stepsToCatchUp = event.elapsed:getAs("rSecond") / self.growTimerStep
    --Catch up to the exact scale increase
    self:growStep(stepsToCatchUp * self.growDelta)
-end
-
-function CHarvestable:getInteractTime(interactType)
-   return 0
 end
 
 function CHarvestable:getLootTable()
