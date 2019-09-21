@@ -210,6 +210,8 @@ function CFireplace:isInteractionLingering(char)
 end
 
 function CFireplace:OnSaveState(state)
+   CRestCamp.OnSaveState(self, state)
+
    if self.installer then
       state.pos = self:getPose():getPos()
       state.rotQuat = self:getPose():getRotQuat()
@@ -221,6 +223,8 @@ function CFireplace:OnSaveState(state)
 end
 
 function CFireplace:OnLoadState(state)
+   CRestCamp.OnLoadState(self, state)
+
    if self.installer then
       if state.pos then
          self:getPose():setPos(state.pos)

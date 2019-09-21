@@ -17,22 +17,15 @@ local obj1 = {
 	["message_00002"] = {
 		["ID"] = 2;
 		["actor"] = 1;
+		["connectID"] = 95;
 		["posX"] = 1020;
 		["posY"] = 210;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return self:isFirstTime() and self:isTopicVisible()\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "start open sesame";
 		["time"] = 2.5;
-		["topic"] = "open_sesame:start";
+		["topic"] = "open_sesame:offer";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = false;
 		["type"] = "message";
 	};
 	["message_00003"] = {
@@ -64,6 +57,8 @@ end\
 		["text"] = "finish open sesame quest.";
 		["time"] = 1;
 		["topic"] = "open_sesame:finish";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00005"] = {
@@ -85,6 +80,8 @@ end\
 		["text"] = "wrong code";
 		["time"] = 1;
 		["topic"] = "open_sesame:code_wrong";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00006"] = {
@@ -106,6 +103,8 @@ end\
 		["text"] = "finish helping_hands quest.";
 		["time"] = 2.5;
 		["topic"] = "helping_hands:finish";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00007"] = {
@@ -127,6 +126,8 @@ end\
 		["text"] = "start helping_hands";
 		["time"] = 2;
 		["topic"] = "helping_hands:start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00009"] = {
@@ -371,19 +372,12 @@ end\
 		["connectID"] = 32;
 		["posX"] = 2550;
 		["posY"] = 810;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return self:isFirstTime() and getQuest(\"helping_hands\"):getTopicVisible(\"start\")\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "And how do you like your job?";
 		["time"] = 4.5;
+		["topic"] = "helping_hands:start";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = false;
 		["type"] = "message";
 	};
 	["message_00032"] = {
@@ -498,6 +492,8 @@ end\
 		["text"] = "Where can I find this Master Phil?";
 		["time"] = 4.5;
 		["topic"] = "helping_hands:start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00042"] = {
@@ -539,19 +535,12 @@ end\
 		["connectID"] = 46;
 		["posX"] = 2550;
 		["posY"] = 1020;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return self:isFirstTime() and getQuestTopicVisible(\"helping_hands\", \"finish\")\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "I've managed to get you some help.";
 		["time"] = 3;
+		["topic"] = "helping_hands:finish";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = false;
 		["type"] = "message";
 	};
 	["message_00046"] = {
@@ -576,6 +565,8 @@ end\
 		["text"] = "But enough about that. With those sturdy fellows I'm going to finish this faster. You've earned your share of greenies for all this back and forth.";
 		["time"] = 14;
 		["topic"] = "helping_hands:finish";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00048"] = {
@@ -584,19 +575,12 @@ end\
 		["connectID"] = 51;
 		["posX"] = 3270;
 		["posY"] = 1020;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return getQuestTopicVisible(\"open_sesame\", \"start\")\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "There's something else you might be able to help me with, a bit more challenging than just walking and talking though.";
 		["time"] = 11.5;
+		["topic"] = "open_sesame:offer";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = false;
 		["type"] = "message";
 	};
 	["message_00049"] = {
@@ -651,19 +635,12 @@ end\
 		["connectID"] = 52;
 		["posX"] = 2550;
 		["posY"] = 1290;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return getQuestTopicVisible(\"open_sesame\", \"start\")\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "So what was it you wanted me to help you with?";
 		["time"] = 6.5;
+		["topic"] = "open_sesame:offer";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = false;
 		["type"] = "message";
 	};
 	["message_00056"] = {
@@ -734,6 +711,9 @@ end\
 		["script"] = "";
 		["text"] = "Why won't you just cut it open?";
 		["time"] = 4.5;
+		["topic"] = "open_sesame:start";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = false;
 		["type"] = "message";
 	};
 	["message_00062"] = {
@@ -757,6 +737,8 @@ end\
 		["text"] = "I'll try to come up with something. Any ideas on where I can start?";
 		["time"] = 8;
 		["topic"] = "open_sesame:start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00064"] = {
@@ -865,20 +847,12 @@ end\
 		["connectID"] = 76;
 		["posX"] = 3240;
 		["posY"] = 1650;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return self:isFirstTime() and self:isTopicVisible()\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "Not yet, but I found Barnabas' note with some sort of a code. It doesn't open the lock.";
 		["time"] = 10;
 		["topic"] = "open_sesame:code_wrong";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00075"] = {
@@ -934,20 +908,12 @@ end\
 		["connectID"] = 81;
 		["posX"] = 3240;
 		["posY"] = 1800;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return self:isFirstTime() and self:isTopicVisible()\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "I found a book about ciphers in Barnabas' room.";
 		["time"] = 5.5;
 		["topic"] = "open_sesame:read_cipher";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00081"] = {
@@ -980,19 +946,12 @@ end\
 		["connectID"] = 84;
 		["posX"] = 3240;
 		["posY"] = 1950;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return getQuestTopicVisible(\"open_sesame\", \"finish\")\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "I have opened the locked storage.";
 		["time"] = 4;
+		["topic"] = "open_sesame:finish";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = false;
 		["type"] = "message";
 	};
 	["message_00084"] = {
@@ -1041,6 +1000,8 @@ end\
 		["text"] = "In any case you can count on a good discount for all my goods. And the captain will hear only the best from me.";
 		["time"] = 13;
 		["topic"] = "open_sesame:finish";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00088"] = {
@@ -1059,8 +1020,7 @@ end\
 		["posX"] = 1020;
 		["posY"] = 90;
 		["script"] = "function message:onStart()\
-   startQuest(\"helping_hands\")\
-   finishQuest(\"helping_hands\")\
+   setGlobalParam(\"helping_hands_finished\", true)\
 end\
 \
 function message:onStop()\
@@ -1081,20 +1041,12 @@ end\
 		["connectID"] = 93;
 		["posX"] = 5490;
 		["posY"] = 930;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return getQuestTopicVisible(\"open_sesame\", \"eli_already_opened\")\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "I already did. Don't think anything wrong, I was just playing around with neurochipped bugs.";
 		["time"] = 8.5;
-		["topic"] = "open_sesame:start";
+		["topic"] = "open_sesame:eli_already_opened";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00093"] = {
@@ -1106,6 +1058,19 @@ end\
 		["script"] = "";
 		["text"] = "You did? That's great news!";
 		["time"] = 3.5;
+		["type"] = "message";
+	};
+	["message_00095"] = {
+		["ID"] = 95;
+		["actor"] = 2;
+		["posX"] = 1290;
+		["posY"] = 210;
+		["script"] = "";
+		["text"] = "";
+		["time"] = 1;
+		["topic"] = "open_sesame:start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["switch_00001"] = {

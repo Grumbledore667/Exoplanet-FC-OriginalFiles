@@ -184,10 +184,6 @@ function CCraftUI:setup()
          craftItem.slot:setYPosition(CEGUI.UDim(0, 0))
       end
    end
-
-   if self.selectedRecipe and self.selectedRecipe.available then
-      self:setupCraftDelimiter()
-   end
 end
 
 function CCraftUI:calculateMaxCraftCount()
@@ -213,6 +209,7 @@ function CCraftUI:setupCraftDelimiter()
       gameplayUI.itemDelimiterUI:setup(item, "craft")
       gameplayUI.itemDelimiterUI.wnd:setPosition(self.wnd:getPosition())
       gameplayUI.itemDelimiterUI.wnd:setProperty("HorizontalAlignment", "Centre")
+      gameplayUI.itemDelimiterUI:show(true)
       GUIUtils.positionWindowRelativeTo(gameplayUI.itemDelimiterUI.wnd, self.wnd, "bottom")
    end
 end
@@ -277,8 +274,8 @@ function CCraftUI:onRecipeClick(args)
       if self.selectedRecipe ~= clickedItem then
          self.selectedRecipe = clickedItem
       end
-      gameplayUI.itemDelimiterUI:show(true)
       self:setup()
+      self:setupCraftDelimiter()
       if not clickedItem.available then
          gameplayUI:showInfoTextEx("Not enough components", "minor", "")
       end

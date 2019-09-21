@@ -546,6 +546,21 @@ local animations = {
          "dl_righthand_wave_short",
          "dl_sneeze",
       },
+      allows_rhand_weapon = {
+         "dl_bow_1",
+         "dl_hand_at_mouth_yelling",
+         "dl_hand_facepalm",
+         "dl_head_2nods",
+         "dl_head_nod",
+         "dl_head_shake",
+         "dl_look_down",
+         "dl_look_down_long",
+         "dl_look_left",
+         "dl_look_right",
+         "dl_look_up",
+         "dl_point_left",
+         "dl_raisedfinger_left",
+      }
    },
    ladder = {
       up = {
@@ -769,10 +784,23 @@ assignEvent "idle_to_ladder_bottom"             "end" {11}
 assignEvent "idle_to_ladder_top"                "end" {23}
 
 --Interactions
+assignEvent "idle_abori_lock_open"       "activate"    {45} "item_change" {110}
+assignEvent "idle_abori_lock_close"      "item_change" {10} "activate"    {65}
 assignEvent "idle_takeobj_down_fast"     "activate"    {10} "preemptive_end" {25}
 assignEvent "idle_takeobj_front"         "activate"    {15} "preemptive_end" {25}
 assignEvent "idle_takeobj_up"            "activate"    {10} "preemptive_end" {25}
 assignEvent "idle_to_chest_idle"         "activate"    {25}
+assignEvent "idle_lever_front_off"       "activate"    {53}
+assignEvent "idle_lever_front_on"        "activate"    {47}
+assignEvent "idle_lever_front_off_fail"  "activate"    {35}
+assignEvent "idle_lever_front_on_fail"   "activate"    {35}
+assignEvent "idle_lever_down_off"        "activate"    {75}
+assignEvent "idle_lever_down_on"         "activate"    {75}
+assignEvent "idle_lever_down_off_fail"   "activate"    {55}
+assignEvent "idle_lever_down_on_fail"    "activate"    {55}
+assignEvent "idle_button_press_fist"     "activate"    {41}
+assignEvent "idle_button_press_palm"     "activate"    {41}
+assignEvent "idle_button_press_hard"     "activate"    {50}
 assignEvent "dig_delve_right"           "dust"         {25} "dig_sound" {20} "dig" {70}
 assignEvent "mine_down"                 "mine_sound"   {42} "mine_success" {42} "hit" {42}
 assignEvent "mine_front"                "mine_sound"   {30} "mine_success" {30} "hit" {30}

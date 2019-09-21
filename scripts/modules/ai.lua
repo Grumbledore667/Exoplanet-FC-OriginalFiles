@@ -7,6 +7,11 @@ local hlp = require "helpers"
 local StackTracePlus
 do
    -- suppress engine log errors when STP pcall require on lua5.2/5.3 modules absent in 5.1
+   -- the way this works is lua allows to set hooks per lua_State but if we set a hook on the
+   -- global lua state we'll lose engine error hook since we can't reset it from lua. but since
+   -- lua coroutines are kind of like lua_State themselves internally, we can clear the hook on a
+   -- coroutine to suppress forced engine error log, which will affect only code running within the
+   -- coroutine.
    local silentRequire = coroutine.create(function()
       StackTracePlus = require "StackTracePlus"
    end)
@@ -25,35 +30,6 @@ local ai = _module
 
 ai["NodeState"]            = require "ai.NodeState"
 ai["Node"]                 = require "ai.Node"
-ai["BehaviorTree"]         = require "ai.BehaviorTree"
-ai["Succeeder"]            = require "ai.Succeeder"
-ai["Failer"]               = require "ai.Failer"
-ai["Wait"]                 = require "ai.Wait"
-ai["Action"]               = require "ai.Action"
-ai["AnimatedAction"]       = require "ai.AnimatedAction"
-ai["CoroutineAction"]      = require "ai.CoroutineAction"
-ai["ConditionNode"]        = require "ai.ConditionNode"
-ai["StateCondition"]       = require "ai.StateCondition"
-ai["ButtonCondition"]      = require "ai.ButtonCondition"
-ai["ReactiveGuard"]        = require "ai.ReactiveGuard"
-ai["SenseCondition"]       = require "ai.SenseCondition"
-ai["Decorator"]            = require "ai.Decorator"
-ai["Repeater"]             = require "ai.Repeater"
-ai["UntilSuccess"]         = require "ai.UntilSuccess"
-ai["UntilFailure"]         = require "ai.UntilFailure"
-ai["Invertor"]             = require "ai.Invertor"
-ai["ForceSuccess"]         = require "ai.ForceSuccess"
-ai["ForceFailure"]         = require "ai.ForceFailure"
-ai["Finisher"]             = require "ai.Finisher"
-ai["TimeLimiter"]          = require "ai.TimeLimiter"
-ai["Composite"]            = require "ai.Composite"
-ai["Sequence"]             = require "ai.Sequence"
-ai["Probabilitor"]         = require "ai.Probabilitor"
-ai["Randomizer"]           = require "ai.Randomizer"
-ai["Selector"]             = require "ai.Selector"
-ai["RandomSelector"]       = require "ai.RandomSelector"
-ai["DynamicGuardSelector"] = require "ai.DynamicGuardSelector"
-ai["Parallel"]             = require "ai.Parallel"
 
 ai.utils = {}
 
@@ -204,7 +180,8 @@ function ai.utils.loadTree(path, entity)
             tablex.update(externalInitList, newExternalInitList)
          end
       else
-         initializedNodes[name] = ai[nodeData.class](vars)
+         vars.className = nodeData.class
+         initializedNodes[name] = ai.Node(vars)
       end
       if nodeData.class == "BehaviorTree" then
          rootNode = initializedNodes[name]

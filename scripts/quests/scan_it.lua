@@ -270,8 +270,7 @@ end\
    self:writeLog(name)\
    self:setTopicVisible(\"finish_bad\", true)\
 \
-   getMC():setDialogAnimationAllowed(false, 3)\
-   useItemForPlayer(self.sandwich)\
+   useItemForPlayer(self.sandwich, true)\
    return true\
 end\
 \

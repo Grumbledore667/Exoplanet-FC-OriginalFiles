@@ -28,7 +28,8 @@ local CScene = oo.class(
       callbacksFirstFrame = nil,
       MCAmbient = "canyon",
       currentAmbient = "canyon",
-      ambientAspect = nil
+      ambientAspect = nil,
+      autoSaveTimer = nil
    }
 )
 
@@ -383,7 +384,13 @@ function CScene:OnSaveState(state)
    gameplayUI:showInfoTextEx("Game saved", "major", "")
    local quests_states = {}
    for k,v in pairs(quests) do
-      if v.activeStep then
+      if v.startNode then
+         local newQuestState = {}
+         if v.OnSaveState then
+            v:OnSaveState(newQuestState)
+            quests_states[k] = newQuestState
+         end
+      elseif v.activeStep then
          local qs = {}
          qs["activeStepName"] = v.activeStep.name
          local qsteps = {}
@@ -450,7 +457,17 @@ function CScene:OnLoadState(state)
    if state.quests then
       for k,v in pairs(state.quests) do
          local q = getQuest(k)
-         if q then
+         if q and q.new then
+            if q.OnLoadState then
+               self:subscribeOnFirstFrame(function()
+                  local status, err = pcall(q.OnLoadState, q, v)
+                  if not status then
+                     log(string.format("ERROR while executing %s's OnLoadState:", q.name))
+                     log(err)
+                  end
+               end)
+            end
+         elseif q then
             -- set active step
             if v.activeStepName then
                local activeStep = q:getStep(v.activeStepName)
@@ -502,7 +519,7 @@ function CScene:OnLoadState(state)
             if q.OnLoadState then
                local status, err = pcall(q.OnLoadState, q, v.scriptState)
                if not status then
-                  log(string.format("ERROR while executing %s's OnLoadState:", q.title))
+                  log(string.format("ERROR while executing %s's OnLoadState:", q.name))
                   log(err)
                end
             end
@@ -651,8 +668,8 @@ function CScene:loadFromPersistentData()
                for name, objState in pairs(ftData) do
                   if objState.discovered or objState.activated then --Supports legacy parameter 'activated'
                      local obj = getObj(name)
-                     if obj and obj.discover then
-                        obj:discover()
+                     if obj and obj.__discover then
+                        obj:__discover()
                         if not q:isStarted() then
                            q:startImediate()
                         end
@@ -669,10 +686,14 @@ end
 
 function CScene:tryAutoSave()
    if isSavingEnabled() then
+      if self.autoSaveTimer then
+         self.autoSaveTimer:stop()
+         self.autoSaveTimer = nil
+      end
       log("Auto saved")
       saveGameSafe("autosave")
-   else
-      runTimer(1.0, self, self.tryAutoSave, false)
+   elseif not self.autoSaveTimer then
+      self.autoSaveTimer = runTimer(1.0, self, self.tryAutoSave, false)
    end
 end
 

@@ -245,6 +245,7 @@ function CNpcEditorOverviewMeshesUI:onMeshRemoved(window)
          for j, meshName in pairs(submeshTable) do
             if removeMeshName == meshName then
                table.remove(submeshTable, j)
+               style.textures[meshName] = nil
                if #submeshTable == 0 then
                   table.remove(style.body, i)
                end

@@ -15,11 +15,9 @@ local CActivator = oo.class({}, CInteractable, CRigid)
 function CActivator:OnCreate(params)
    getmetatable(self)["__tostring"] = function(t) return "activator" end
 
-   CInteractable.OnCreate(self, params)
+   self.activateByHit = loadParam(self, "activateByHit", false)
 
-   self.toggle = loadParam(self, "toggle", false)
-
-   self.enabled = true
+   self.activated = false
 
    self.labelId      = loadParam(self, "labelId", "")
    self.interactTime = loadParamNumber(self, "interactTime", 0)
@@ -29,7 +27,8 @@ function CActivator:OnCreate(params)
    self.animationToPlay = loadParam(self, "animationToPlay", "")
    self.animationCycled = loadParam(self, "animationCycled", true)
 
-   self.activatorEnabled = loadParam(self, "activatorEnabled", true)
+   --TODO:FIXME: change 'activatorEnabled' to 'enabled'
+   self.parameters.enabled = loadParam(self, "activatorEnabled", true)
    self.activatorHide    = loadParam(self, "activatorHide", false)
    self.activateByPlayer = loadParam(self, "activateByPlayer", true)
    self.activateMultiple = loadParam(self, "activateMultiple", false)
@@ -44,14 +43,9 @@ function CActivator:OnCreate(params)
 
    self.itemPickup = loadParam(self, "itemPickup", false)
 
-   self.interactor:setRaycastRadius(self.raycastRadius)
-   self.interactor:setRaycastActive(self.activateByPlayer)
+   CInteractable.OnCreate(self, params)
 
-   if self.activatorEnabled then
-      self:enable()
-   else
-      self:disable()
-   end
+   self.interactor:setRaycastRadius(self.raycastRadius)
 
    getScene():subscribeOnLocationEnter(self.loadNamedObjectParams, self)
 
@@ -91,9 +85,16 @@ function CActivator:spawnObject()
    entity:setPose(self:getPose())
 
    if entity.subscribeOnDestroy then
-      entity:subscribeOnDestroy(self.removeSpawnedObject, self, entity)
+      entity:subscribeOnDestroy(self.removeInstallation, self, entity)
    end
    self:addSpawnedObject(entity)
+end
+
+function CActivator:despawnObjects()
+   for _,obj in pairs(self.spawnedObjects) do
+      hlp.safeDestroyEntity(obj)
+   end
+   self.spawnedObjects = {}
 end
 
 function CActivator:addSpawnedObject(obj)
@@ -103,7 +104,7 @@ function CActivator:addSpawnedObject(obj)
    end
 end
 
-function CActivator:removeSpawnedObject(obj)
+function CActivator:removeInstallation(obj)
    local index = tablex.find(self.spawnedObjects, obj)
    if index then
       table.remove(self.spawnedObjects, index)
@@ -115,33 +116,23 @@ function CActivator:enable()
    self.interactor:setRaycastActive(self.enabled and self.activateByPlayer)
 end
 
-function CActivator:disable()
-   self.enabled = false
-   self.interactor:setRaycastActive(self.enabled)
-end
-
-function CActivator:isEnabled()
-   return self.enabled
+function CActivator:OnHit(params)
+   local char = params.impactor and params.impactor.owner and params.impactor.owner.owner
+   if not self.enabled or not self.activateByHit
+      or self.activateByPlayer and char ~= getPlayer() or params.impactor:isRangedWeapon() then return end
+   self:activate(char)
+   if char.onObjectActivate then
+      char:onObjectActivate(self, self:getInteractType())
+   end
 end
 
 function CActivator:preActivate(char)
-   if self.toggle then
-      if self.activated then
-         self:playAnimation("close", false)
-      else
-         self:playAnimation("open", false)
-      end
-   end
 end
 
 function CActivator:activate(char)
    if not self.enabled then return end
 
-   if self.toggle then
-      self.activated = not self.activated
-   else
-      self.activated = true
-   end
+   self.activated = true
 
    if not self.activateMultiple then
       self:disable()
@@ -174,9 +165,6 @@ function CActivator:activate(char)
    for _, object in ipairs(self.objectsToActivate) do
       object:activate(self)
    end
-   for _, object in ipairs(self.objectsToDeactivate) do
-      object:deactivate(self)
-   end
 
    for _, object in ipairs(self.objectsToEnable) do
       object:enable()
@@ -201,6 +189,65 @@ function CActivator:activate(char)
    end
 
    self:addItemsToPlayer()
+end
+
+---Reverse activate effects, when possible. Used in subclasses.
+function CActivator:activateReverse(char)
+   self.activated = false
+   if not self.activateMultiple then
+      self:disable()
+   end
+
+   for _, object in ipairs(self.objectsToShow) do
+      object:setVisible(false)
+   end
+   for _, object in ipairs(self.objectsToHide) do
+      object:setVisible(true)
+   end
+
+   for _, name in ipairs(self.soundsToPlay) do
+      getPlayer():playSound(name) --This one is the same
+   end
+
+   for _, sound in ipairs(self.soundsToStop) do
+      sound:play()
+   end
+
+   for _, emitter in ipairs(self.emittersToStart) do
+      emitter:stop()
+   end
+   for _, emitter in ipairs(self.emittersToStop) do
+      emitter:play()
+   end
+
+   self:playAnimation(self.animationToPlay, self.animationCycled) --This one is the same
+
+   for _, object in ipairs(self.objectsToActivate) do
+      object:activate(self)
+   end
+
+   for _, object in ipairs(self.objectsToEnable) do
+      object:disable()
+   end
+   for _, object in ipairs(self.objectsToDisable) do
+      object:enable()
+   end
+
+   for _, object in ipairs(self.collisionsToEnable) do
+      disableObjectCollisions(object:getName())
+   end
+   for _, object in ipairs(self.collisionsToDisable) do
+      enableObjectCollisions(object:getName())
+   end
+
+   if #self.spawnedObjects > 0 then
+      self:despawnObjects()
+   end
+
+   if self.activatorHide then
+      self:setVisible(false)
+   end
+   --Don't actually take back items
 end
 
 function CActivator:pickupItem(inventory)
@@ -248,53 +295,39 @@ function CActivator:getInteractLabel()
 end
 
 function CActivator:getInteractData(char)
-   local prefabName = self:getPrefabName()
    local data = {
       time = self.interactTime,
       animations = {},
+      holdButton = true,
    }
+   if self.itemPickup then
+      data.animations.activate = hlp.getPickupAnimationFor(char, self)
+   end
+
    if self.interactAnchor then
       data.anchorPos = self.interactAnchor:getPose():getPos()
       data.anchorDir = vec3RotateQuat({x=0,y=0,z=-1}, self.interactAnchor:getPose():getRotQuat())
-   end
-   if prefabName == "lever_wall.sbg" then
-      data.animations.activate = self.activated and "idle_lever_front_off" or "idle_lever_front_on"
-   elseif prefabName == "lever_ground.sbg" then
-      data.holster = true
-      data.animations.activate = self.activated and "idle_lever_down_off" or "idle_lever_down_on"
-   elseif prefabName == "button_tech.sbg" then
-      data.animations.activate = "idle_button_press_fist"
-   elseif prefabName == "button_stone_1.sbg" or prefabName == "button_stone_2.sbg" or prefabName == "button_stone_3.sbg" then
-      data.animations.activate = "idle_button_press_hard"
-   elseif prefabName == "abori_lock.sbg" then
-      data.holster = true
-      data.animations.activate = self.activated and "idle_abori_lock_close" or "idle_abori_lock_open"
-   end
-   if self.itemPickup then
-      data.animations.activate = hlp.getPickupAnimationFor(char, self)
    end
    return data
 end
 
 function CActivator:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
    CRigid.OnSaveState(self, state)
-   state.enabled = self.enabled
    if #self.spawnedObjects > 0 then
       state.spawned = true
    end
+   state.activated = self.activated
 end
 
 function CActivator:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
    CRigid.OnLoadState(self, state)
-   if state.enabled then
-      self:enable()
-   else
-      self:disable()
-   end
 
    if state.spawned then
       self:spawnObject()
    end
+   self.activated = state.activated
 end
 
 return {CActivator=CActivator}

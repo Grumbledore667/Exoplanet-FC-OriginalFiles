@@ -23,8 +23,14 @@ function CInteractable:OnCreate(params)
    self.interactor:getPose():setParent(self:getPose())
    self.interactor:getPose():resetLocalPose()
    self.interactor:setTriggerActive(false)
-   self.interactor:setRaycastActive(true)
    self.interactor:setRaycastRadius(loadParamNumber(self, "raycastRadius", 150))
+
+   self.enabled = loadParam(self, "enabled", true)
+   if self.enabled then
+      self:enable()
+   else
+      self:disable()
+   end
 end
 
 function CInteractable:isHighlightingAllowed()
@@ -73,6 +79,23 @@ function CInteractable:stopHighlightTimer()
    end
 end
 
+function CInteractable:enable()
+   self.enabled = true
+   self.interactor:setRaycastActive(true)
+end
+
+function CInteractable:disable()
+   self.enabled = false
+   self.interactor:setRaycastActive(false)
+   if gameplayUI:getFocusObj() == self then
+      gameplayUI:setFocusObj(nil)
+   end
+end
+
+function CInteractable:isEnabled()
+   return self.enabled
+end
+
 function CInteractable:getInteractType(char)
    return "activator"
 end
@@ -85,6 +108,22 @@ function CInteractable:getLabelPos()
    local pos = self.interactor:getPose():getPos()
    pos.y = pos.y + 30
    return pos
+end
+
+function CInteractable:OnSaveState(state)
+   state.enabled = self.enabled
+   state.raycastActive = self.interactor:getRaycastActive()
+   state.triggerActive = self.interactor:getTriggerActive()
+end
+
+function CInteractable:OnLoadState(state)
+   if state.enabled then
+      self:enable()
+   else
+      self:disable()
+   end
+   self.interactor:setRaycastActive(state.raycastActive)
+   self.interactor:setTriggerActive(state.triggerActive)
 end
 
 return CInteractable

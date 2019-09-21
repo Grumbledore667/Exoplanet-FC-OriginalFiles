@@ -54,7 +54,7 @@ function CInventoryBase:addItem(itemName, count, quality, silent, noEvent)
    if not itemName then return nil end
    local template = ItemsData.getItemTemplate(itemName)
    if not template and (not ItemsData.isCorrectItemName(itemName) or not ItemsData.hasItemsInfo(itemName)) then
-      log("ERROR: item name " .. tostring(itemName) .. " doesn't exist")
+      log(string.format("ERROR: inventory of '%s' tried to add item '%s' which doesn't exist", self.owner:getName(), tostring(itemName)))
       return nil
    elseif template then
       template = ItemsData.getItemTemplate(itemName)

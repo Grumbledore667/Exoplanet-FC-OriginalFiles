@@ -420,6 +420,20 @@ finish_function = Entity.consume_finish\
 finish_function = Entity.consume_finish\
 ";
 	};
+	["node_consume_00305"] = {
+		["ID"] = 305;
+		["class"] = "CoroutineAction";
+		["connectionsID"] = {
+		};
+		["guard"] = "";
+		["link_type"] = "internal";
+		["name"] = "consume";
+		["posX"] = 1530;
+		["posY"] = -30;
+		["script"] = "running_function = Entity.consume_running\
+finish_function = Entity.consume_finish\
+";
+	};
 	["node_consuming?_00259"] = {
 		["ID"] = 259;
 		["class"] = "StateCondition";
@@ -458,7 +472,7 @@ finish_function = Entity.cook_finish\
 		["name"] = "customRestarter";
 		["posX"] = 1260;
 		["posY"] = 1620;
-		["script"] = "local Decorator = require \"ai.Decorator\"\
+		["script"] = "local Decorator = require \"ai.Node\"\
 --local NodeState = require \"ai.NodeState\"\
 \
 function running(self)\
@@ -492,12 +506,14 @@ end";
 		["ID"] = 284;
 		["children"] = {
 			[1] = "unequip";
-			[2] = "dummyRunning";
+			[2] = "consume";
+			[3] = "dummyRunning";
 		};
 		["class"] = "DynamicGuardSelector";
 		["connectionsID"] = {
 			[1] = 283;
 			[2] = 285;
+			[3] = 305;
 		};
 		["guard"] = "";
 		["link_type"] = false;
@@ -527,7 +543,7 @@ end";
 		["link_type"] = "internal";
 		["name"] = "dummyRunning";
 		["posX"] = 1530;
-		["posY"] = -30;
+		["posY"] = 30;
 		["script"] = "running_function = true";
 	};
 	["node_empty magazine?_00225"] = {

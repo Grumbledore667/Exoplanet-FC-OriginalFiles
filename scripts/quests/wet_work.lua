@@ -27,7 +27,8 @@ Aborigine raider - 10";
 			["posX"] = -60;
 			["posY"] = 240;
 			["script"] = "function Condition:onCheck(name, obj)\
-   runTimer(0, self, function(self) self:setTopicVisible(\"terminal\", false) end, false)\
+   self:setTopicVisible(\"terminal\", false)\
+   self:setTopicVisible(\"what_tokens\", true)\
    return true\
 end\
 \
@@ -52,6 +53,43 @@ end\
 ";
 			["targetsAll"] = "";
 			["targetsAny"] = "give_tokens";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00013"] = {
+			["ID"] = 13;
+			["connectionsID"] = {
+				[1] = 1;
+			};
+			["event"] = "discuss";
+			["posX"] = -60;
+			["posY"] = 390;
+			["script"] = "function Condition:onCheck(name, obj)\
+   self:setTopicVisible(\"terminal\", true)\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "terminal_start";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00014"] = {
+			["ID"] = 14;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = 210;
+			["posY"] = 120;
+			["script"] = "function Condition:onCheck(name, obj)\
+   self:setTopicVisible(\"what_tokens\", true)\
+   return true\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "terminal";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -125,7 +163,6 @@ end\
 end\
 \
 function Step:onStart()\
-   self:setTopicVisible(\"terminal\", true)\
    self:setTopicVisible(\"give_tokens\", true)\
 end\
 \
@@ -156,5 +193,13 @@ end\
 \
 ";
 	["title"] = "Wet Work";
+	["topics"] = {
+		[1] = {
+			["log_id"] = "";
+			["name"] = "what_tokens";
+			["single_use"] = true;
+			["visible"] = false;
+		};
+	};
 }
 return obj1

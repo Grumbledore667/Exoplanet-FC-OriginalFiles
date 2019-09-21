@@ -121,11 +121,6 @@ function CDrone:getLabel()
    return "Drone"
 end
 
-function CDrone:resetSpeed()
-   self:setMoveSpeed(0)
-   self:setOrientationSpeed(0)
-end
-
 function CDrone:getAnimationFor(eventName)
    if eventName == "idle" then
       return self.animations.idle.default

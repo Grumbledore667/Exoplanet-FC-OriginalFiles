@@ -145,11 +145,13 @@ end
 
 function CContainer:OnSaveState(state)
    CLockable.OnSaveState(self, state)
+
    state.inventory = self:getInventory():serialize()
 end
 
 function CContainer:OnLoadState(state)
    CLockable.OnLoadState(self, state)
+
    self:getInventory().items = {}
    if state.inventory then
       self:getInventory():deserialize(state.inventory)

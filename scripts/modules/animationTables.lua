@@ -4,6 +4,7 @@ local tables = {}
 
 tables.human_male  = require "animationTables.human_male"
 tables.abori       = require "animationTables.abori"
+tables.abori_child = require "animationTables.abori_child"
 tables.space_biker = require "animationTables.space_biker"
 tables.hulk        = require "animationTables.hulk"
 tables.killerbug   = require "animationTables.killerbug"

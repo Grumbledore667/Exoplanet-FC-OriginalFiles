@@ -30,6 +30,11 @@ local animations = {
          default = "run_right",
       },
    },
+   sprint = {
+      front = {
+         default = "run_front",
+      }
+   },
    jump = {
       default = "jump_front"
    },

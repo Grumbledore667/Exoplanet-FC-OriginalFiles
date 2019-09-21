@@ -267,7 +267,7 @@ function Step:onStart()\
    self:setTopicVisible(\"scrap_master_wait_wrench\", false)\
    self:setTopicVisible(\"scrap_master_waits_wrench\", false)\
    self:setTopicVisible(\"scrap_master_skip_wrench\", false)\
-   getObj(self.wrench_rack):disable()\
+   disableObject(self.wrench_rack)\
 end\
 \
 function Step:onFinish()\
@@ -318,14 +318,14 @@ end\
 \
 function Quest:onStart()\
    self:setTopicVisible(\"scrap_master_waits_wrench\", true)\
-   getObj(self.wrench_rack):enable()\
+   enableObject(self.wrench_rack)\
 end\
 \
 function Quest:onFinish()\
    self:setTopicVisible(\"scrap_master_give_wrench\", false)\
    self:setTopicVisible(\"scrap_master_waits_wrench\", false)\
    self:setTopicVisible(\"scrap_master_regular_greeting\", true)\
-   getObj(self.wrench_rack):disable()\
+   disableObject(self.wrench_rack)\
 end\
 \
 ";

@@ -43,8 +43,8 @@ end
 
 function CBed:getInteractData(char)
    local data = {
-      anchorPos = localPointToWorld({x=0,y=0,z=-80}, self:getPose()),
-      anchorDir = vec3RotateQuat({x=0,y=0,z=-1}, self:getPose():getRotQuat()),
+      anchorPos = localPointToWorld({x=20,y=20,z=80}, self:getPose()),
+      anchorDir = vec3RotateQuat({x=0,y=0,z=1}, self:getPose():getRotQuat()),
       animations = {
          activate = "idle_to_sleep_bed_idle",
          loop = "sleep_bed_idle",
@@ -52,6 +52,14 @@ function CBed:getInteractData(char)
       },
    }
    return data
+end
+
+function CBed:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+end
+
+function CBed:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
 end
 
 return {CBed=CBed}

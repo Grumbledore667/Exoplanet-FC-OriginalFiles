@@ -82,7 +82,7 @@ local obj1 = {
 	};
 	["abori_gun_mortar.gun"] = {
 		["animations"] = "shotgun";
-		["cooldown"] = 2;
+		["cooldown"] = 2 - 0.966666666666667;
 		["damage"] = 100;
 		["desc"] = {
 			["eng"] = "Crafted from the remains of a broken 8-gauge shotgun, this ugly short four barrelled thing makes good last ditch weapon for big game hunters or perfect room sweeper if you want. '4 barrels instead of 2: double your chances when shit hits the fan!'";
@@ -116,7 +116,7 @@ local obj1 = {
 	};
 	["abori_gun_pistol.gun"] = {
 		["animations"] = "pistol";
-		["cooldown"] = 0.2;
+		["cooldown"] = 0.2 -0.166666666666667;
 		["damage"] = 15;
 		["desc"] = {
 			["eng"] = "Aboriginal weapon that accelerates sharp antigravium projectiles to supersonic speed. This version is shortened and has no shock. You cannot use it without special training.";
@@ -150,7 +150,7 @@ local obj1 = {
 	};
 	["abori_gun_rifle.gun"] = {
 		["animations"] = "shotgun";
-		["cooldown"] = 2;
+		["cooldown"] = 2 - 0.966666666666667;
 		["damage"] = 100;
 		["desc"] = {
 			["eng"] = "Aboriginal weapon that accelerates sharp antigravium projectiles to supersonic speed. This version is modified for long range combat. You cannot use it without special training.";
@@ -896,7 +896,7 @@ The real problem is that I have no more pills left and withdrawal makes the symp
 		};
 		["attireType"] = "hat";
 		["desc"] = {
-			["eng"] = "Boonie hat. Protects from getting a sunstroke. It won't make you invisible or anytnig else";
+			["eng"] = "Boonie hat. Protects from getting a sunstroke. It won't make you invisible or anything else";
 		};
 		["equipable"] = true;
 		["icon"] = "BoonieHat";
@@ -1385,7 +1385,7 @@ Neurochip (allows remote control)";
 	};
 	["carbine.gun"] = {
 		["animations"] = "carbine";
-		["cooldown"] = 1;
+		["cooldown"] = 1 - 0.966666666666667;
 		["damage"] = 70;
 		["desc"] = {
 			["eng"] = "A high-accuracy lever-action repeating rifle.";
@@ -1784,7 +1784,7 @@ Neurochip (allows remote control)";
 	};
 	["flaregun.gun"] = {
 		["animations"] = "pistol";
-		["cooldown"] = 0.5;
+		["cooldown"] = 0.5 - 0.166666666666667;
 		["damage"] = 45;
 		["desc"] = {
 			["eng"] = "A 26.5mm signal flare gun. Deals little damage and won't really penetrate skin or clothes, but it might set the target on fire.";
@@ -1987,7 +1987,7 @@ Neurochip (allows remote control)";
 	};
 	["howdah.gun"] = {
 		["animations"] = "shotgun";
-		["cooldown"] = 2;
+		["cooldown"] = 2 - 0.966666666666667;
 		["damage"] = 35;
 		["desc"] = {
 			["eng"] = "Crafted from the remains of a broken 8-gauge shotgun, this ugly short four barrelled thing makes good last ditch weapon for big game hunters or perfect room sweeper if you want. '4 barrels instead of 2: double your chances when shit hits the fan!'";
@@ -2173,6 +2173,21 @@ Neurochip (allows remote control)";
 		["meshes"] = "human_male_legs, junk_legs_2";
 		["value"] = 30;
 	};
+	["junk_legs_herbalist.itm"] = {
+		["armor"] = 6;
+		["attireType"] = "bottom";
+		["desc"] = {
+			["eng"] = "Breeches made by the Herbalist out of scrap materials. They may look off, but they sure are protecting - old man knows what he's doing.";
+		};
+		["equipable"] = true;
+		["icon"] = "JunkLegs2";
+		["invCategory"] = "attire";
+		["label"] = {
+			["eng"] = "Improved Junk Pants";
+		};
+		["meshes"] = "human_male_legs, junk_legs_2";
+		["value"] = 130;
+	};
 	["junk_top_1.itm"] = {
 		["armor"] = 1;
 		["attireType"] = "top";
@@ -2203,6 +2218,21 @@ Neurochip (allows remote control)";
 		["meshes"] = "human_male_top, junk_top_2";
 		["value"] = 30;
 	};
+	["junk_top_herbalist.itm"] = {
+		["armor"] = 6;
+		["attireType"] = "top";
+		["desc"] = {
+			["eng"] = "A vest made by the Herbalist out of scrap materials. It may look off, but it sure is protecting - old man knows what he's doing.";
+		};
+		["equipable"] = true;
+		["icon"] = "JunkTop2";
+		["invCategory"] = "attire";
+		["label"] = {
+			["eng"] = "Improved Junk Jacket";
+		};
+		["meshes"] = "human_male_top, junk_top_2";
+		["value"] = 130;
+	};
 	["kabarog_head.itm"] = {
 		["desc"] = {
 			["eng"] = "A head of a dead hornhog. The stench almost makes your eyes bleed. You better don't try to hang this trophy above your fireplace";
@@ -2217,7 +2247,7 @@ Neurochip (allows remote control)";
 	};
 	["kabarog_hsg.gun"] = {
 		["animations"] = "shotgun";
-		["cooldown"] = 1.5;
+		["cooldown"] = 1.5 - 0.966666666666667;
 		["damage"] = 10;
 		["desc"] = {
 			["eng"] = "This monstruous 8-gauge double barelled shotgun was nicknamed 'Hornhog' for obvious reasons. Hydraulic shock absorber protects shooter's bones from powerful recoil";
@@ -2342,6 +2372,34 @@ Neurochip (allows remote control)";
 		};
 		["value"] = 15;
 	};
+	["bambas_letter.itm"] = {
+		["desc"] = {
+			["eng"] = "Short unsent letter written by outcast guard Bamba.";
+		};
+		["icon"] = "NoteAbori";
+		["invCategory"] = "quest";
+		["label"] = {
+			["eng"] = "Bamba's Letter";
+		};
+		["message"] = {
+			["eng"] = {
+				["contents"] = "Things didn't turn out quite as planned. There's no job in New Hope, and worker strikes get brutally suppressed - narrowly escaped capture and being sent to the mines myself. I'm currently in the Outcasts camp on the outskirts of White Erg, and it seems I'm going to be stuck here for some time, so I won't see you in a while; still, I hope to be back home before the end of this Cycle.\
+\
+I lucked out and landed a job as a guard. The pay isn't exactly great, but it keeps coming, though after doing some of the things they've told me to, I now consider quitting. Stuff makes a man feel proper nasty. Truth be told, though, I am out of options: either I'm serving or heading into the desert with scrap collectors.\
+The latter involves less money and more dying.\
+\
+Recently, I got lucky again, when the boss found out I had good eyesight; I was assigned to a watchtower. It isn't all hunky dory, though: my partner turned out to be an inept wino, completely useless. I had to keep watch for the both of us before coming up with one neat trick (I'll tell you when I see you - you will be laughing!). It gave me quite a bit of downtime, so I picked up a side job.\
+\
+Which is standing in some hot, dusty armpit all day, keeping an eye on the warehouses run by local wheeler-dealers. Both guys are proper weirdos: one reeks of rotten meat and can't stop talking about meat, too; the other wears some kind of a wacky motley outfit and keeps trying to grab me by the ass. I'd much rather knock their teeth in, but there's a nice amount of shards in the job for me, so I keep soldiering on. Hope this helps me scrape up enough money way quicker.\
+\
+Once I'm back, we're gonna have enough to send the kids to school, get some meds for your parents, and maybe expand our herd even. I miss you all and our village so badly. I keep imagining myself scaling the hill, stepping into our valley, and seeing you guys wait for me by the hedge. It's the only thing that helps me fall asleep in this doggone place. I'll be sending this letter with the first travelling merchant I run into. Hope it reaches you quickly.\
+\
+Yours, Bamba.";
+				["title"] = "Hello, my dearest ones!";
+			};
+		};
+		["value"] = 0;
+	};
 	["lemonade_wade_bug_message.itm"] = {
 		["desc"] = {
 			["eng"] = "Short message written by Lemonade Wade. The slaver has a surprisingly elegant handwriting.";
@@ -2381,11 +2439,58 @@ Neurochip (allows remote control)";
 			["eng"] = "This special key opens several doors in Lemonade Wade's stronghold. Obviously was made for slaver leader's convenience but it's quite impractical in terms of security.";
 		};
 		["icon"] = "MasterKey";
-		["invCategory"] = "quest";
+		["invCategory"] = "key";
 		["label"] = {
 			["eng"] = "Lemonade Wade's Master Key";
 		};
 		["value"] = 50;
+	};
+	["key_dummy.itm"] = {
+		["desc"] = {
+			["eng"] = "Key dummy item.";
+		};
+		["icon"] = "MasterKey";
+		["invCategory"] = "key";
+		["label"] = {
+			["eng"] = "Key Dummy";
+		};
+		["value"] = 50;
+	};
+	["abori_lock_key.itm"] = {
+		["desc"] = {
+			["eng"] = "Placeholder description.";
+		};
+		["icon"] = "NoteAbori";
+		["invCategory"] = "key";
+		["questItem"] = true;
+		["label"] = {
+			["eng"] = "Abori Key";
+		};
+		["value"] = 250;
+	};
+	["lockpick_digital.itm"] = {
+		["desc"] = {
+			["eng"] = "One of the primary tools for a hacker - no conventional electronic lock can resist it. Wears out quickly during intensive use, unfortunately.";
+		};
+		["icon"] = "LockpickElectronic";
+		["invCategory"] = "misc";
+		["label"] = {
+			["eng"] = "Digital Lockpick";
+		};
+		["lockDamage"] = 50;
+		["value"] = 50;
+	};
+	["lockpick_mechanical.itm"] = {
+		["desc"] = {
+			["eng"] = "Allows picking mechanical locks of different complexity. Durability is limited.";
+		};
+		["icon"] = "LockpickMechanical";
+		["invCategory"] = "misc";
+		["label"] = {
+			["eng"] = "Lockpick";
+		};
+		["lockDamage"] = 35;
+		["value"] = 30;
 	};
 	["machete.wpn"] = {
 		["animations"] = "melee_low";
@@ -2697,6 +2802,44 @@ Mining +5 if already 20 or above";
 		};
 		["value"] = 50;
 	};
+	["herbalist_staff.itm"] = {
+		["desc"] = {
+			["eng"] = "A sturdy walking stick of the old Herbalist - not really much of a weapon.";
+		};
+		["icon"] = "HerbalistsStaff";
+		["invCategory"] = "quest";
+		["label"] = {
+			["eng"] = "Herbalist's Staff";
+		};
+		["model"] = "herbalist_staff.sbg";
+		["questItem"] = true;
+		["value"] = 50;
+	};
+	["herbalist_tools_message.itm"] = {
+		["desc"] = {
+			["eng"] = "Herbalist's message to Scrap Master in outcast camp. Written in abori language.";
+		};
+		["icon"] = "ElderScroll";
+		["invCategory"] = "quest";
+		["label"] = {
+			["eng"] = "Herbalist's Message";
+		};
+		["message"] = {
+         ["abori"] = true;
+		};
+		["value"] = 0;
+	};
+	["armorer_tools.itm"] = {
+		["desc"] = {
+			["eng"] = "A set of different sewing tools and accessories: needles, scissors, a ripper, a ruler, a riveter. Handy for professional tailors.";
+		};
+		["icon"] = "ArmorersTools";
+		["invCategory"] = "quest";
+		["label"] = {
+			["eng"] = "Armorer's Tools";
+		};
+		["value"] = 1000;
+	};
 	["nomad_goggles.itm"] = {
 		["attachments"] = {
 			[1] = {
@@ -2745,7 +2888,7 @@ Mining +5 if already 20 or above";
 				["width"] = 1187;
 			};
 		};
-		["icon"] = "NoteAbori";
+		["icon"] = "DrawnMap";
 		["invCategory"] = "drawing";
 		["label"] = {
 			["eng"] = "Taboo Area Schematic";
@@ -2911,7 +3054,7 @@ Mining +5 if already 20 or above";
 	};
 	["revolver.gun"] = {
 		["animations"] = "pistol";
-		["cooldown"] = 0.5;
+		["cooldown"] = 0.5 - 0.166666666666667;
 		["damage"] = 45;
 		["desc"] = {
 			["eng"] = "HR80 'Equalizer' revolver with 8'' barrel is the most popular model in Wesson&Sons line. Standard ones use .45 ammo and are favoured for their high reliability and accuracy.";
@@ -3036,7 +3179,7 @@ Mining +5 if already 20 or above";
 	};
 	["scamp_22.gun"] = {
 		["animations"] = "pistol";
-		["cooldown"] = 0.2;
+		["cooldown"] = 0.2 - 0.166666666666667;
 		["damage"] = 30;
 		["desc"] = {
 			["eng"] = "Small CAliber Machine Pistol is often used on spaceships and station for law enforcement and self-defence. 22 caliber ammo can't puncture hull or deal heavy damage to equipment which also makes it ineffective against heavily armored targets";
@@ -3074,7 +3217,7 @@ Mining +5 if already 20 or above";
 	};
 	["scamp_22_shock.gun"] = {
 		["animations"] = "pistol";
-		["cooldown"] = 0.2;
+		["cooldown"] = 0.2 - 0.166666666666667;
 		["damage"] = 1;
 		["desc"] = {
 			["eng"] = "Unlike regular tazers which stun opponents, this one on its own doesn't do any significant damage. However, when used with an LED torch, a usually unimpressive weapon used commonly as a light source, if the enemy is under the effect of this seemingly useless tazer, then the humble LED torch shows its full potential, unleashing a devastating attack.\
@@ -3247,7 +3390,7 @@ Uses energy.";
 	};
 	["shotgun.gun"] = {
 		["animations"] = "shotgun";
-		["cooldown"] = 0.1;
+		["cooldown"] = 0.1 - 0.966666666666667;
 		["damage"] = 15;
 		["desc"] = {
 			["eng"] = "An immortal classic 12-gauge shotgun design embodied in common materials. Can be heavily modified by its owner.";

@@ -212,19 +212,12 @@ end\
 		["connectID"] = 49;
 		["posX"] = 0;
 		["posY"] = 750;
-		["script"] = "function message:onStart()\
-end\
-\
-function message:onStop()\
-end\
-\
-function message:isVisible()\
-   return getQuest(\"wet_work\"):isStarted()\
-end\
-\
-";
+		["script"] = "";
 		["text"] = "What kind of tokens were you talking about?";
 		["time"] = 5;
+		["topic"] = "wet_work:what_tokens";
+		["topic_check_visible"] = true;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00049"] = {

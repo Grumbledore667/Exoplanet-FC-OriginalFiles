@@ -1,5 +1,6 @@
 local oo = require "loop.simple"
 local CContainer = (require "rigids.container").CContainer
+local CInteractable = require "mixins.interactable"
 
 local hlp = require "helpers"
 
@@ -33,9 +34,12 @@ end
 
 -- force overwrite parent save routines
 function CContainerStash:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
 end
 
 function CContainerStash:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+
    self:updateLockMeshes() --Simply hides the 'Locked' submesh
    self:resetAnimations()
 end

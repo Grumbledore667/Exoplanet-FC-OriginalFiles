@@ -113,9 +113,13 @@ Rigids =
       description = "Doors",
       parameters =
       {
-         { name = "keyItems",      value = "", label = "Key items",          tip = "Names of the items to have in inventory to be able to open this", },
+         { name = "enabled",       value = true, label = "Enabled",          tip = "If this door is enabled from the start.", },
+         { name = "lockType",      value = "unlocked", label = "Lock Type",  tip = "'digital', 'mechanical', 'unpickable' or 'unlocked'.", },
+         { name = "lockLevel",     value = 1,  label = "Lock Level",         tip = "From 1 (very easy) to 5 (very hard)", },
          { name = "code",          value = "", label = "Lock Code",          tip = "Enter FOUR digits that will open this object. Ex. '4273'", },
+         { name = "keyItems",      value = "", label = "Key items",          tip = "Names of the items to have in inventory to be able to open this", },
          { name = "disableOnOpen", value = false, label = "Disable on open", tip = "The door can only be opened once.", },
+         { name = "guardedBy",     value = "", label = "Guarded By",         tip = "A list of characters who's presence to check before trying to interact with this object.", },
       },
    },
    CWater =
@@ -162,7 +166,7 @@ Rigids =
       module      = "rigids.harvestable",
       root = "_rootRigid",
       parent      = "CHarvestable",
-      description = "Generic class for plants that grow harvestable fruits",
+      description = "CHarvestable with item name preset to blood_root.itm and regrow to false",
       parameters =
       {
          { name = "item", value = "blood_root.itm", label = "Item name", tip = "Item name that's gonna be added to player's inventory when harvested.", },
@@ -175,7 +179,7 @@ Rigids =
       module      = "rigids.harvestable",
       root = "_rootRigid",
       parent      = "CHarvestable",
-      description = "Generic class for plants that grow harvestable fruits",
+      description = "CHarvestable with item name preset to corn_fresh.itm",
       parameters =
       {
          { name = "item", value = "corn_fresh.itm", label = "Item name", tip = "Item name that's gonna be added to player's inventory when harvested.", },
@@ -188,7 +192,7 @@ Rigids =
       module      = "rigids.harvestable",
       root = "_rootRigid",
       parent      = "CHarvestable",
-      description = "Generic class for plants that grow harvestable fruits",
+      description = "CHarvestable with item name preset to corn_dry.itm and regrow to false",
       parameters =
       {
          { name = "item", value = "corn_dry.itm", label = "Item name", tip = "Item name that's gonna be added to player's inventory when harvested.", },
@@ -201,7 +205,7 @@ Rigids =
       module      = "rigids.harvestable",
       root = "_rootRigid",
       parent      = "CHarvestable",
-      description = "Generic class for plants that grow harvestable fruits",
+      description = "CHarvestable with item name preset to ktharsian_aloe.itm and regrow to false",
       parameters =
       {
          { name = "item", value = "ktharsian_aloe.itm", label = "Item name", tip = "Item name that's gonna be added to player's inventory when harvested.", },
@@ -214,7 +218,7 @@ Rigids =
       module      = "rigids.harvestable",
       root = "_rootRigid",
       parent      = "CHarvestable",
-      description = "Generic class for plants that grow harvestable fruits",
+      description = "CHarvestable with item name preset to stygmyan_golden_apple.itm and regrow to false",
       parameters =
       {
          { name = "item", value = "stygmyan_golden_apple.itm", label = "Item name", tip = "Item name that's gonna be added to player's inventory when harvested.", },
@@ -226,7 +230,7 @@ Rigids =
       module      = "rigids.harvestable",
       root = "_rootRigid",
       parent      = "CHarvestable",
-      description = "Generic class for plants that grow harvestable fruits",
+      description = "CHarvestable with item name preset to melon.itm",
       parameters =
       {
          { name = "item", value = "melon.itm", label = "Item name", tip = "Item name that's gonna be added to player's inventory when harvested.", },
@@ -238,7 +242,7 @@ Rigids =
       module      = "rigids.harvestable",
       root = "_rootRigid",
       parent      = "CHarvestable",
-      description = "Regrowable bluethorn leaves",
+      description = "CHarvestable with item name preset to bluethorn_leaf.itm",
       parameters =
       {
          { name = "item", value = "bluethorn_leaf.itm", label = "Item name", tip = "Item name that's gonna be added to player's inventory when harvested.", },
@@ -529,11 +533,14 @@ Rigids =
       description = "Contains items",
       parameters  =
       {
+         { name = "enabled",        value = true, label = "Enabled",      tip = "If this container is enabled from the start.", },
          { name = "items"         , value = "", label = "Items list",     tip = "Enter list of items separated by comma", },
          { name = "raycastRadius",  value = "", label = "Raycast Radius", tip = "Bounding sphere radius", },
          { name = "labelId",        value = "", label = "Label ID" ,      tip = "Lebel ID that should ref to objectsLabels.lua file record", },
-         { name = "keyItems",       value = "", label = "Key items",      tip = "Names of the items to have in inventory to be able to open this", },
-         { name = "code",           value = "", label = "Lock Code",      tip = "Enter FOUR digits that will open this container. Ex. '4273'", },
+         { name = "lockType",       value = "unlocked", label = "Lock Type", tip = "'digital', 'mechanical', 'unpickable' or 'unlocked'", },
+         { name = "lockLevel",      value = 1,  label = "Lock Level",        tip = "From 1 (very easy) to 5 (very hard)", },
+         { name = "code",           value = "", label = "Lock Code",         tip = "Enter FOUR digits that will open this object. Ex. '4273'", },
+         { name = "keyItems",       value = "", label = "Key items",         tip = "Names of the items to have in inventory to be able to open this", },
          { name = "textureName",    value = "", label = "Texture",        tip = "Name of a texture to be applied solely to case meshes. Ex. 'chest_med_dif.dds'", },
       }
    },
@@ -545,8 +552,10 @@ Rigids =
       description = "Interactable combination lock whose reference should be stored on a locked object",
       parameters  =
       {
-         { name = "keyItems",      value = "", label = "Key items",      tip = "Names of the items to have in inventory to be able to open this", },
-         { name = "code",          value = "", label = "Lock Code",      tip = "Enter FOUR digits that will open this object. Ex. '4273'", },
+         { name = "lockType",      value = "unlocked", label = "Lock Type",  tip = "'digital', 'mechanical', 'unpickable' or 'unlocked'.", },
+         { name = "lockLevel",     value = 1,  label = "Lock Level",         tip = "From 1 (very easy) to 5 (very hard)", },
+         { name = "code",          value = "", label = "Lock Code",          tip = "Enter FOUR digits that will open this object. Ex. '4273'", },
+         { name = "keyItems",      value = "", label = "Key items",          tip = "Names of the items to have in inventory to be able to open this", },
          { name = "lockedObjects", value = "", label = "Locked Objects", tip = "Names of objects separated by commas that are controlled by this lock.", },
       }
    },
@@ -570,12 +579,15 @@ Rigids =
       description = "Activates/Deactivates different objects set in parameters",
       parameters  =
       {
-         { name = "toggle",        value = false, label = "Toggle", tip = "Is this activator is an on/off switch", },
-         { name = "labelId",       value = "", label = "Label ID" , tip = "Lebel ID that should ref to objectsLabels.lua file record", },
-         { name = "interactTime",  value = 0,  label = "Interact time",   tip = "Interaction time", },
-
-         { name = "objectsToShow", value = "", label = "Show Objects", tip = "Enter list of objects that should be showed", },
-         { name = "objectsToHide", value = "", label = "Hide Objects", tip = "Enter list of objects that should be hidden", },
+         { name = "activatorEnabled", value = true , label = "Activator Enabled", tip = "Is activator enabled by default", },
+         { name = "activatorHide", value = false, label = "Hide Activator", tip = "Hide this activator after activation", },
+         { name = "activateByPlayer", value = true , label = "Activate by player", tip = "Can be activated by player", },
+         { name = "activateMultiple", value = false, label = "Activate Multiple", tip = "Can be activated several times", },
+         { name = "activateByHit", value = false, label = "By Hit", tip = "Is this activator activated by hit", },
+         { name = "itemPickup", value = false, label = "Item Pickup", tip = "If it should be activated after being picked up like an item.", },
+         { name = "labelId", value = "", label = "Label ID", tip = "Label ID that should ref to objectsLabels.lua file record", },
+         { name = "raycastRadius", value = 50, label = "Raycast Radius", tip = "Raycast radius", },
+         { name = "interactTime", value = 0, label = "Interact time", tip = "Interaction time", },
 
          { name = "soundsToPlay", value = "", label = "Play Sounds", tip = "Enter list of sounds to play", },
          { name = "soundsToStop", value = "", label = "Stop Sounds", tip = "Enter list of sounds to stop", },
@@ -586,14 +598,10 @@ Rigids =
          { name = "animationToPlay", value = "", label = "Play animation", tip = "Enter animation name", },
          { name = "animationCycled", value = true, label = "Cycled animation", tip = "Select animation mode Cycled or Single", },
 
-         { name = "activatorEnabled", value = true , label = "Activator Enabled" , tip = "Is activator enabled by default", },
-         { name = "activatorHide"   , value = false, label = "Hide Activator"    , tip = "Hide this activator", },
-         { name = "activateByPlayer", value = true , label = "Activate by player", tip = "Can be activated by player", },
-         { name = "activateMultiple", value = false, label = "Activate Multiple" , tip = "Can be activated several times", },
-         { name = "raycastRadius"  , value = 50  , label = "Raycast Radius"   , tip = "Raycast radius", },
+         { name = "objectsToShow", value = "", label = "Show Objects", tip = "Enter list of objects that should be showed", },
+         { name = "objectsToHide", value = "", label = "Hide Objects", tip = "Enter list of objects that should be hidden", },
 
          { name = "objectsToActivate",   value = "", label = "Activate Objects",   tip = "Enter list of objects that should activated", },
-         { name = "objectsToDeactivate", value = "", label = "Deactivate Objects", tip = "Enter list of objects that should deactivated", },
 
          { name = "objectsToEnable",     value = "", label = "Enable Objects" , tip = "Enter list of objects that should be Enabled", },
          { name = "objectsToDisable",    value = "", label = "Disable Objects", tip = "Enter list of objects that should be Disabled", },
@@ -606,7 +614,117 @@ Rigids =
 
          { name = "removeItems", value = "", label = "Remove Items", tip = "Enter list of items that should be removed from Player", },
          { name = "addItems"   , value = "", label = "Add Items"   , tip = "Enter list of items that should be added to Player", },
-         { name = "itemPickup", value = false, label = "Item Pickup" , tip = "If it should be activated after being picked up like an item.", },
+      }
+   },
+   CActivatorSwitch =
+   {
+      module      = "rigids.activatorSwitch",
+      root = "_rootRigid",
+      description = "An activator that can be switched on/off - a lever, button and etc",
+      parameters  =
+      {
+         { name = "activatorEnabled", value = true , label = "Activator Enabled", tip = "Is activator enabled by default", },
+         { name = "activatorHide", value = false, label = "Hide Activator", tip = "Hide this activator after activation", },
+         { name = "activateByPlayer", value = true , label = "Activate by player", tip = "Can be activated by player", },
+         { name = "activateMultiple", value = false, label = "Activate Multiple", tip = "Can be activated several times", },
+         { name = "activateByHit", value = false, label = "By Hit", tip = "Is this activator activated by hit", },
+         { name = "jammed", value = false, label = "Is Jammed", tip = "If this switch is jammed a won't get activated", },
+         { name = "labelId", value = "", label = "Label ID", tip = "Label ID that should ref to objectsLabels.lua file record", },
+         { name = "raycastRadius", value = 50, label = "Raycast Radius", tip = "Raycast radius", },
+
+         { name = "soundsToPlay", value = "", label = "Play Sounds", tip = "Enter list of sounds to play", },
+         { name = "soundsToStop", value = "", label = "Stop Sounds", tip = "Enter list of sounds to stop", },
+
+         { name = "emittersToStart", value = "", label = "Start Emitters", tip = "Enter list of emitters to start", },
+         { name = "emittersToStop" , value = "", label = "Stop Emitters" , tip = "Enter list of emitters to stop", },
+
+         { name = "objectsToShow", value = "", label = "Show Objects", tip = "Enter list of objects that should be showed", },
+         { name = "objectsToHide", value = "", label = "Hide Objects", tip = "Enter list of objects that should be hidden", },
+
+         { name = "objectsToActivate", value = "", label = "Activate Objects",   tip = "Enter list of objects that should activated", },
+
+         { name = "objectsToEnable", value = "", label = "Enable Objects" , tip = "Enter list of objects that should be Enabled", },
+         { name = "objectsToDisable", value = "", label = "Disable Objects", tip = "Enter list of objects that should be Disabled", },
+
+         { name = "collisionsToEnable", value = "", label = "Enable Collisions" , tip = "Enter list of objects which collisions should be Enabled", },
+         { name = "collisionsToDisable", value = "", label = "Disable Collisions", tip = "Enter list of objects which collisions should be Disabled", },
+
+         { name = "objectTypeToSpawn", value = "", label = "Spawn Object Type" , tip = "Enter object type (fireplace.sbg, kabarog.cfg) that should be spawned upon activation", },
+         { name = "objectClassToSpawn", value = "", label = "Spawn Object Class" , tip = "Enter object class (CFireplace, CKabarog) that should be spawned upon activation", },
+      }
+   },
+   CActivatorPlate =
+   {
+      module      = "rigids.activatorPlate",
+      root = "_rootRigid",
+      description = "A floor plate activator that triggers upon standing on it",
+      parameters  =
+      {
+         { name = "activatorEnabled", value = true , label = "Activator Enabled", tip = "Is activator enabled by default", },
+         { name = "activatorHide", value = false, label = "Hide Activator", tip = "Hide this activator after activation", },
+         { name = "activateByPlayer", value = true , label = "Activate by player", tip = "Can be activated by player", },
+         { name = "activateMultiple", value = false, label = "Activate Multiple", tip = "Can be activated several times", },
+         { name = "activateByHit", value = false, label = "By Hit", tip = "Is this activator activated by hit", },
+         { name = "toggle", value = false, label = "Toggle", tip = "If false - this plate will do the same thing every activation (and not reverse what it's done upon every other activation).", },
+         { name = "labelId", value = "", label = "Label ID", tip = "Label ID that should ref to objectsLabels.lua file record", },
+         { name = "raycastRadius", value = 50, label = "Raycast Radius", tip = "Raycast radius", },
+
+         { name = "soundsToPlay", value = "", label = "Play Sounds", tip = "Enter list of sounds to play", },
+         { name = "soundsToStop", value = "", label = "Stop Sounds", tip = "Enter list of sounds to stop", },
+
+         { name = "emittersToStart", value = "", label = "Start Emitters", tip = "Enter list of emitters to start", },
+         { name = "emittersToStop" , value = "", label = "Stop Emitters" , tip = "Enter list of emitters to stop", },
+
+         { name = "objectsToShow", value = "", label = "Show Objects", tip = "Enter list of objects that should be showed", },
+         { name = "objectsToHide", value = "", label = "Hide Objects", tip = "Enter list of objects that should be hidden", },
+
+         { name = "objectsToActivate", value = "", label = "Activate Objects",   tip = "Enter list of objects that should activated", },
+
+         { name = "objectsToEnable", value = "", label = "Enable Objects" , tip = "Enter list of objects that should be Enabled", },
+         { name = "objectsToDisable", value = "", label = "Disable Objects", tip = "Enter list of objects that should be Disabled", },
+
+         { name = "collisionsToEnable", value = "", label = "Enable Collisions" , tip = "Enter list of objects which collisions should be Enabled", },
+         { name = "collisionsToDisable", value = "", label = "Disable Collisions", tip = "Enter list of objects which collisions should be Disabled", },
+
+         { name = "objectTypeToSpawn", value = "", label = "Spawn Object Type" , tip = "Enter object type (fireplace.sbg, kabarog.cfg) that should be spawned upon activation", },
+         { name = "objectClassToSpawn", value = "", label = "Spawn Object Class" , tip = "Enter object class (CFireplace, CKabarog) that should be spawned upon activation", },
+      }
+   },
+   CAboriLock =
+   {
+      module      = "rigids.aboriLock",
+      root = "_rootRigid",
+      description = "An abori lock activator that can be switched on/off",
+      parameters  =
+      {
+         { name = "activatorEnabled", value = true , label = "Activator Enabled", tip = "Is activator enabled by default", },
+         { name = "activatorHide", value = false, label = "Hide Activator", tip = "Hide this activator after activation", },
+         { name = "activateByPlayer", value = true , label = "Activate by player", tip = "Can be activated by player", },
+         { name = "activateMultiple", value = false, label = "Activate Multiple", tip = "Can be activated several times", },
+         { name = "labelId", value = "", label = "Label ID", tip = "Label ID that should ref to objectsLabels.lua file record", },
+         { name = "raycastRadius", value = 50, label = "Raycast Radius", tip = "Raycast radius", },
+
+         { name = "keyItems", value = "", label = "Key items", tip = "Names of the items to have in inventory to be able to open this", },
+
+         { name = "soundsToPlay", value = "", label = "Play Sounds", tip = "Enter list of sounds to play", },
+         { name = "soundsToStop", value = "", label = "Stop Sounds", tip = "Enter list of sounds to stop", },
+
+         { name = "emittersToStart", value = "", label = "Start Emitters", tip = "Enter list of emitters to start", },
+         { name = "emittersToStop" , value = "", label = "Stop Emitters" , tip = "Enter list of emitters to stop", },
+
+         { name = "objectsToShow", value = "", label = "Show Objects", tip = "Enter list of objects that should be showed", },
+         { name = "objectsToHide", value = "", label = "Hide Objects", tip = "Enter list of objects that should be hidden", },
+
+         { name = "objectsToActivate", value = "", label = "Activate Objects",   tip = "Enter list of objects that should activated", },
+
+         { name = "objectsToEnable", value = "", label = "Enable Objects" , tip = "Enter list of objects that should be Enabled", },
+         { name = "objectsToDisable", value = "", label = "Disable Objects", tip = "Enter list of objects that should be Disabled", },
+
+         { name = "collisionsToEnable", value = "", label = "Enable Collisions" , tip = "Enter list of objects which collisions should be Enabled", },
+         { name = "collisionsToDisable", value = "", label = "Disable Collisions", tip = "Enter list of objects which collisions should be Disabled", },
+
+         { name = "objectTypeToSpawn", value = "", label = "Spawn Object Type" , tip = "Enter object type (fireplace.sbg, kabarog.cfg) that should be spawned upon activation", },
+         { name = "objectClassToSpawn", value = "", label = "Spawn Object Class" , tip = "Enter object class (CFireplace, CKabarog) that should be spawned upon activation", },
       }
    },
    CBed =

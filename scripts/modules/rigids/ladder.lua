@@ -16,7 +16,6 @@ local CLadder = oo.class({}, _rootRigid, CDestroyable, CInteractable)
 
 function CLadder:OnCreate()
    CDestroyable.OnCreate(self)
-   CInteractable.OnCreate(self)
 
    self.interactor_top = self:createAspect("interactor")
    self.interactor_top:setObject(self)
@@ -26,12 +25,7 @@ function CLadder:OnCreate()
    self.interactor_top:getPose():setLocalPos({x=0,y=self:getHeight(),z=0})
    self.interactor_top:setRaycastActive(true)
 
-   self.enabled = loadParam(self, "enabled", true)
-   if self.enabled then
-      self:enable()
-   else
-      self:disable()
-   end
+   CInteractable.OnCreate(self)
 end
 
 function CLadder:getHeight()
@@ -83,19 +77,15 @@ function CLadder:bottom()
 end
 
 function CLadder:enable()
-   self.enabled = true
-   self.interactor:setRaycastActive(self.enabled)
-   self.interactor_top:setRaycastActive(self.enabled)
+   CInteractable.enable(self)
+
+   self.interactor_top:setRaycastActive(true)
 end
 
 function CLadder:disable()
-   self.enabled = false
-   self.interactor:setRaycastActive(self.enabled)
-   self.interactor_top:setRaycastActive(self.enabled)
-end
+   CInteractable.disable(self)
 
-function CLadder:isEnabled()
-   return self.enabled
+   self.interactor_top:setRaycastActive(false)
 end
 
 function CLadder:getInteractType(char)
@@ -129,15 +119,11 @@ function CLadder:getInteractLabel()
 end
 
 function CLadder:OnSaveState(state)
-   state.enabled = self.enabled
+   CInteractable.OnSaveState(self, state)
 end
 
 function CLadder:OnLoadState(state)
-   if state.enabled then
-      self:enable()
-   else
-      self:disable()
-   end
+   CInteractable.OnLoadState(self, state)
 end
 
 return {CLadder=CLadder}

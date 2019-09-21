@@ -35,7 +35,9 @@ end
 function CCoroutineManager:removeEventHandler(routine, handler)
    local index = tablex.find(self.routineEvents[routine], handler)
    handler:destroy()
-   table.remove(self.routineEvents[routine], index)
+   if index then
+      table.remove(self.routineEvents[routine], index)
+   end
 end
 
 function CCoroutineManager:addEventHandler(routine, eventHandler)

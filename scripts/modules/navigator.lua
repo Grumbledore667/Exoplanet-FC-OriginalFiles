@@ -59,14 +59,34 @@ function CNavigator:setRunPatrol(value)
 end
 
 --Methods
+---@param waypoint string | any
+function CNavigator:moveTo(waypoint)
+   if type(waypoint) == "string" then
+      waypoint = getObj(waypoint)
+   end
+   self:setPatrolRoute({waypoint})
+end
+
+---@param groupName string
+function CNavigator:setPatrolGroup(groupName)
+   self:setPatrolRoute(tablex.imap(getObj, getObjectsInGroupOrdered(groupName)))
+end
+
 ---@param waypoints string | table
 function CNavigator:setPatrolRoute(waypoints)
-   if not waypoints then return end
+   if not waypoints then
+      self.nextWPID = 0
+      self.patrolPoints = nil
+      return
+   end
 
    local newWaypoints
    if type(waypoints) == "string" then
       newWaypoints = unpackObjectsString(waypoints)
    elseif type(waypoints) == "table" then
+      if type(waypoints[1]) == "string" then
+         waypoints = tablex.imap(getObj, waypoints)
+      end
       newWaypoints = waypoints
    end
    self.nextWPID = 0
@@ -134,6 +154,7 @@ function CNavigator:patrol_finish()
    self.owner:setState("patrol", false)
    self.owner:resetTarget()
    self.owner:resetSpeed()
+   self.routeReset = false
    SkySystem:unsubscribeFastForwardTime(self.ffPatrolCallback)
    self.ffPatrolCallback = nil
 end

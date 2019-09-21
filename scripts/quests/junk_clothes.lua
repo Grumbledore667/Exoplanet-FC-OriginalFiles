@@ -3,7 +3,7 @@ local multiRefObjects = {
 
 } -- multiRefObjects
 local obj1 = {
-	["description"] = "Old Outcast I saved is ready to make me a new attire if I bring him 2 cloth rags.";
+	["description"] = "The Herbalist I saved is ready to make me a new attire if I bring him 2 cloth rags.";
 	["hidden"] = false;
 	["logs"] = {
 		["Finish"] = "The old guy made me some really primitive tunic and boots. Thanks for that, but I have to find something better soon.";
@@ -15,7 +15,7 @@ local obj1 = {
 				[1] = 1;
 			};
 			["event"] = "discuss";
-			["posX"] = 90;
+			["posX"] = 0;
 			["posY"] = 150;
 			["script"] = "";
 			["targetsAll"] = "";
@@ -37,7 +37,7 @@ end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "old_outcast_give_cloth";
+			["targetsAny"] = "herbalist_give_cloth";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -61,17 +61,18 @@ end\
 				[1] = 1;
 			};
 			["event"] = "discuss";
-			["posX"] = 90;
+			["posX"] = 0;
 			["posY"] = 300;
 			["script"] = "function Condition:onCheck(name, obj)\
    self:setTopicVisible(\"start\", false)\
-   self:setTopicVisible(\"old_outcast_get_cloth\", false)\
+   self:setTopicVisible(\"skip\", false)\
+   self:setTopicVisible(\"herbalist_skipped\", true)\
    return false\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "skip";
+			["targetsAny"] = "herbalist_skip";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -88,10 +89,11 @@ end\
 		["start"] = {
 			["ID"] = 1;
 			["connectionsID"] = {
-				[1] = 6;
+				[1] = 4;
+				[2] = 6;
 			};
 			["name"] = "start";
-			["posX"] = 360;
+			["posX"] = 270;
 			["posY"] = 270;
 			["script"] = "";
 			["type"] = "step";
@@ -100,24 +102,29 @@ end\
 	["script"] = "function Quest:onCreate()\
    self:setTopicVisible(\"skip\", true)\
    self:setTopicVisible(\"start\", true)\
-   self:setTopicVisible(\"old_outcast_get_cloth\", true)\
-   self:setTopicVisible(\"old_outcast_give_cloth\", true)\
-   self:setTopicVisible(\"old_outcast_got_cloth\", true) --is hidden by give_cloth\
+   self:setTopicVisible(\"herbalist_get_cloth\", false)\
+   self:setTopicVisible(\"herbalist_give_cloth\", false)\
+   self:setTopicVisible(\"herbalist_got_cloth\", false)\
+   self:setTopicVisible(\"herbalist_skip\", true)\
+   self:setTopicVisible(\"herbalist_skipped\", false)\
    self:setTopicVisible(\"finish\", true)\
-   self:setTopicVisible(\"old_outcast_real_bushman\", false)\
+   self:setTopicVisible(\"herbalist_real_bushman\", false)\
    self:declareVar(\"clothReq\", 2)\
 end\
 \
 function Quest:onStart()\
    self:setTopicVisible(\"start\", false)\
+   self:setTopicVisible(\"herbalist_get_cloth\", true)\
+   self:setTopicVisible(\"herbalist_give_cloth\", true)\
+   self:setTopicVisible(\"herbalist_got_cloth\", true)\
 end\
 \
 function Quest:onFinish()\
    local player = getMC()\
    local pTop = player:getInventory():getSlotItem(\"top\")\
    local pBottom = player:getInventory():getSlotItem(\"bottom\")\
-   local top = addItemToPlayer(\"junk_top_1.itm\")\
-   local bottom = addItemToPlayer(\"junk_legs_1.itm\")\
+   addItemToPlayer(\"junk_top_1.itm\")\
+   addItemToPlayer(\"junk_legs_1.itm\")\
    if not pTop then\
       equipItemForPlayer(\"junk_top_1.itm\", \"top\", false)\
    end\
@@ -127,24 +134,24 @@ function Quest:onFinish()\
    if not pTop or not pBottom then\
       player.animationsManager:playAction(\"idle_arms_on_hips\")\
    end\
-   self:setTopicVisible(\"old_outcast_get_cloth\", false)\
-   self:setTopicVisible(\"old_outcast_real_bushman\", true)\
+   self:setTopicVisible(\"herbalist_get_cloth\", false)\
+   self:setTopicVisible(\"herbalist_real_bushman\", true)\
 end\
 \
 \
-function Quest:getTopicVisible_old_outcast_give_cloth()\
+function Quest:getTopicVisible_herbalist_give_cloth()\
    return hasPlayerItem(\"cloth.itm\", self.clothReq)\
 end\
 \
-function Quest:getTopicVisible_old_outcast_real_bushman()\
+function Quest:getTopicVisible_herbalist_real_bushman()\
    local player = getMC()\
    local top = player:getInventory():getSlotItem(\"top\")\
    local bottom = player:getInventory():getSlotItem(\"bottom\")\
    return top and top:getItemName():find(\"junk\")\
-          or bottom and bottom:getItemName():find(\"junk\") \
+          or bottom and bottom:getItemName():find(\"junk\")\
 end\
 \
-function Quest:getTopicVisible_skip()\
+function Quest:getTopicVisible_herbalist_skip()\
    local player = getMC()\
    local top = player:getInventory():getSlotItem(\"top\")\
    local bottom = player:getInventory():getSlotItem(\"bottom\")\

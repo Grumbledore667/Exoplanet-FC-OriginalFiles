@@ -135,8 +135,9 @@ function CDigSite:getLootTable()
 end
 
 function CDigSite:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+
    state.lootItems = self.lootItems
-   state.raycastActive = self.interactor:getRaycastActive()
    state.digsDone = self.digsDone
 
    -- spawned items and containers
@@ -153,11 +154,8 @@ function CDigSite:OnSaveState(state)
 end
 
 function CDigSite:OnLoadState(state)
-   if state.raycastActive then
-      self.interactor:setRaycastActive(true)
-   else
-      self.interactor:setRaycastActive(false)
-   end
+   CInteractable.OnLoadState(self, state)
+
    self.digsDone = state.digsDone
 
    if self:isOpen() then

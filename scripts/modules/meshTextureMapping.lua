@@ -69,7 +69,7 @@ api.meshTextureMaps = {
      textures = { "crucas_dif.dds", "crucas_dif_2.dds" }, },
 
    --ITEMS
-   { meshes   = { "bandana_1.sbg", },
+   { meshes   = { "bandana_1.sbg", "child_bandana_1.sbg" },
       textures = { "bandana_dif_1.dds", "bandana_dif_2.dds", "bandana_dif_3.dds", }, },
 
    { meshes   = { "scamp_22.sbg", },

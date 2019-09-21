@@ -1179,18 +1179,24 @@ function Step:onStart()\
    self:setTopicVisible(\"scrap_master_workers_coming\", true)\
 \
    local cog = getObj(\"cog\")\
+   if cog then\
+      cog:setState(\"talkForbidden\", true)\
+      cog:setIgnoreSleep(true)\
+      if self:getTopicVisible(\"scrap_master_self_repair_full\") then\
+         cog.navigator:setPatrolRoute(table.concat(self.cog_to_shop_short_wps, \",\"))\
+      else\
+         cog.navigator:setPatrolRoute(table.concat(self.cog_to_shop_wps, \",\"))\
+      end\
+   end\
    local nut = getObj(\"nut\")\
-   cog:setState(\"talkForbidden\", true)\
-   nut:setState(\"talkForbidden\", true)\
-   cog:setIgnoreSleep(true)\
-   nut:setIgnoreSleep(true)\
-\
-   if self:getTopicVisible(\"scrap_master_self_repair_full\") then\
-      cog.navigator:setPatrolRoute(table.concat(self.cog_to_shop_short_wps, \",\"))\
-      nut.navigator:setPatrolRoute(table.concat(self.nut_to_shop_short_wps, \",\"))\
-   else\
-      cog.navigator:setPatrolRoute(table.concat(self.cog_to_shop_wps, \",\"))\
+   if nut then\
+      nut:setState(\"talkForbidden\", true)\
+      nut:setIgnoreSleep(true)\
+      if self:getTopicVisible(\"scrap_master_self_repair_full\") then\
+         nut.navigator:setPatrolRoute(table.concat(self.nut_to_shop_short_wps, \",\"))\
+      else\
       nut.navigator:setPatrolRoute(table.concat(self.nut_to_shop_wps, \",\"))\
+      end\
    end\
 \
    self.q.screwCallback = SkySystem:subscribeTimePassed(CTime(12, \"gHour\"),\
@@ -1323,20 +1329,24 @@ function Step:onStart()\
    showEnableObjectGroup(self.board_group_fixed, true)\
 \
    local cog = getObj(\"cog\")\
+   if cog then\
+      removeItemFromObj(\"scrap_electric.itm\", cog, 5)\
+      removeItemFromObj(\"electrical_tape.itm\", cog, 2)\
+      removeItemFromObj(\"circuit_breaker_auto.itm\", cog, 1)\
+\
+      cog:setState(\"talkForbidden\", false)\
+      cog:setDefaultAnimation(\"idle\")\
+      cog:setHeadLookingAllowed(true)\
+      cog.navigator:setPatrolRoute(self.cog_rest_wp)\
+   end\
+\
    local nut = getObj(\"nut\")\
-   removeItemFromObj(\"scrap_electric.itm\", cog, 5)\
-   removeItemFromObj(\"electrical_tape.itm\", cog, 2)\
-   removeItemFromObj(\"circuit_breaker_auto.itm\", cog, 1)\
-\
-   cog:setState(\"talkForbidden\", false)\
-   nut:setState(\"talkForbidden\", false)\
-   cog:setDefaultAnimation(\"idle\")\
-   nut:setDefaultAnimation(\"idle\")\
-   cog:setHeadLookingAllowed(true)\
-   nut:setHeadLookingAllowed(true)\
-\
-   cog.navigator:setPatrolRoute(self.cog_rest_wp)\
-   nut.navigator:setPatrolRoute(self.nut_rest_wp)\
+   if nut then\
+      nut:setState(\"talkForbidden\", false)\
+      nut:setDefaultAnimation(\"idle\")\
+      nut:setHeadLookingAllowed(true)\
+      nut.navigator:setPatrolRoute(self.nut_rest_wp)\
+   end\
 \
    self:setTopicVisible(\"cog_about_crane\", false)\
    self:setTopicVisible(\"cog_repaired\", true)\
@@ -1448,15 +1458,19 @@ function Step:onStart()\
    self.q.repairCallback = SkySystem:subscribeTimePassed(CTime(24, \"gHour\"),\
    false, partial(self.q.onTimePassedRepair, self.q))\
    local cog = getObj(\"cog\")\
+   if cog then\
+      cog:setState(\"talkForbidden\", true)\
+      cog:setIgnoreSleep(true)\
+      cog.navigator:setPatrolRoute(table.concat(self.cog_repair_wps, \",\"))\
+      cog:setDefaultAnimation(\"idle_search\")\
+   end\
    local nut = getObj(\"nut\")\
-   cog:setState(\"talkForbidden\", true)\
-   nut:setState(\"talkForbidden\", true)\
-   cog:setIgnoreSleep(true)\
-   nut:setIgnoreSleep(true)\
-   cog.navigator:setPatrolRoute(table.concat(self.cog_repair_wps, \",\"))\
-   nut.navigator:setPatrolRoute(table.concat(self.nut_repair_wps, \",\"))\
-   cog:setDefaultAnimation(\"idle_search\")\
-   nut:setDefaultAnimation(\"idle_search\")\
+   if nut then\
+      nut:setState(\"talkForbidden\", true)\
+      nut:setIgnoreSleep(true)\
+      nut.navigator:setPatrolRoute(table.concat(self.nut_repair_wps, \",\"))\
+      nut:setDefaultAnimation(\"idle_search\")\
+   end\
 \
    self:setTopicVisible(\"broken_crane_object_repair\", false)\
 \
@@ -1614,6 +1628,7 @@ function Quest:onStart()\
 end\
 \
 function Quest:onFinish()\
+   local toolsQuest = getQuest(\"herbalist_tools\")\
    self:disable_sweet_joy_topics()\
    self:setTopicVisible(\"scrap_master_about_crane\", false)\
    self:setTopicVisible(\"scrap_master_quest_finished\", true)\
@@ -1622,14 +1637,20 @@ function Quest:onFinish()\
       addItemToPlayer(\"porter.itm\", 1)\
       self:writeLog(\"finish_cog_wasnt_beaten\")\
    else\
+      toolsQuest:applyScrapMasterDiscount(\"crane_beating_markup\")\
       self:writeLog(\"finish_cog_was_beaten\")\
    end\
 \
    if self:getTopicVisible(\"scrap_master_crane_fixed_by_self\") then\
+      toolsQuest:applyScrapMasterDiscount(\"crane_self_repair_discount\")\
       addItemToPlayer(\"scrap_electric.itm\", 4)\
       self:writeLog(\"finish_self_repair\")\
    else\
+      toolsQuest:applyScrapMasterDiscount(\"crane_discount\")\
       self:writeLog(\"finish_workers_repair\")\
+   end\
+   if not toolsQuest:isFinished() then\
+      toolsQuest:writeLog(\"scrap_master_broken_crane_finished\")\
    end\
 end\
 \
@@ -1674,11 +1695,13 @@ end\
 function Quest:onTimePassedScrewWakeup()\
    self.screwCallback = nil\
    local screw = getObj(\"screw\")\
-   screw:setState(\"talkForbidden\", true)\
-   screw:setDefaultAnimation(\"idle\")\
-   screw:setHeadLookingAllowed(true)\
-   screw:setIgnoreSleep(true)\
-   screw.navigator:setPatrolRoute(table.concat(self.screw_to_shop_wps, \",\"))\
+   if screw then\
+      screw:setState(\"talkForbidden\", true)\
+      screw:setDefaultAnimation(\"idle\")\
+      screw:setHeadLookingAllowed(true)\
+      screw:setIgnoreSleep(true)\
+      screw.navigator:setPatrolRoute(table.concat(self.screw_to_shop_wps, \",\"))\
+   end\
 end\
 \
 \

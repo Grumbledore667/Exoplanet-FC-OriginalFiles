@@ -3,6 +3,7 @@ local oo = require "loop.simple"
 local tablex = require "pl.tablex"
 
 ---@class CEventManager
+---@field events table<string, EventCallback[]>
 local CEventManager = oo.class()
 
 function CEventManager:__new()
@@ -15,7 +16,13 @@ function CEventManager:postEvent(eventName, data)
    self:performCallbacks(eventName, data)
 end
 
+---@param eventName string
+---@param func function
+---@return EventCallback
 function CEventManager:subscribeToEvent(eventName, func, ...)
+   ---@class EventCallback
+   ---@field func function
+   ---@field args any[]
    local callback = {}
    callback.func = func
    callback.args = table.pack(...)

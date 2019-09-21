@@ -4,21 +4,41 @@ local ItemsData = require "itemsData"
 
 local CLockable = oo.class({locked = false}, CInteractable)
 
+local LOCK_HP_BY_LEVELS = {
+   [1] = 25,
+   [2] = 50,
+   [3] = 75,
+   [4] = 100,
+   [5] = 150
+}
+
 function CLockable:OnCreate(params)
    params = params or {}
    CInteractable.OnCreate(self)
-   self.code = params.code or loadParam(self, "code", nil) or nil
+   self.lockType = loadParam(self, "lockType", "unlocked")
+   self.lockLevel = loadParam(self, "lockLevel", 1)
+   self.code = params.code or loadParam(self, "code", nil)
    self.keyItems = loadParamStrings(self, "keyItems", {})
-   if #self.keyItems > 0 or (type(self.code) == "string" and self.code ~= "") then
+   if self.lockType ~= "unlocked" or self.code then
       self:setLockState(true)
    else
       self:setLockState(false)
+   end
+
+   --Only allow key or quest items in keyItems param
+   for _, itemName in ipairs(self.keyItems) do
+      if not ItemsData.isItemKey(itemName) and not ItemsData.isItemQuestItem(itemName) then
+         log(string.format("ERROR: lockable object '%s' has bad a keyItem '%s' (only keys and quest items allowed)", self:getName(), itemName))
+      end
    end
 end
 
 function CLockable:setLockState(state)
    self.locked = state
    self:updateLockMeshes()
+   if state then
+      self.lockPoints = self:getLockInitialPoints()
+   end
 end
 
 function CLockable:setCode(strCode)
@@ -28,6 +48,44 @@ function CLockable:setCode(strCode)
    else
       self:setLockState(false)
    end
+end
+
+function CLockable:getLockType()
+   return self.lockType
+end
+
+function CLockable:setLockType(value)
+   self.lockType = value
+end
+
+function CLockable:getLockLevel()
+   return self.lockLevel
+end
+
+function CLockable:setLockLevel(value)
+   self.lockLevel = value
+end
+
+function CLockable:getLockPoints()
+   return self.lockPoints
+end
+
+function CLockable:getLockInitialPoints()
+   return LOCK_HP_BY_LEVELS[self.lockLevel]
+end
+
+function CLockable:pickLock(item, char)
+   if not item then return end
+
+   self.lockPoints = math.max(self.lockPoints - item:getLockDamage(), 0)
+   questSystem:fireEvent("lockpick_used", self:getName(), self)
+   if self.lockPoints <= 0 then
+      self:setLockState(false)
+      questSystem:fireEvent("lock_picked", self:getName(), self)
+      gameplayUI:showInfoTextEx("Lock picked", "minor", "")
+      char:interactStop()
+   end
+   item:destroy()
 end
 
 function CLockable:tryCode(strCode, silent)
@@ -59,7 +117,7 @@ end
 
 function CLockable:characterHasKey(char)
    for _,itemName in ipairs(self.keyItems) do
-      if hasObjItem(itemName, char) then return itemName end
+      if char.inventory:getItemByName(itemName) then return itemName end
    end
    return false
 end
@@ -79,7 +137,7 @@ end
 function CLockable:getInteractLabel(char)
    local label = ""
    if self:isLocked() then
-      label = "enter code"
+      label = "try lock"
    end
    return label
 end
@@ -89,18 +147,24 @@ function CLockable:getInteractType(char)
 end
 
 function CLockable:isInteractionLingering(char)
-   if self.code then
+   if self.code or self.lockPoints then
       return true
    end
    return false
 end
 
 function CLockable:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+
    state.locked = self:isLocked()
+   state.lockPoints = self.lockPoints
 end
 
 function CLockable:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+
    self:setLockState(state.locked)
+   self.lockPoints = state.lockPoints
 end
 
 return CLockable

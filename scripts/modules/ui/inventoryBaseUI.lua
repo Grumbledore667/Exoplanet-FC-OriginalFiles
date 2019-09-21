@@ -19,12 +19,13 @@ local CInventoryBaseUI = oo.class({
    equippedOrderTable = {last_weapon = 1, weapon = 2, attire = 10, gadget = 11, accessory = 12},
    itemsOrderTable = {
       ammo = 20, weapon = 21, attire = 22, gadget = 23, accessory = 24, meds = 25, food = 26, drink = 27,
-      smokable = 28, tech = 29, misc = 30, message = 31, drawing = 32, map = 33, quest = 34,
+      smokable = 28, tech = 29, misc = 30, message = 31, drawing = 32, map = 33, quest = 34, key = 35
    },
    tabFilters = {
-      TabAll = nil, TabWeapon = { "weapon", "ammo" }, TabAttire = { "attire", "gadget", "accessory" },
-      TabFood = { "food", "drink", "smokable", "meds" }, TabQuest = { "quest" },
-      TabMisc = { "tech", "misc", "message", "map", "drawing" },
+      TabAll = nil, TabWeapon = {"weapon", "ammo"}, TabAttire = {"attire", "gadget", "accessory"},
+      TabFood = {"food", "drink", "smokable", "meds"}, TabQuest = {"quest"},
+      TabMisc = {"tech", "misc", "message", "map", "drawing"},
+      TabKeys = {"key"}
    },
 }, CBaseModule)
 

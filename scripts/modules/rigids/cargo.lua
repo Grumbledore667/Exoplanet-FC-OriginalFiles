@@ -174,11 +174,15 @@ function CCargo:getInteractLabel()
 end
 
 function CCargo:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+
    state.lock_opened = self.lock_opened
    state.opened = (self.opening or self.opened) and not self.closing
 end
 
 function CCargo:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+
    if state.lock_opened ~= nil then
       self.lock_opened = state.lock_opened
    end

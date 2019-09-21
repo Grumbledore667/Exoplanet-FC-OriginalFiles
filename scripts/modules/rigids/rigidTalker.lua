@@ -34,20 +34,6 @@ function CRigidTalker:initDialog()
    end
 end
 
-function CRigidTalker:enable()
-   self.enabled = true
-   self.interactor:setRaycastActive(self.enabled)
-end
-
-function CRigidTalker:disable()
-   self.enabled = false
-   self.interactor:setRaycastActive(self.enabled)
-end
-
-function CRigidTalker:isEnabled()
-   return self.enabled
-end
-
 function CRigidTalker:activate(obj)
    obj:startTalk(self)
 end
@@ -113,15 +99,11 @@ function CRigidTalker:getLabelPos()
 end
 
 function CRigidTalker:OnSaveState(state)
-   state.enabled = self.enabled
+   CInteractable.OnSaveState(self, state)
 end
 
 function CRigidTalker:OnLoadState(state)
-   if state.enabled then
-      self:enable()
-   else
-      self:disable()
-   end
+   CInteractable.OnLoadState(self, state)
 end
 
 return {CRigidTalker=CRigidTalker}

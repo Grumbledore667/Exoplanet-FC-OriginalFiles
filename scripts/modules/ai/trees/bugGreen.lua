@@ -228,7 +228,7 @@ end";
 		["link_type"] = false;
 		["name"] = "die";
 		["posX"] = 660;
-		["posY"] = 660;
+		["posY"] = 960;
 		["script"] = "start_function = function(self)\
    setQuestParam(\"greenbug\", \"times_got_away\", 3)\
    self:die()\
@@ -246,7 +246,7 @@ end";
 		["posX"] = 1320;
 		["posY"] = 570;
 		["script"] = "condition = function()\
-   return getQuestActiveStepName(\"greenbug\") ~= \"terminal_end\"\
+   return not getQuestTopicVisible(\"greenbug\", \"terminal_finish\")\
 end";
 	};
 	["node_eatBait_00032"] = {
@@ -471,9 +471,9 @@ end";
 		["children"] = {
 			[1] = "caught";
 			[2] = "death";
-			[3] = "die";
-			[4] = "damaged";
-			[5] = "dealWithBait";
+			[3] = "damaged";
+			[4] = "dealWithBait";
+			[5] = "die";
 			[6] = "runAway";
 			[7] = "ai.trees.bug.respondToEnemy";
 			[8] = "ai.trees.bug.idleBehavior";

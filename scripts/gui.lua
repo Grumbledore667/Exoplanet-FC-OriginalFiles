@@ -34,6 +34,7 @@ local CMapUI         = require "ui.map"
 local CJournalUI    = require "ui.journal"
 local CHotbarUI     = require "ui.hotbar"
 local CCombLockUI   = require "ui.combLock"
+local CLockpickingUI = require "ui.lockpicking"
 local CMessageUI    = require "ui.message"
 local CDrawingUI    = require "ui.drawing"
 local CDialogUI     = require "ui.dialog"
@@ -143,6 +144,9 @@ function gameplayUI:init()
 
    self.combLockUI = CCombLockUI()
    self.combLockUI:init()
+
+   self.lockpickingUI = CLockpickingUI()
+   self.lockpickingUI:init()
 
    self.messageUI = CMessageUI()
    self.messageUI:init()

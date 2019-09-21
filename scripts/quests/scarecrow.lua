@@ -434,6 +434,20 @@ end\
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
+		["condition_00045"] = {
+			["ID"] = 45;
+			["connectionsID"] = {
+				[1] = 1;
+			};
+			["event"] = "discuss";
+			["posX"] = -420;
+			["posY"] = 240;
+			["script"] = "";
+			["targetsAll"] = "";
+			["targetsAny"] = "terminal_start";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
 		["finish"] = {
 			["ID"] = 3;
 			["connectionsID"] = {

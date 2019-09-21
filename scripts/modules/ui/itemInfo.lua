@@ -96,6 +96,7 @@ function CItemInfoUI:setup()
       self:getTypeInfo(itemName, qualityInt),
       self:getQualityInfo(itemName, qualityInt),
       self:getDamageInfo(itemName, qualityInt, equippedItem),
+      self:getLockDamageInfo(itemName, qualityInt, equippedItem),
       self:getHitEffectsInfo(itemName, qualityInt),
       self:getArmorInfo(itemName, qualityInt, equippedItem),
       self:getEnergyBlockInfo(itemName, qualityInt, equippedItem),
@@ -163,6 +164,19 @@ function CItemInfoUI:getDamageInfo(itemName, qualityInt, equippedItem)
       if equippedItem then
          local totalEquippedDmg = equippedItem:getDamage() * (equippedItem.getBulletsInShot and equippedItem:getBulletsInShot() or 1)
          text = compareStat(totalEquippedDmg, totalDmg, text)
+      end
+      text = string.format("%s\n", text)
+   end
+   return text
+end
+
+function CItemInfoUI:getLockDamageInfo(itemName, qualityInt, equippedItem)
+   local lockDamage = self.item and self.item:getLockDamage() or ItemsData.getItemLockDamage(itemName, qualityInt)
+   local text = ""
+   if lockDamage > 0 then
+      text = string.format("%s%s%d%s", "Damage: ", gameplayUI.damageColorTags.physical, lockDamage, gameplayUI.whiteTag)
+      if equippedItem then
+         text = compareStat(equippedItem:getLockDamage(), lockDamage, text)
       end
       text = string.format("%s\n", text)
    end

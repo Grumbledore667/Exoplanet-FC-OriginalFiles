@@ -10,10 +10,7 @@ testingHelpers.assureMockRng()
 local tools = {}
 test(testingHelpers.getEventsHandlerSimpleLogger(_G.log), tools)
 
-local ReactiveGuard = require "ai.ReactiveGuard"
-local Action = require "ai.Action"
-local DynamicGuardSelector = require "ai.DynamicGuardSelector"
-local BehaviorTree = require "ai.BehaviorTree"
+local Node = require "ai.Node"
 local CEventManager = require "eventManager"
 
 local function callCount(spiedFunction)
@@ -30,26 +27,30 @@ test("ai.ReactiveGuard test", function()
 
    local targetStartSpy = spy()
    local targetFinishSpy = spy()
-   local action = Action{
+   local action = Node{
+      className = "Action",
       name = "targetBehavior",
       entity = entity,
       start_function = targetStartSpy,
       running_function = true,
       finish_function = targetFinishSpy,
    }
-   local guard = ReactiveGuard{
+   local guard = Node{
+      className = "ReactiveGuard",
       name = "guard",
       entity = entity,
    }
    action:addGuard(guard)
 
    local dummy_spy = spy()
-   local dgs = DynamicGuardSelector{
+   local dgs = Node{
+      className = "DynamicGuardSelector",
       name = "dgs",
       entity = entity,
       children = {
          action,
-         Action{
+         Node{
+            className = "Action",
             name = "dummy",
             entity = entity,
             start_function = dummy_spy,
@@ -57,7 +58,8 @@ test("ai.ReactiveGuard test", function()
       },
    }
 
-   local root = BehaviorTree{
+   local root = Node{
+      className = "BehaviorTree",
       name = "test root",
       child = dgs,
       entity = entity,

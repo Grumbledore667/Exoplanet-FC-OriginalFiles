@@ -95,7 +95,7 @@ end\
 		["posX"] = 990;
 		["posY"] = 420;
 		["script"] = "";
-		["text"] = "Gods-in-the-Earth are testing me! I will never turn my back on them! I will prove them my worth!";
+		["text"] = "Gods-in-the-Earth are testing me! I will never turn my back on them! I will prove my worth to them!";
 		["time"] = 10;
 		["type"] = "message";
 	};
@@ -138,7 +138,7 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "No matter what you believe in or if you don't, Gods-in-the-Earth will forever stay in power!";
+		["text"] = "No matter what you believe in, Gods-in-the-Earth will forever stay in power!";
 		["time"] = 9;
 		["type"] = "message";
 	};

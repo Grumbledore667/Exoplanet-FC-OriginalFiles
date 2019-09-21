@@ -127,7 +127,14 @@ return {
     subscribeToFFTime = true
   },
   bamba = {
-    defaultAnimation = "idle_armcross"
+    customLabel = "Bamba",
+    defaultAnimation = "idle_armcross",
+    dialog = "bamba",
+    guild = "GLD_NPC_FRIEND",
+    immortality = "immortal",
+    knockoutBeforeDeath = true,
+    lootItems = "bambas_letter.itm",
+    tree = "ai.trees.npc"
   },
   barnie = {
     defaultAnimation = "shotgun_idle_2"
@@ -160,6 +167,9 @@ return {
     defaultAnimation = "idle_pot",
     dialog = "default_slave_1",
     orientateToPlayer = false
+  },
+  cudgel = {
+    defaultAnimation = "polearm_idle",
   },
   depressed_worker = {
     dialog = "depressed_abori",
@@ -212,7 +222,9 @@ return {
     style = "outcast_guard_light_2"
   },
   herbalist = {
-    defaultAnimation = "1hm_idle"
+    patrolRunning = true,
+    shouldFearEnemy = true,
+    viewDist = 700
   },
   john = {
     defaultAnimation = "shotgun_idle",
@@ -285,11 +297,6 @@ return {
   },
   old_mug = {
   },
-  old_outcast = {
-    patrolRunning = true,
-    shouldFearEnemy = true,
-    viewDist = 700
-  },
   ouga = {
     dialog = "default_slave_1"
   },
@@ -357,6 +364,9 @@ return {
   },
   outcast_22 = {
     defaultAnimation = "idle_4",
+    dialog = "default_outcast_1"
+  },
+  outcast_23 = {
     dialog = "default_outcast_1"
   },
   outcast_3 = {
@@ -561,6 +571,15 @@ return {
     dialog = "pales_follower",
     style = "pales_follower_5"
   },
+  popped_eye = {
+    customLabel = "Popped Eye",
+    defaultAnimation = "sleep_ground_idle_3",
+    dialog = "popped_eye",
+    dialogInitiatorDist = 800,
+    guild = "GLD_NPC_FRIEND",
+    immortality = "immortal",
+    tree = "ai.trees.npc"
+  },
   q_angrybugs_bandit_1 = {
     customLabel = "Scalphunter",
     style = "scalphunter_1",
@@ -637,7 +656,10 @@ return {
   ragpicker = {
     customLabel = "Ragpicker",
     dialog = "ragpicker",
+    dialogActors = "ragpicker,bamba",
     guild = "GLD_NPC_FRIEND",
+    immortality = "immortal",
+    knockoutBeforeDeath = true,
     tree = "ai.trees.npc",
     weaponList = "abori_knife.wpn"
   },
@@ -651,9 +673,6 @@ return {
   },
   sad_abori = {
     style = "abori_worker_2"
-  },
-  sandflea = {
-    dialog = "default_outcast_1"
   },
   scarecrow = {
     attitudeToMainCharacter = "NEUTRAL",
@@ -687,6 +706,9 @@ return {
     orientateToPlayer = false,
     subscribeToFFTime = true
   },
+  shady_abori = {
+    defaultAnimation = "idle_4",
+  },
   shop_guard = {
     defaultAnimation = "idle_armcross"
   },
@@ -700,6 +722,11 @@ return {
     dialog = "default_outcast_1",
     orientateToPlayer = false,
     style = "abori_outcast_1"
+  },
+  sick_outcast_2 = {
+    defaultAnimation = "idle_hurt_2",
+    dialog = "default_outcast_1",
+    style = "abori_outcast_22"
   },
   sly = {
     defaultAnimation = "1hm_idle",
@@ -762,7 +789,7 @@ return {
     style = "vorga"
   },
   waga_the_tumbleweed = {
-    defaultAnimation = "bag_1hm_idle",
+    defaultAnimation = "bag_1hm_idle"
   },
   wandering_merchant = {
     defaultAnimation = "bag_1hm_idle",

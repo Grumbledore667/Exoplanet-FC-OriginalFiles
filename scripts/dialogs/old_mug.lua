@@ -504,7 +504,7 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "Before taking a lazer drill you should first get comfortable with a pickaxe. You're gonna be surprized how much a skillful miner can accomplish with one! Hold it firmly and strike one point until a good shard breaks away. Shatter it and out it through a sieve - you'll get a bunch of pure crystals. Doesn't sound so hard, does it?";
+		["text"] = "Before taking a laser drill you should first get comfortable with a pickaxe. You're gonna be surprized how much a skillful miner can accomplish with one! Hold it firmly and strike one point until a good shard breaks away. Shatter it and out it through a sieve - you'll get a bunch of pure crystals. Doesn't sound so hard, does it?";
 		["time"] = 32;
 		["type"] = "message";
 	};
@@ -569,7 +569,7 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "There is nothing I could teach you. You should find a real master of a pickaxe, or a lazer drill operator.\
+		["text"] = "There is nothing I could teach you. You should find a real master of a pickaxe, or a laser drill operator.\
 ";
 		["time"] = 11.5;
 		["type"] = "message";
@@ -843,7 +843,7 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "There is nothing I could teach you. You should find a real master of a pickaxe, or a lazer drill operator.\
+		["text"] = "There is nothing I could teach you. You should find a real master of a pickaxe, or a laser drill operator.\
 ";
 		["time"] = 11.5;
 		["type"] = "message";

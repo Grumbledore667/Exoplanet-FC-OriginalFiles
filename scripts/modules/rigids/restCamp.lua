@@ -23,4 +23,12 @@ function CRestCamp:getInteractLabel()
    return "rest"
 end
 
+function CRestCamp:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+end
+
+function CRestCamp:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+end
+
 return {CRestCamp=CRestCamp}

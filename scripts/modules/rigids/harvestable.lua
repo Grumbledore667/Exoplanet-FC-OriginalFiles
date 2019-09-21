@@ -205,6 +205,8 @@ function CHarvestable:getLootTable()
 end
 
 function CHarvestable:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+
    state.fruitStates = {}
    for _,fruit in ipairs(self.fruits) do
       local fruitState = {ripeVisible = fruit.ripe:getVisible(), greenScale = nil}
@@ -216,6 +218,8 @@ function CHarvestable:OnSaveState(state)
 end
 
 function CHarvestable:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+
    --While loading, the engine loads the visibility of the main mesh which also shows every green submesh,
    --so we have to hide them again
    for _, fruit in ipairs(self.fruits) do

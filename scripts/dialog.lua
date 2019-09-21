@@ -221,7 +221,11 @@ function dialogSystem:restoreConnections(messages)
    if rootsCount == 0 then
       return nil, "dialog has no roots!"
    elseif rootsCount > 1 then
-      return nil, "dialog has multiple roots!"
+      local error = "dialog has multiple roots! IDs are:"
+      for _,root in ipairs(roots) do
+         error = string.format("%s %s", error, root.ID)
+      end
+      return nil, error
    end
 
    local root = roots[1]

@@ -69,7 +69,7 @@ function CInventoryPlayerUI:setup()
    local sortedIterator = tablex.sortv(items, partial(self.sort, self))
    local index = 0
    for _,item in sortedIterator do
-      if not filterTable or tablex.search(filterTable, item:getInvCategory()) then
+      if (not filterTable or tablex.search(filterTable, item:getInvCategory())) then --Filter by tabs
          index = index + 1
          self.slots[index].slot:setProperty   ("DraggingEnabled", "true")
          self.slots[index].slot:setUserString ("itemID", tostring(item:getId()))

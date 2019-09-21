@@ -548,7 +548,7 @@ end\
 		["posX"] = 3090;
 		["posY"] = -30;
 		["script"] = "";
-		["text"] = "We have only three rules here: don't steal from the other villagers, don't start a fight without permission and share with everyone what you have found. That's all. You are not one of our vilagers. The old outcast has chosen to live alone - he's not one of us as well. Can't do anything about it. ";
+		["text"] = "We have only three rules here: don't steal from the other villagers, don't start a fight without permission and share with everyone what you have found. That's all. You are not one of our vilagers. The Herbalist has chosen to live alone - he's not one of us as well. Can't do anything about it. ";
 		["time"] = 29.5;
 		["type"] = "message";
 	};
@@ -652,7 +652,7 @@ end\
 		["posX"] = 1890;
 		["posY"] = -30;
 		["script"] = "";
-		["text"] = "They were also beating up the Old Outcast. Could have killed the poor old timer if I hadn't interfered. Seems like they came from this camp...";
+		["text"] = "They were also beating up the Herbalist. Could have killed the poor old timer if I hadn't interfered. Seems like they came from this camp...";
 		["time"] = 14;
 		["type"] = "message";
 	};
@@ -721,7 +721,7 @@ end\
 		["posX"] = 3810;
 		["posY"] = -30;
 		["script"] = "";
-		["text"] = "This is our strength. You may be the best warrior in the Desert but you won't stand a chance against a tribe. The tribe sets the rules and loners obey. Or suffer like that old outcast you were talking about.";
+		["text"] = "This is our strength. You may be the best warrior in the Desert but you won't stand a chance against a tribe. The tribe sets the rules and loners obey. Or suffer like that old Herbalist you were talking about.";
 		["time"] = 21;
 		["type"] = "message";
 	};
@@ -856,7 +856,7 @@ function message:isVisible()\
 end\
 \
 ";
-		["text"] = "No, if you want the story, here it is... I used an old bughunter's trick which I learnt from Old Outcast. The one with the stink shroom and a bug hive.";
+		["text"] = "No, if you want the story, here it is... I used an old bughunter's trick which I learnt from the Herbalist. The one with the stink shroom and a bug hive.";
 		["time"] = 16.5;
 		["type"] = "message";
 	};

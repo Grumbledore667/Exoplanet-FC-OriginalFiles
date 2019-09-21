@@ -375,6 +375,22 @@ local templatesList =
       itemName = "shovel.wpn",
       quality = 4,
    },
+   ["weathered_sledgehammer.tmpl"] = {
+      itemName = "sledgehammer.wpn",
+      quality = 1,
+   },
+   ["good_sledgehammer.tmpl"] = {
+      itemName = "sledgehammer.wpn",
+      quality = 2,
+   },
+   ["exceptional_sledgehammer.tmpl"] = {
+      itemName = "sledgehammer.wpn",
+      quality = 3,
+   },
+   ["mastercrafted_sledgehammer.tmpl"] = {
+      itemName = "sledgehammer.wpn",
+      quality = 4,
+   },
 }
 
 return templatesList

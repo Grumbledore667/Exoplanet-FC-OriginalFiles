@@ -501,7 +501,7 @@ end\
 		["posX"] = 1230;
 		["posY"] = 1350;
 		["script"] = "";
-		["text"] = "I haven't found anything yet...";
+		["text"] = "\\[BACK]";
 		["time"] = 3.5;
 		["type"] = "message";
 	};

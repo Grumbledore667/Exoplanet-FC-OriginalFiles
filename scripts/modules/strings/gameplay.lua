@@ -36,6 +36,7 @@ return {
                tab_food = "Food",
                tab_misc = "Misc",
                tab_quest = "Quest",
+               tab_keys = "Keys",
             },
          },
          journal = {

@@ -224,6 +224,21 @@ local animations = {
          "dl_righthand_wave_short",
          "dl_sneeze",
       },
+      allows_rhand_weapon = {
+         "dl_bow_1",
+         "dl_hand_at_mouth_yelling",
+         "dl_hand_facepalm",
+         "dl_head_2nods",
+         "dl_head_nod",
+         "dl_head_shake",
+         "dl_look_down",
+         "dl_look_down_long",
+         "dl_look_left",
+         "dl_look_right",
+         "dl_look_up",
+         "dl_point_left",
+         "dl_raisedfinger_left",
+      }
    },
    hit = {
       default = "hit__front",

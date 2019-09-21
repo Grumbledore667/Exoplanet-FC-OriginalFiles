@@ -60,8 +60,8 @@ function CTravelUI:setupTravel(obj)
    self:show(true)
 end
 
-function CTravelUI:onClose()
-   CBaseModule.onClose(self)
+function CTravelUI:onHide()
+   CBaseModule.onHide(self)
 
    getMC():interactStop()
 end

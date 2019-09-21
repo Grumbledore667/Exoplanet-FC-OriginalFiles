@@ -1,5 +1,6 @@
 local SkySystem     = (require "environment.sky").SkySystem
 local oo = require "loop.simple"
+local hierarchy = require "loop.hierarchy"
 
 local stringx = require "pl.stringx"
 local tablex = require "pl.tablex"
@@ -48,14 +49,16 @@ function isQuestStepFinished(quest_name, step_name)
    return false
 end
 
+local newQuests = {}
+
 function getQuest(quest_name)
-   for k,quest in pairs(quests) do
-      if k == quest_name then
+   if quest_name then
+      local quest = quests[quest_name]
+      if not quest then
+         log("getQuest(): no such quest: " .. quest_name)
+      else
          return quest
       end
-   end
-   if quest_name then
-      log("getQuest(): no such quest: " .. quest_name)
    else
       log("getQuest(): invalid quest_name: nil")
    end
@@ -87,7 +90,7 @@ function finishQuest(quest_name)
 end
 
 function getQuestById(quest_id)
-   for k,quest in pairs(quests) do
+   for _,quest in pairs(quests) do
       if quest.id == quest_id then
          return quest
       end
@@ -295,7 +298,7 @@ function CQuest:isStepPassed(step_name)
 end
 
 function CQuest:getStep(step_name)
-   for k,node in pairs(self.nodes) do
+   for _,node in pairs(self.nodes) do
       if node.type == "step" and node.name == step_name then
          return node
       end
@@ -442,6 +445,15 @@ function CQuest:getLogString(entry)
    return (self.logs and self.logs[entry]) or entry
 end
 
+function CQuest:writeLogOnce(entry, ...)
+   local paramName = "log_used_" .. entry
+   local param = self:getParam(paramName)
+   if not param then
+      self:setParam(paramName, true)
+      self:writeLog(entry, ...)
+   end
+end
+
 function CQuest:writeLog(entry, ...)
    if self:isStarted() and not self.hidden then
       gameplayUI:showQuestLogUpdateInfo(self.title .. ": new journal entry")
@@ -451,8 +463,10 @@ function CQuest:writeLog(entry, ...)
 end
 
 function CQuest:writeLogSilent(entry, ...)
+   table.insert(self.logBuilder, {entry=entry, args=table.pack(...)})
    entry = string.format(self:getLogString(entry), ...)
-   self.log = self.log .. "***" .. entry
+   local sep = (#self.log > 0 or self.description ~= "") and "***" or ""
+   self.log = self.log .. sep .. entry
    gameplayUI.journalUI:updateSelectedJournalQuestLog(self)
 end
 
@@ -514,6 +528,10 @@ function CNode:getLogString(entry)
    return self:getQuest():getLogString(entry)
 end
 
+function CNode:writeLogOnce(entry, ...)
+   self:getQuest():writeLogOnce(entry, ...)
+end
+
 function CNode:writeLog(entry, ...)
    self:getQuest():writeLog(entry, ...)
 end
@@ -566,6 +584,7 @@ function questSystem:initQuest(name)
    quest.name = name
    quest.id = self.questid
    quest.tracked = false
+   quest.logBuilder = {}
    self.questid = self.questid + 1
    self:loadQuestScripts(quest)
 end
@@ -585,10 +604,10 @@ end
 function questSystem:restoreActivators(quest)
    quest.activators = {}
 
-   for k1,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       if node.type == "condition" and not node.supercondition then
          local foundLink = false
-         for k2,node2 in pairs(quest.nodes) do
+         for _,node2 in pairs(quest.nodes) do
             for k3=1,#node2.connections do
                if node2.connections[k3] == node then
                   foundLink = true
@@ -608,10 +627,10 @@ end
 function questSystem:restoreFreeListeners(quest)
    quest.freeListeners = {}
 
-   for k1,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       if node.type == "condition" and not node.supercondition then
          local foundLink = false
-         for k2,node2 in pairs(quest.nodes) do
+         for _,node2 in pairs(quest.nodes) do
             for k3=1,#node2.connections do
                if node2.connections[k3] == node then
                   foundLink = true
@@ -633,10 +652,10 @@ function questSystem:restoreListeners(quest)
       quest.listeners = {}
    end
 
-   for k1,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       if node.type == "condition" and not node.supercondition then
          local foundLink = false
-         for k2,node2 in pairs(quest.nodes) do
+         for _,node2 in pairs(quest.nodes) do
             for k3=1,#node2.connections do
                if node2.connections[k3] == node then
                   foundLink = true
@@ -658,7 +677,7 @@ function questSystem:restoreTransitions(quest)
       quest.listeners = {}
    end
 
-   for k1,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       if node.type == "step" then
          node.transitions = {}
          for i=1,#node.connections do
@@ -672,7 +691,7 @@ function questSystem:restoreTransitions(quest)
 end
 
 function questSystem:initConditions(quest)
-   for k1,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       if node.type == "condition" then
          node.enabled = false
       end
@@ -684,7 +703,7 @@ end
 
 function questSystem:getInputNodes(quest, target)
    local list = {}
-   for k1,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       for k2=1,#node.connections do
          if node.connections[k2] == target then
             table.insert(list, node)
@@ -696,7 +715,7 @@ end
 
 -- quest.firstStep
 function questSystem:restoreFirstStep(quest)
-   for k1,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       local input = self:getInputNodes(quest, node)
       -- step without inputs
       if node.type == "step" and next(input) == nil then
@@ -705,7 +724,7 @@ function questSystem:restoreFirstStep(quest)
       -- step with only conditions as inputs each without inputs
       elseif node.type == "step" then
          local badEnding = false
-         for k2,node2 in pairs(input) do
+         for _,node2 in pairs(input) do
             if node2.type == "step" then
                badEnding = true
             elseif next(self:getInputNodes(quest, node2)) ~= nil then
@@ -722,7 +741,7 @@ end
 
 -- quest.lastStep
 function questSystem:restoreLastStep(quest)
-   for k1,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       if node.type == "step" then
          if #node.connections == 0 then
             quest.lastStep = node
@@ -733,12 +752,12 @@ function questSystem:restoreLastStep(quest)
 end
 
 function questSystem:restoreConnections(quest)
-   for nk,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       node.quest = quest -- back link
 
       node.connections = {}
       if node.connectionsID then
-         for k,v in pairs(node.connectionsID) do
+         for _,v in pairs(node.connectionsID) do
             node.connections[#node.connections+1] = self:findReference(quest.nodes, v)
          end
       end
@@ -746,7 +765,7 @@ function questSystem:restoreConnections(quest)
 end
 
 function questSystem:findReference(nodes, id)
-   for k,node in pairs(nodes) do
+   for _,node in pairs(nodes) do
       if node.ID == id then
          return node
       end
@@ -802,7 +821,7 @@ local function loadObjScript(obj)
 end
 
 function questSystem:loadNodesScripts(quest)
-   for k,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       local mt = {}
       if node.type == "condition" then
          loadObjScript(node)
@@ -849,7 +868,7 @@ function questSystem:loadQuestScripts(quest)
    quest.activeStep = nil
    quest.failed = false
 
-   for k,node in pairs(quest.nodes) do
+   for _,node in pairs(quest.nodes) do
       if node.type == "condition" then
          node.targetsAny = getWords(node.targetsAny)
          local targetsAll = getWords(node.targetsAll)
@@ -862,6 +881,397 @@ function questSystem:loadQuestScripts(quest)
    end
 end
 
+---@type table<string, CNodeNew>
+local newNodeClassMap = {}
+
+local function declareNodeClass(className, members, super)
+   members = members or {}
+   members.className = className
+   local class = oo.class(members, super)
+   newNodeClassMap[className] = class
+   return class
+end
+
+---@class CNodeNew
+---@field className string
+---@field name string
+---@field ID number @unique ID
+---@field suspended boolean
+---@field quest CQuestNew
+---@field parent CQuestNew | CPhase
+---@field connections CConnection[]
+local CNodeNew = declareNodeClass("CNodeNew", {
+   --derived classes are responsible for calling parent's __init method
+   __new = hierarchy.creator
+})
+
+function CNodeNew:__init(data)
+   self.suspended = false
+   if data then
+      for k, v in pairs(data) do self[k] = v end
+   end
+end
+
+function CNodeNew:logq(str)
+   self.quest:logq(str)
+end
+
+function CNodeNew:logqf(fmt, ...)
+   self.quest:logqf(fmt, ...)
+end
+
+---@class CNodeStart : CNodeNew
+local CNodeStart = declareNodeClass("CNodeStart", {}, CNodeNew)
+function CNodeStart:__init(data)
+   CNodeNew.__init(self, data)
+end
+
+---@class CNodeFinish : CNodeNew
+local CNodeFinish = declareNodeClass("CNodeFinish", {}, CNodeNew)
+function CNodeFinish:__init(data)
+   CNodeNew.__init(self, data)
+end
+---@class CFork : CNodeNew
+local CFork = declareNodeClass("CFork", {}, CNodeNew)
+
+local api = require "quest.api"
+local op = require "pl.operator"
+
+---@class CScriptCondition : CFork
+---@field functionName string
+---@field arguments any[] @arguments to pass to the function
+---@field operator fun(a,b): boolean @operator function
+---@field resultValue any @value to compare the result of the function to
+local CScriptCondition = declareNodeClass("CScriptCondition", {}, CFork)
+
+local function initArguments(variables, data)
+   local arguments = {}
+   local value
+   for _, arg in ipairs(data.arguments) do
+      if arg.type == "variable" then
+         for _, v in pairs(variables) do
+            if v.name == arg.value then
+               value = v.value
+               break
+            end
+         end
+      else
+         value = arg.value
+      end
+      table.insert(arguments, value)
+   end
+   return arguments
+end
+
+function CScriptCondition:__init(data)
+   CFork.__init(self, data)
+   local operatorName = api.operations[data.operator]
+   self.operator = op[operatorName]
+   self.arguments = initArguments(self.quest.variables, data)
+end
+
+---@class CScriptFunction : CNodeNew
+local CScriptFunction = declareNodeClass("CScriptFunction", {}, CNodeNew)
+
+function CScriptFunction:__init(data)
+   CNodeNew.__init(self, data)
+   self.arguments = initArguments(self.quest.variables, data)
+end
+
+---@class CShowTopic : CNodeNew
+---@field topics string[]
+local CShowTopic = declareNodeClass("CShowTopic", {}, CNodeNew)
+function CShowTopic:__init(data)
+   CNodeNew.__init(self, data)
+   self.topics = data.topics
+end
+
+---@class CHideTopic : CShowTopic
+local CHideTopic = declareNodeClass("CHideTopic", {}, CShowTopic)
+
+---@class CLogEntry : CNodeNew
+---@field log string @log id
+local CLogEntry = declareNodeClass("CLogEntry", {}, CNodeNew)
+
+function CLogEntry:__init(data)
+   CNodeNew.__init(self, data)
+   self.log = data.log
+end
+
+---@class CLogDescription : CLogEntry
+local CLogDescription = declareNodeClass("CLogDescription", {}, CLogEntry)
+
+---@class CLogSuccess : CLogEntry
+local CLogSuccess = declareNodeClass("CLogSuccess", {}, CLogEntry)
+
+---@class CLogFailure : CLogEntry
+local CLogFailure = declareNodeClass("CLogFailure", {}, CLogEntry)
+
+---@class CRewardExp : CNodeNew
+---@field experience number
+local CRewardExp = declareNodeClass("CRewardExp", {}, CNodeNew)
+
+---@class RewardItem
+---@field name string
+---@field count number
+local RewardItem
+
+---@class CRewardItems : CNodeNew
+---@field rewards RewardItem[]
+local CRewardItems = declareNodeClass("CRewardItems", {}, CNodeNew)
+
+---@class CRewardMoney : CRewardItems
+local CRewardMoney = declareNodeClass("CRewardMoney", {}, CRewardItems)
+
+---@class CConnection
+---@field fromNode CNodeNew
+---@field fromSlot number
+---@field toNode CNodeNew
+---@field toSlot number
+---Describes a connection between two quest nodes
+local CConnection = oo.class()
+
+---@class CNodeAnd : CNodeNew
+---@field suspendedSlots table<number, boolean>
+---@field inputSlots number
+local CNodeAnd = declareNodeClass("CNodeAnd", {}, CNodeNew)
+
+function CNodeAnd:__init(data)
+   CNodeNew.__init(self, data)
+   self.suspendedSlots = {n=self.inputSlots}
+end
+
+---@class CNodeEvent : CNodeNew
+---@field event string
+local CNodeEvent = declareNodeClass("CNodeEvent", {}, CNodeNew)
+
+---@class CWaitTrigger : CNodeEvent
+---@field triggerName string
+---@field objectType string
+---@field objectName string
+local CWaitTrigger = declareNodeClass("CWaitTrigger", {}, CNodeEvent)
+
+---@class WaitTimeOfDay : CNodeNew
+local WaitTimeOfDay = declareNodeClass("WaitTimeOfDay", {}, CNodeNew)
+
+---@class CDiscuss : CNodeEvent
+---@field topic string
+---@field unhideTopic boolean
+local CDiscuss = declareNodeClass("CDiscuss", {event="discuss"}, CNodeEvent)
+
+---@class CNodeTimer : CNodeNew
+local CNodeTimer = declareNodeClass("CNodeTimer", {}, CNodeNew)
+
+
+---@class CLogData
+---@field entry string
+---@field args any[]
+local CLogData
+
+---@class CQuestNew
+---@field name string @internal quest name
+---@field title string @ingame quest name
+---@field nodes CNodeNew[] @a list of all quest nodes
+---@field startNode CNodeNew @the starting node of the quest
+---@field finishNodes CNodeNew[] @quest will finish upon hitting one of those nodes
+---@field started boolean @true if quest started (sets true on first description log entry)
+---@field finished boolean @true if quest finished (sets true on success or fail log entry)
+---@field finishedNode CNodeNew @the node which finished the quest. True if the quest is finished for real
+---@field log string @legacy log storage
+---@field logBuilder CLogData[] @list of log entries and their optional format arguments
+---@field new boolean @indicates new quest system
+local CQuestNew = oo.class()
+
+function CQuestNew:__new(data)
+   self = oo.rawnew(self, data)
+   self.log = ""
+   self.logBuilder = {}
+   self.debugLogStrings = {}
+   self.new = true
+   return self
+end
+
+function CQuestNew:logq(str)
+   table.insert(self.debugLogStrings, tostring(str))
+end
+
+function CQuestNew:logqf(fmt, ...)
+   self:logq(string.format(fmt, ...))
+end
+
+---@param start CNodeNew
+---@return fun():CNodeNew
+local function walkBranch(start)
+   return coroutine.wrap(function()
+      ---@type CNodeNew[]
+      local upNext = {start}
+      local visited = {}
+      while #upNext > 0 do
+         ---@type CNodeNew
+         local current = table.remove(upNext)
+         if not visited[current] then
+            visited[current] = true
+            coroutine.yield(current)
+            for i=#current.connections,1,-1 do
+               table.insert(upNext, current.connections[i].toNode)
+            end
+         end
+      end
+   end)
+end
+
+local serializeNode, deserializeNode
+
+---Walk node tree starting from startNode, depth-first, and get their saved data
+---@param startNode CNodeNew
+---@return table @a list of saved node states
+local function saveQuestNodes(startNode)
+   local nodes = {}
+   for node in walkBranch(startNode) do
+      local nodeState = {}
+      serializeNode(node, nodeState)
+      if next(nodeState) ~= nil then
+         local nodeData = {
+            ID = node.ID,
+            nodeState = nodeState
+         }
+         table.insert(nodes, nodeData)
+      end
+   end
+   return nodes
+end
+
+function CQuestNew:OnSaveState(state)
+   state.nodes = saveQuestNodes(self.startNode)
+   state.started = self.started
+   state.hidden = self.hidden
+   state.finished = self.finished
+   if self.finished then
+      state.finishedNodeID = self.finishedNode.ID
+   end
+   state.logBuilder = self.logBuilder
+end
+
+---Call OnLoadState for each node in nodes list that matches by id in savedNodeStates
+---@param nodes CNodeNew[]
+---@param savedNodeStates table @a list of saved node states
+local function loadQuestNodes(nodes, savedNodeStates)
+   if savedNodeStates and #savedNodeStates > 0 then
+      local idMap = {}
+      for _, n in pairs(nodes) do idMap[n.ID] = n end
+      for _, nodeData in ipairs(savedNodeStates) do
+         local node = idMap[nodeData.ID]
+         deserializeNode(node, nodeData.nodeState)
+      end
+   end
+end
+
+function CQuestNew:OnLoadState(state)
+   loadQuestNodes(self.nodes, state.nodes)
+   self.started = state.started
+   self.hidden = state.hidden
+   self.finished = state.finished
+   if self.finished then
+      for _, fin in ipairs(self.finishNodes) do
+         if fin.ID == state.finishedNodeID then
+            self.finishedNode = fin
+            break
+         end
+      end
+   end
+   self.logBuilder = state.logBuilder
+end
+
+local function loadNewQuestNodes(data, parent, quest)
+   quest = quest or parent
+   local ids = {}
+   local nodes = {}
+   local startNode
+   local finishNodes = {}
+
+   local vars = quest._variables
+   local objs, groups = vars.objects, vars.groups
+   for _, nodeData in require"orderedPairs".orderedPairs(data) do
+      if nodeData.script and nodeData.script ~= "" then
+         --local chunk = assert(loadstring(nodeData.script))
+         local chunk = loadstring(nodeData.script)
+         if chunk then
+            local env = setmetatable(
+               { node = nodeData, vars = vars, objs = objs, groups = groups },
+               { __index = _G }
+            )
+            setfenv(chunk, env)
+            chunk()
+         end
+      end
+      local class = nodeData.class and newNodeClassMap[nodeData.class] or CNodeNew
+      nodeData.parent = parent
+      nodeData.quest = quest
+      local node = class(nodeData)
+      ids[node.ID] = node
+      table.insert(nodes, node)
+      if node.className == CNodeStart.className then
+         startNode = node
+      elseif node.className == CNodeFinish.className then
+         table.insert(finishNodes, node)
+      end
+   end
+
+   for _, node in ipairs(nodes) do
+      local connections = {}
+      for _, conData in ipairs(node.connectionsID) do
+         local con = CConnection{
+            fromNode = node,
+            fromSlot = conData.fromSlot,
+            toNode = ids[conData.toID],
+            toSlot = conData.toSlot,
+         }
+         table.insert(connections, con)
+      end
+      node.connections = connections
+   end
+
+   table.sort(finishNodes, function(a, b) return a.posY < b.posY end)
+   --reverse map nodes to their index
+   for i, v in ipairs(finishNodes) do
+      finishNodes[v] = i
+   end
+   return nodes, startNode, finishNodes
+end
+
+local function initNewQuest(testQuestName)
+   local ok, questData = deb.loadTableFromFile(string.format("%snew/%s.lua", kPathGlobalQuests, testQuestName))
+   if not ok then
+      log(string.format("ERROR: Can't load quest '%s':", testQuestName))
+      log(questData)
+   else
+      --local questChunk = assert(loadstring(questData.script))
+      local questChunk = loadstring(questData.script)
+      local variables = {objects={}, groups={}}
+      if questChunk then
+         local env = setmetatable(
+            { Quest = questData, vars=variables, objs=variables.objects, groups=variables.groups },
+            { __index = _G }
+         )
+         setfenv(questChunk, env)
+         questChunk()
+      end
+
+      local quest = CQuestNew(questData)
+      quest.name = testQuestName
+      quest._variables = variables
+      local nodes, startNode, finishNodes = loadNewQuestNodes(quest.nodes, quest)
+
+      quest.nodes = nodes
+      quest.startNode = startNode
+      quest.finishNodes = finishNodes
+      newQuests[quest.name] = quest
+      quests[quest.name] = quest
+      questSystem:loadQuestData(quest)
+      return quest
+   end
+end
+
 function questSystem:init()
    log("questSystem:init()")
    local quests_names = getFolderElements("\\gdata\\scripts\\quests\\*.lua", false, true)
@@ -871,52 +1281,543 @@ function questSystem:init()
       end
    end
    for _, q in pairs(quests) do
-      if q.topics then
-         for _, topic in ipairs(q.topics) do
-            q.topics[topic.name] = topic
-            q:setTopicVisible(topic.name, topic.visible)
-         end
+      questSystem:loadQuestData(q)
+   end
+
+   local helping_hands = initNewQuest("helping_hands")
+   local open_sesame = initNewQuest("open_sesame")
+   local greenbug = initNewQuest("greenbug")
+
+   if not getScene():isLoadedGame() then
+      getScene():subscribeOnLocationEnter(function()
+         helping_hands:start()
+         open_sesame:start()
+         greenbug:start()
+      end)
+   end
+end
+
+function questSystem:loadQuestData(q)
+   if q.topics then
+      for _, topic in ipairs(q.topics) do
+         q.topics[topic.name] = topic
+         q:setTopicVisible(topic.name, topic.visible)
       end
-      if q.variables then
-         local objects, groups = {}, {}
-         for _, var in ipairs(q.variables) do
-            if var.kind == "object" then
-               table.insert(objects, var)
-            elseif var.kind == "group" then
-               table.insert(groups, var)
-            else
-               if var.kind == "item" and not ItemsData.isCorrectItemName(var.value) then
-                  local wrong_item_name = "ERROR: wrong item name in quest '%s' variable '%s': %s"
-                  log(string.format(wrong_item_name, q.name, var.name, var.value))
+   end
+   if q.variables then
+      local objects, groups = {}, {}
+      for _, var in ipairs(q.variables) do
+         if var.kind == "object" then
+            table.insert(objects, var)
+         elseif var.kind == "group" then
+            table.insert(groups, var)
+         else
+            if var.kind == "item" and not ItemsData.isCorrectItemName(var.value) then
+               local wrong_item_name = "ERROR: wrong item name in quest '%s' variable '%s': %s"
+               log(string.format(wrong_item_name, q.name, var.name, var.value))
+            end
+         end
+         q:declareVar(var.name, var.value)
+      end
+      if #objects > 0 or #groups > 0 then
+         getScene():subscribeOnLocationEnter(function()
+            local silent = isDebug("quest")
+            local object_instances = q._variables.objects or {}
+            q._variables.objects = object_instances
+            for _, object_var in ipairs(objects) do
+               if object_var.value then --Support uninitialized vars
+                  object_instances[object_var.name] = getObj(object_var.value, silent)
                end
             end
-            q:declareVar(var.name, var.value)
-         end
-         if #objects > 0 or #groups > 0 then
-            getScene():subscribeOnLocationEnter(function()
-               local object_instances = {}
-               q._variables.objects = object_instances
-               for _, object_var in ipairs(objects) do
-                  if object_var.value then --Support uninitialized vars
-                     object_instances[object_var.name] = getObj(object_var.value)
-                  end
-               end
 
-               local group_instances = {}
-               q._variables.groups = group_instances
-               for _, group_var in ipairs(groups) do
-                  if group_var.value then --Support uninitialized vars
-                     group_instances[group_var.name] = tablex.imap(getObj, getObjectsInGroupOrdered(group_var.value))
-                  end
+            local group_instances = q._variables.groups or {}
+            q._variables.groups = group_instances
+            for _, group_var in ipairs(groups) do
+               if group_var.value then --Support uninitialized vars
+                  group_instances[group_var.name] = tablex.imap(getObj, getObjectsInGroupOrdered(group_var.value), silent)
                end
-            end)
+            end
+
+            for index_name, target_group_name in pairs(q.group_indices or {}) do
+               local index = q._variables[index_name]
+               local group = group_instances[target_group_name]
+               if index < 0 then
+                  index = index + #group + 1
+               end
+               if group[index] then
+                  -- put object name in a quest variable
+                  q:declareVar(index_name, group[index]:getName())
+                  -- ...and store object instance in .objects
+                  object_instances[index_name] = group[index]
+               elseif #group == 0 then
+                  log(string.format("WARNING: trying to index empty group '%s'", target_group_name))
+               else
+                  log(string.format("WARNING: index '%s'(%d) not found in group '%s'", index_name, index, target_group_name))
+               end
+            end
+         end)
+      end
+   end
+   if q.onCreate then
+      q:onCreate()
+   end
+end
+
+CQuestNew.setTopicVisible = CQuest.setTopicVisible
+CQuestNew.getTopicVisible = CQuest.getTopicVisible
+CQuestNew.declareVar = CQuest.declareVar
+CQuestNew.setParam = CQuest.setParam
+CQuestNew.getParam = CQuest.getParam
+CQuestNew.getName = CQuest.getName
+CQuestNew.setTracked = CQuest.setTracked
+CQuestNew.isTracked = CQuest.isTracked
+CQuestNew.getLogString = CQuest.getLogString
+CQuestNew.writeLog = CQuest.writeLog
+CQuestNew.writeLogSilent = CQuest.writeLogSilent
+CQuestNew.setupQuestMarkers = CQuest.setupQuestMarkers
+CQuestNew.declareQuestMarkers = CQuest.declareQuestMarkers
+
+function CQuestNew:start()
+   self:advanceNode(self.startNode)
+end
+function CQuestNew:finish() end
+
+function CQuestNew:isStarted()
+   return self.started
+end
+
+function CQuestNew:isActive()
+   return self:isStarted() and not self:isFinished()
+end
+
+function CQuestNew:isFinished()
+   return self.finished
+end
+
+function CQuestNew:isTerminalFinished()
+   return self:getTopicVisible("terminal_finish")
+end
+
+function CQuestNew:isFailed()
+   return false
+end
+
+function CQuestNew:setMarkersVisible() end
+
+function CQuestNew:getActiveStep()
+end
+
+function CNodeEvent:checkEvent(...)
+   return not self.onCheck or self:onCheck(...)
+end
+
+local triggerEventMap = {
+   inside = "trigger_in",
+   next_entered = "trigger_in",
+   outside = "trigger_out",
+   next_exited = "trigger_out"
+}
+
+---Resets node data. Should handle being called multiple times well.
+---@param node CNodeNew
+---@param slot number
+local function resetNode(node, slot)
+   node.suspended = false
+   local className = node.className
+   if className == "CNodeAnd" then
+      node.suspendedSlots = {n=node.inputSlots}
+   elseif className == "CNodeEvent" or className == "CDiscuss" then
+      if not node.callback then return end
+      questSystem:unsubscribeEvent(node.event, node.callback)
+      node.callback = nil
+   elseif className == "WaitTimeOfDay" then
+      if node.callback then
+         SkySystem:unsubscribeDayStateChange(node.callback)
+         node.callback = nil
+      end
+   elseif className == "CNodeTimer" then
+      if node.callback then
+         node.callback:stop()
+         node.callback = nil
+      end
+   elseif className == "CWaitTrigger" then
+      if not node.callback then return end
+      questSystem:unsubscribeEvent(triggerEventMap[node.event], node.callback)
+      node.callback = nil
+   elseif className == "CPhase" then
+      for _, child in ipairs(node.nodes) do
+         resetNode(child)
+      end
+      node.finished = false
+      node.finishedNode = nil
+   end
+end
+
+local function getWaitTriggerObj(type, objectName)
+   return type == "player" and getPlayer()
+      or type == "main_character" and getMC()
+      or type == "npc" and getObj(objectName)
+end
+
+--TODO: add skipEvent onSuspend param
+---To be called from within node's evaluate method
+---@param node CNodeNew
+---@param slot number
+local function suspendNode(node, slot)
+   node:logq(node.name .. " suspends")
+   node.suspended = true
+   node:onSuspend()
+   local className = node.className
+   if className == "CNodeNew" then
+   elseif className == "CNodeTimer" then
+      if not node.duration then return end
+      node.callback = runTimerAdv(node.duration, false, function()
+         node:logq(node.name .. ": timer event arrived, advancing signal")
+         resetNode(node)
+         if #node.connections > 0 then
+            node.parent:advanceSignal(unpack(node.connections))
+         end
+      end)
+   elseif className == "WaitTimeOfDay" then
+      --TODO: add selection choice
+      --[[
+      morning
+      afternoon
+      night
+      midnight
+      ]]
+      node.callback = SkySystem:subscribeDayStateChange("night", function()
+         log("WOLOLO")
+         resetNode(node)
+         if #node.connections > 0 then
+            node.parent:advanceSignal(unpack(node.connections))
+         end
+      end)
+   elseif className == "CNodeAnd" then
+      node:checkSlot(slot)
+   elseif className == "CNodeEvent" or className == "CDiscuss" then
+      if not node.event then return end
+      node.callback = questSystem:subscribeEvent(node.event, function(...)
+         if not node:checkEvent(...) then
+            return
+         end
+         node:logq(node.name .. ": matching event arrived, advancing signal")
+         resetNode(node)
+         if #node.connections > 0 then
+            node.parent:advanceSignal(unpack(node.connections))
+         end
+      end)
+      if className == "CDiscuss" then
+         if node.unhideTopic then
+            node:setTopicVisible(node.topic, true)
          end
       end
-      if q.onCreate then
-         q:onCreate()
+   elseif className == "CWaitTrigger" then
+      local event = triggerEventMap[node.event]
+      if not event then return end
+      --Note that at the moment we can't use main_character object type because CTrigger supports only player or npc
+      node.callback = questSystem:subscribeEvent(event, function(eventName, triggerName, triggerObj)
+         if triggerName == node.triggerName and triggerObj and triggerObj.chars then
+            local obj = getWaitTriggerObj(node.objectType, node.objectName)
+            local inside = triggerObj.chars[obj]
+            if (eventName == "trigger_in" and inside) or (eventName == "trigger_out" and not inside) then
+               node:logq(node.name .. ": matching event arrived, advancing signal")
+               resetNode(node)
+               if #node.connections > 0 then
+                  node.parent:advanceSignal(unpack(node.connections))
+               end
+            end
+         end
+      end)
+   end
+end
+
+---Called when node doesn't suspend and just executes script
+---@param node CNodeNew
+---@param slot number
+local function executeNode(node, slot)
+   node:onExecute()
+   local className = node.className
+   if className == "CShowTopic" then
+      for _, topic in ipairs(node.topics) do
+         node:setTopicVisible(topic, true)
+      end
+   elseif className == "CHideTopic" then
+      for _, topic in ipairs(node.topics) do
+         node:setTopicVisible(topic, false)
+      end
+   elseif className == "CLogEntry" or className == "CLogFailure" then
+      node:writeLog(node.log)
+   elseif className == "CLogDescription" then
+      node.quest.started = true
+      node.quest.hidden = false
+      node:writeLogSilent(node.log)
+      gameplayUI.journalUI:updateQuestsList()
+      gameplayUI:showQuestStartInfo("Quest '" .. node.quest.title .. "' started")
+   elseif className == "CLogSuccess" then
+      node:writeLog(node.log)
+      node.quest.finished = true
+      gameplayUI.journalUI:updateQuestsList()
+      gameplayUI:showQuestStopInfo("Quest '" .. node.quest.title .. "' completed")
+   elseif className == "CRewardExp" then
+      getMC():addExp(node.experience)
+   elseif className == "CRewardItems" or className == "CRewardMoney" then
+      for _, entry in ipairs(node.rewards) do
+         addItemToPlayer(entry.name, entry.count)
       end
    end
 end
+
+---Called every time advanceSignal walker goes over the node.
+---Return connected nodes for the walker to pass the node, or nil if no connected nodes or
+---if we do not want to propagate signal for any other reason.
+---@param node CNodeNew
+---@param slot number
+---@return CConnection[]
+local function evaluateNode(node, slot)
+   executeNode(node, slot)
+   local className = node.className
+   if node.evaluate then
+      return node:evaluate()
+   elseif className == "CFork" then
+      local path = {}
+      local outSlot = node:onCheck() and 1 or 2
+      for _, con in ipairs(node.connections) do
+         if con.fromSlot == outSlot then
+            table.insert(path, con)
+         end
+      end
+      return path
+   elseif className == "CNodeTimer" or className == "CNodeEvent" or className == "CDiscuss" or className == "WaitTimeOfDay" then
+      if not node.suspended then
+         suspendNode(node, slot)
+      end
+   elseif className == "CWaitTrigger" then
+      if not node.suspended then
+         if node.event == "inside" then
+            local trigger = getObj(node.triggerName)
+            local obj = getWaitTriggerObj(node.objectType, node.objectName)
+            if trigger and trigger.chars and trigger.chars[obj] then
+               return node.connections
+            end
+         elseif node.event == "outside" then
+            local trigger = getObj(node.triggerName)
+            local obj = getWaitTriggerObj(node.objectType, node.objectName)
+            if trigger and trigger.chars and not trigger.chars[obj] then
+               return node.connections
+            end
+         end
+         suspendNode(node, slot)
+      end
+   elseif className == "CNodeAnd" then
+      if node.suspended then
+         node:checkSlot(slot)
+         node:logq(node.name .. " suspended and evaluates signal")
+      else
+         suspendNode(node, slot)
+      end
+      if node.suspendedSlots.n <= 0 then
+         return node.connections
+      end
+   elseif className == "CPhase" then
+      if not node.suspended then
+         CQuestNew.advanceSignal(node, CConnection{toNode=node.startNode})
+         if node.finishedNode then
+            return node:buildConnectionsForFinishNode(node.finishedNode)
+         else
+            suspendNode(node, slot)
+         end
+      end
+   elseif className == "CScriptFunction" then
+      local _G = _G
+      local desc = api.functions[node.functionName]
+      local func = desc.global and _G[node.functionName] or desc.func
+      func(unpack(node.arguments))
+      return node.connections
+   elseif className == "CScriptCondition" then
+      local _G = _G
+      local path = {}
+      local desc = api.functions[node.functionName]
+      local func = desc.global and _G[node.functionName] or desc.func
+      local result = func(unpack(node.arguments))
+
+      local outSlot = node.operator(result, node.resultValue) and 1 or 2
+      for _, con in ipairs(node.connections) do
+         if con.fromSlot == outSlot then
+            table.insert(path, con)
+         end
+      end
+      return path
+   else
+      return node.connections
+   end
+end
+
+---@param node CNodeNew
+serializeNode = function(node, state)
+   if node.suspended then
+      state.suspended = true
+
+      local className = node.className
+      if className == "CNodeAnd" then
+         state.suspendedSlots = node.suspendedSlots
+      elseif className == "CNodeTimer" and node.callback then
+         state.duration = node.callback:getTimeLeft()
+      elseif className == "CPhase" then
+         state.nodes = saveQuestNodes(node.startNode)
+      end
+   end
+end
+
+---@param node CNodeNew
+deserializeNode = function(node, state)
+   if state.suspended then
+      node.suspended = true
+
+      local className = node.className
+      if className == "CNodeAnd" then
+         node.suspendedSlots = state.suspendedSlots
+      elseif className == "CNodeEvent" or className == "CDiscuss" or className == "CWaitTrigger" or className == "WaitTimeOfDay" then
+         --note that suspendNode always calls onSuspend
+         suspendNode(node)
+      elseif className == "CNodeTimer" then
+         node.duration = state.duration
+         suspendNode(node)
+      elseif className == "CPhase" then
+         loadQuestNodes(node.nodes, state.nodes)
+      end
+   end
+end
+
+function CNodeNew:onSuspend() end
+function CNodeNew:onExecute() end
+
+function CNodeNew:setTopicVisible(topic, value)
+   self.quest:setTopicVisible(topic, value)
+end
+
+function CNodeNew:setParam(param, value)
+   self.quest:setParam(param, value)
+end
+
+function CNodeNew:getParam(param)
+   return self.quest:getParam(param)
+end
+
+function CNodeNew:writeLog(entry, ...)
+   return self.quest:writeLog(entry, ...)
+end
+
+function CNodeNew:writeLogSilent(entry, ...)
+   return self.quest:writeLogSilent(entry, ...)
+end
+
+function CDiscuss:checkEvent(eventName, topicRaw)
+   local questName, _, topic = stringx.partition(topicRaw, ':')
+   return self.quest.name == questName and topic == self.topic
+end
+
+function CNodeAnd:checkSlot(slot)
+   if not self.suspendedSlots[slot] then
+      self.suspendedSlots[slot] = true
+      self.suspendedSlots.n = self.suspendedSlots.n - 1
+   end
+end
+
+---Helper for advanceSignal that accepts node without origin (fromNode)
+---@param node CNodeNew
+---@param slot number
+function CQuestNew:advanceNode(node, slot)
+   return self:advanceSignal(CConnection{toNode=node, toSlot=slot})
+end
+
+--TODO: instead of checking and asserting on recursive call, collect signals from recursive calls
+--and process them after all other signals, possibly taking advantage of visited nodes table
+--TODO: consider making possible to delay node evaluation like for a XOR gate case which needs to know
+--if more than one of its inputs gave a signal during one signal frame to decide whether to propagate
+---Start advancing signal propagation, executing and suspending nodes
+---@param signal CConnection
+function CQuestNew:advanceSignal(signal, ...)
+   --assert(self.finishedNode == nil, "Can't advance finished quest")
+   --assert(not self._advanceSignalRunning, "advanceSignal recursion forbidden")
+   self._advanceSignalRunning = true
+   ---@type CConnection[]
+   local upNext = {signal, ...}
+   local visited = {}
+   while #upNext > 0 do
+      local connection = table.remove(upNext)
+      local current, slot = connection.toNode, connection.toSlot or 1
+      if not visited[current] then
+         visited[current] = true
+         if self.finishNodes[current] then
+            --finish node is not currently executed but start is.
+            self:logq(current.name .. ": finish node")
+            if self.onFinish then self:onFinish() end
+            self.finished = true
+            --this is here only as the fastest way to check which node was last in quest and phase
+            self.finishedNode = current
+            for _, n in ipairs(self.nodes) do
+               if n.suspended then
+                  resetNode(n)
+               end
+            end
+            break
+         end
+
+         current:logq(current.name .. ": evaluating")
+         local toPropagate = evaluateNode(current, slot)
+         if toPropagate and #toPropagate > 0 then
+            current:logq(current.name .. ": advancing signal")
+            resetNode(current)
+            for i = #toPropagate, 1, -1 do
+               table.insert(upNext, toPropagate[i])
+            end
+         end
+      end
+   end
+   self._advanceSignalRunning = false
+end
+
+---@class CPhase : CNodeNew
+---@field finishedNode CNodeNew
+---@field startNode CNodeNew
+---@field finishNodes CNodeNew[]
+local CPhase = declareNodeClass("CPhase", {}, CNodeNew)
+
+function CPhase:__init(data)
+   CNodeNew.__init(self, data)
+   self.nodes, self.startNode, self.finishNodes = loadNewQuestNodes(data.nodes, self, self.quest)
+end
+
+function CPhase:buildConnectionsForFinishNode(finishNode)
+   local slot = self.finishNodes[finishNode]
+   self:logqf(" slot %d", slot)
+   local connections = {}
+   for _, con in ipairs(self.connections) do
+      self:logqf(" fromSlot %d", con.fromSlot)
+      if con.fromSlot == slot then
+         table.insert(connections, con)
+      end
+   end
+   return connections
+end
+
+function CPhase:advanceSignal(...)
+   CQuestNew.advanceSignal(self, ...)
+   if self.finishedNode then
+      local connections = self:buildConnectionsForFinishNode(self.finishedNode)
+      self:logq(self.name .. ": phase reached finish node, advancing signal")
+      if #connections > 0 then
+         self.parent:advanceSignal(unpack(connections))
+      end
+      resetNode(self)
+   end
+end
+
+function CPhase:isFinished()
+   return self.finished
+end
+
 
 function questSystem:checkCondition(condition, event_name, target_name, target_obj)
    if not condition.enabled then return false end
@@ -1002,7 +1903,9 @@ function questSystem:unsubscribeEvent(event_name, callback)
    local eventTable = self.eventSubscribers[event_name]
    if eventTable then
       local index = tablex.find(eventTable, callback)
-      table.remove(eventTable, index)
+      if index then
+         table.remove(eventTable, index)
+      end
    end
 end
 
@@ -1039,20 +1942,20 @@ end
 
 function questSystem:processEvent(quest, event_name, target_name, target_obj)
    --process superListeners
-   for _, node in ipairs(quest.superListeners) do
+   for _, node in ipairs(quest.superListeners or {}) do
       if self:checkCondition(node, event_name, target_name, target_obj) then
          node.enabled = false
       end
    end
    if not quest:isStarted() then -- process activators
-      for _, node in ipairs(quest.activators) do
+      for _, node in ipairs(quest.activators or {}) do
          if self:checkCondition(node, event_name, target_name, target_obj) then
             quest:start()
             break
          end
       end
    elseif quest:isActive() then -- process listeners
-      for _, node in ipairs(quest.freeListeners) do
+      for _, node in ipairs(quest.freeListeners or {}) do
          if self:checkCondition(node, event_name, target_name, target_obj) then
             node.enabled = false
          end
@@ -1137,10 +2040,8 @@ function enableObject(object_name, silent)
    if object then
       if object.enable then
          object:enable()
-      elseif object.setDisabled then
-         object:setDisabled(false)
       elseif not silent then
-         log("ERROR: " .. object_name .. " lacks method 'disable' or 'setDisabled'")
+         log("ERROR: " .. object_name .. " lacks method 'disable'")
       end
    end
 end
@@ -1150,10 +2051,8 @@ function disableObject(object_name, silent)
    if object then
       if object.disable then
          object:disable()
-      elseif object.setDisabled then
-         object:setDisabled(true)
       elseif not silent then
-         log("ERROR: " .. object_name .. " lacks method 'disable' or 'setDisabled'")
+         log("ERROR: " .. object_name .. " lacks method 'disable'")
       end
    end
 end
@@ -1227,6 +2126,10 @@ function getObjectsInGroupOrdered(groupName)
    return alphanumsort(result)
 end
 
+function getLastObjectInOrderedGroup(groupName, silent)
+   local t = getObjectsInGroupOrdered(groupName, silent)
+   return t[#t]
+end
 
 --INVENTORIES AND ITEMS MANAGEMENT
 function addItemToPlayer(itemName, count, qualityInt)
@@ -1303,10 +2206,10 @@ function giveTradeItemFromObjTo(itemName, obj1, obj2, count)
    return item
 end
 
-function useItemForPlayer(itemName)
+function useItemForPlayer(itemName, force)
    local player = getMC()
    local item = player:getInventory():getItemByName(itemName)
-   player:useItem(item)
+   player:useItem(item, force)
 end
 
 function equipItemForPlayer(itemName, slotId, silent)
@@ -1375,7 +2278,6 @@ function getPlayerBooze(strength)
    local items = getMC():getInventory():getItems()
    local booze = {}
    for i=1,#items do
-      local boozeCount = 0
       if items[i]:isBooze() then
          if not strength or strength == items[i]:getBoozeStrength() then
             booze[items[i].name] = items[i]:getCount()
@@ -1470,6 +2372,17 @@ function isObjectTeleportSafe(obj, target, distance)
    end
 
    return not objInDist(playerPos, obj:getPose():getPos(), distance) and not objInDist(playerPos, target, distance)
+end
+
+---Add status effect to the object
+---@param obj CCharacter
+---@param effectName string
+---@param params table optional
+---@return CStatusEffectBase
+function addStatusEffectTo(obj, effectName, params)
+   local t = tablex.deepcopy(params) or {}
+   t.name = effectName
+   return obj.statusEffectsManager:addStatusEffect(t)
 end
 
 function showGameplayUI(state)

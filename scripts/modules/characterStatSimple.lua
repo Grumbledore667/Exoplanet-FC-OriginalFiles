@@ -13,7 +13,8 @@ end
 
 function CCharacterStatSimple:regenTick(secondsElapsed)
    local val = self:getRegen()
-   if val ~= 0 then
+
+   if val ~= 0 and (self.owner.god_mode and val > 0 or not self.owner.god_mode) then
       self:changeValue(val * secondsElapsed)
    end
 end

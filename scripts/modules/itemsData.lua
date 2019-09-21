@@ -599,6 +599,14 @@ function api.isItemMessage(itemName)
    return info and info.message
 end
 
+function api.canReadItemMessage(itemName)
+   if not itemName then return false end
+
+   local info = ItemsInfo[itemName]
+
+   return info and not info.message.abori
+end
+
 function api.isItemContainer(itemName)
    if not itemName then return false end
    local info = ItemsInfo[itemName]
@@ -820,6 +828,17 @@ function api.getItemDamage(itemName, qualityInt)
    end
 end
 
+function api.getItemLockDamage(itemName, qualityInt)
+   if not itemName then return 0 end
+
+   if ItemsInfo[itemName] and ItemsInfo[itemName].lockDamage ~= nil then
+      qualityInt = qualityInt or 2
+      return math.ceil(ItemsInfo[itemName].lockDamage * api.getItemQualityBonus("damageMul", qualityInt))
+   else
+      return 0
+   end
+end
+
 function api.getItemBulletsInShot(itemName)
    if not itemName then return nil end
 
@@ -1013,6 +1032,12 @@ function api.isItemQuestItem(itemName)
    else
       return nil
    end
+end
+
+function api.isItemKey(itemName)
+   if not itemName then return false end
+
+   return api.getItemInvCategory(itemName) == "key"
 end
 
 api.ItemsInfo          = ItemsInfo

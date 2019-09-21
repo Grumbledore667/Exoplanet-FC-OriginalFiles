@@ -103,10 +103,14 @@ function CFastTravel:getInteractLabel()
 end
 
 function CFastTravel:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+
    state.discovered = self.discovered
 end
 
 function CFastTravel:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+
    if state.discovered then
       self:__discover()
    end

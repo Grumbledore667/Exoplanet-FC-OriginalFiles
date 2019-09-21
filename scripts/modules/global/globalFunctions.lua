@@ -48,6 +48,7 @@ function isSavingEnabled()
    local player = getMC()
    return not isEditor() and player and getPlayer() == player
       and not player:getState("talk") and not player:getState("resting") and not player:getState("dead")
+      and not player:getState("climbing_ladder") and not player:getState("climbing_ladder_down") and not player:getState("bed_resting")
       and not gameplayUI.fadeToBlackSequence
       and not getGlobalParam("inScene")
 end

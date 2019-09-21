@@ -50,7 +50,7 @@ end
 
 function CNPC:initSenses()
    self.senseScheduler:addPlayerDetectSense()
-   self.senseScheduler:addDistanceSense("playerInDialogDistance", "player", "dialogInitiatorDist")
+   self.senseScheduler:addDistanceSense("playerInDialogDistance", "mainCharacter", "dialogInitiatorDist")
    self.senseScheduler:addSense("inZone", false, self.senseScheduler, self.senseScheduler.checkZone)
 end
 
@@ -244,6 +244,8 @@ local orientWhitelist = {
       "shotgun_idle_2",
       "shotgun_idle_3",
       "shotgun_idle_view",
+      "polearm_idle",
+      "polearm_idle_hurt",
       "idle_smoke_draw",
       "wall_idle",
       "wall_idle_armcross",
@@ -264,6 +266,8 @@ local orientWhitelist = {
       "rifle_idle",
       "idle_smoke_draw",
       "1hm_idle",
+      "polearm_idle",
+      "polearm_idle_hurt",
    },
    ["space_biker.cfg"] = {
       "idle","idle_2",
@@ -331,11 +335,6 @@ function CNPC:obtainTradeInventory()
    for name, count in pairs(self.tradeInventorylist) do
       self:getTradeInventory():addItem(name, count)
    end
-end
-
-function CNPC:resetSpeed()
-   self:setMoveSpeed(0)
-   self:setOrientationSpeed(0)
 end
 
 ---External animated damage function if damage is allowed and character is alive
@@ -475,6 +474,8 @@ function CNPC:knockoutGetup_running()
       self.animationsManager:playCycle(self.defaultAnimation)
    end
 
+   self:setCollisionCharacters(true)
+
    coro.waitAnimationEnd(self, anims.out)
 end
 
@@ -483,7 +484,6 @@ function CNPC:knockoutGetup_finish()
    self:setBBVar("knockoutSide", nil)
    self:setState("knockoutHasToGetup", false)
    self:setState("talkForbidden", false)
-   self:setCollisionCharacters(true)
    local health = self:getStatCount("healthMax") * (self.parameters.knockoutHealthPercent + 5)/ 100 --5% over the threshold
    if self:getStatCount("health") < health then
       self:setStatCount("health", health)
@@ -512,7 +512,9 @@ end
 function CNPC:fall_running()
    self:setState("fallRecovery", true)
    local anim = self:getAnimationFor("fall")
-   self.animationsManager:playCycle(anim, 0.2)
+   if anim then
+      self.animationsManager:playCycle(anim, 0.2)
+   end
    self.prevPos = self:getPose():getPos()
    --Fail safe timer that will call OnLanding if it's missing or already came before this coro's waitEvent
    if not self.fallTimer then
@@ -715,6 +717,7 @@ end
 
 function CNPC:talkToPlayer_start()
    getPlayer():startTalk(self)
+   self.animationsManager:playCycle(self.defaultAnimation)
    self:setState("activate", false)
    self:setState("inDialog", true)
    if self:isDialogInitiator() then
@@ -929,22 +932,8 @@ function CNPC:startTalk(char)
    return true
 end
 
-function CNPC:isTalkAnimAllowed()
-   if self._talkAllowed ~= nil then
-      return self._talkAllowed
-   end
-   self._talkAllowed = true
-   local weapon = self:getWeaponSlotItem()
-   if tablex.search(self.style.attachments or {}, "item_slot1") or (weapon and weapon:getItemName() ~= "hand_to_hand.wpn") then
-      self._talkAllowed = false
-   end
-   return self._talkAllowed
-end
-
 function CNPC:onStartMessage(animation)
-   if not (self:isOrientAllowedFor(self.defaultAnimation) and
-            self:isTalkAnimAllowed() and
-            self:getState("orientateToPlayer")) then
+   if not (self:isOrientAllowedFor(self.defaultAnimation) and self:getState("orientateToPlayer")) then
       return
    end
 
@@ -1120,8 +1109,7 @@ function CNPC:OnSaveState(state)
    end
 
    state.talkForbidden = self:getState("talkForbidden")
-
-   state.knockout = self:getState("knockout")
+   state.knockoutBeforeDeath = self:getState("knockoutBeforeDeath")
 
    state.defaultAnimation = self.defaultAnimation
 
@@ -1158,7 +1146,7 @@ function CNPC:OnLoadState(state)
    end
 
    self:setState("talkForbidden", state.talkForbidden)
-   self:setState("knockout", state.knockout)
+   self:setState("knockoutBeforeDeath", state.knockoutBeforeDeath)
 
    self.navigator:OnLoadState(state)
 end

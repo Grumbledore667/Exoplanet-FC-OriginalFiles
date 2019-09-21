@@ -343,6 +343,7 @@ function WeatherSystem:changeWeather()
    self:changeWeatherByTags(tags)
 end
 
+---Filter effects with tags that are a subset of our tags or vice versa
 function WeatherSystem:findEffects(tags, effectsList)
    local effects = {}
 

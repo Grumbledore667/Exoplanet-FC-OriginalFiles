@@ -120,19 +120,19 @@ function CItemGenerator:getLootTable()
 end
 
 function CItemGenerator:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+
    state.visible = self:getVisible()
-   state.interactor = self.interactor:getRaycastActive()
    state.activated = self.activated
 end
 
 function CItemGenerator:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+
    if state.visible then
       self:setVisible(true)
    else
       self:setVisible(false)
-   end
-   if state.interactor ~= nil then
-      self.interactor:setRaycastActive(state.interactor)
    end
    self.activated = state.activated
 end

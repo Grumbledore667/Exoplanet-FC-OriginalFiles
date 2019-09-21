@@ -174,6 +174,41 @@ local MiscLabels =
          eng = "Electric Shock",
       },
    },
+   ["lock1"] =
+   {
+      label =
+      {
+         eng = "very easy",
+      },
+   },
+   ["lock2"] =
+   {
+      label =
+      {
+         eng = "easy",
+      },
+   },
+   ["lock3"] =
+   {
+      label =
+      {
+         eng = "medium",
+      },
+   },
+   ["lock4"] =
+   {
+      label =
+      {
+         eng = "hard",
+      },
+   },
+   ["lock5"] =
+   {
+      label =
+      {
+         eng = "very hard",
+      },
+   },
 }
 
 local ItemQualityLabels = {

@@ -11,15 +11,6 @@ local tools = {}
 test(testingHelpers.getEventsHandlerSimpleLogger(_G.log), tools)
 
 local Node = require "ai.Node"
-local Action = require "ai.Action"
-local AnimatedAction = require "ai.AnimatedAction"
-local CoroutineAction = require "ai.CoroutineAction"
-local Finisher = require "ai.Finisher"
-local Decorator = require "ai.Decorator"
-local DynamicGuardSelector = require "ai.DynamicGuardSelector"
-local TimeLimiter = require "ai.TimeLimiter"
-local Sequence = require "ai.Sequence"
-local ConditionNode = require "ai.ConditionNode"
 local NodeState = require "ai.NodeState"
 
 local function callCount(spiedFunction)
@@ -67,7 +58,8 @@ end)
 test("ai.Action finish_function", function()
    local ok, eq, spy = tools.ok, tools.eq, tools.spy
 
-   local node = Action{
+   local node = Node{
+      className = "Action",
       name = "test action",
       finish_function = spy(),
       entity = {},
@@ -86,7 +78,8 @@ end)
 test("ai.Action guarded finish_function", function()
    local ok, eq, spy = tools.ok, tools.eq, tools.spy
 
-   local guard = ConditionNode{
+   local guard = Node{
+      className = "ConditionNode",
       name = "test guard",
       condition = function()
          return false
@@ -94,7 +87,8 @@ test("ai.Action guarded finish_function", function()
       entity = {},
    }
 
-   local node = Action{
+   local node = Node{
+      className = "Action",
       name = "test action",
       finish_function = spy(),
       entity = {},
@@ -114,7 +108,8 @@ end)
 test("ai.AnimatedAction finish_function", function()
    local ok, eq, spy = tools.ok, tools.eq, tools.spy
 
-   local node = AnimatedAction{
+   local node = Node{
+      className = "AnimatedAction",
       name = "test animated action",
       animation = "test",
       finish_function = spy(),
@@ -137,7 +132,8 @@ end)
 test("ai.CoroutineAction finish_function", function()
    local ok, eq, spy = tools.ok, tools.eq, tools.spy
 
-   local node = CoroutineAction{
+   local node = Node{
+      className = "CoroutineAction",
       name = "test coroutine action",
       running_function = function() end,
       finish_function = spy(),
@@ -159,13 +155,15 @@ test("ai.Finisher finish_function", function()
 
    local finisher_ff, action_ff = spy(), spy()
 
-   local action = Action{
+   local action = Node{
+      className = "Action",
       name = "test action",
       finish_function = action_ff,
       entity = testingHelpers.mockCallable,
    }
 
-   local finisher = Finisher{
+   local finisher = Node{
+      className = "Finisher",
       name = "test finisher",
       finish_function = finisher_ff,
       entity = testingHelpers.mockCallable,
@@ -188,7 +186,8 @@ test("bug: decorator causes action with failed guard to call finish_function", f
 
    local action_ff = spy()
 
-   local condition = ConditionNode{
+   local condition = Node{
+      className = "ConditionNode",
       name = "failing condition",
       entity = {},
       condition = function()
@@ -196,14 +195,16 @@ test("bug: decorator causes action with failed guard to call finish_function", f
       end,
    }
 
-   local action = Action{
+   local action = Node{
+      className = "Action",
       name = "test action",
       guard = condition,
       finish_function = action_ff,
       entity = testingHelpers.mockCallable,
    }
 
-   local decorator = Decorator{
+   local decorator = Node{
+      className = "Decorator",
       name = "test decorator",
       entity = testingHelpers.mockCallable,
       child = action,
@@ -222,7 +223,8 @@ test("bug: sequence causes action with failed guard to call finish_function", fu
 
    local action_ff = spy()
 
-   local condition = ConditionNode{
+   local condition = Node{
+      className = "ConditionNode",
       name = "failing condition",
       entity = {},
       condition = function()
@@ -230,14 +232,16 @@ test("bug: sequence causes action with failed guard to call finish_function", fu
       end,
    }
 
-   local action = Action{
+   local action = Node{
+      className = "Action",
       name = "test action",
       guard = condition,
       finish_function = action_ff,
       entity = testingHelpers.mockCallable,
    }
 
-   local sequence = Sequence{
+   local sequence = Node{
+      className = "Sequence",
       name = "test sequence",
       entity = testingHelpers.mockCallable,
       children = {
@@ -258,12 +262,12 @@ test("bug: TimeLimiter doesn't call child's finisher when terminating child", fu
    local ok, eq, spy = tools.ok, tools.eq, tools.spy
    local action_ff = spy()
 
-   local timeLimiter = TimeLimiter{
+   local timeLimiter = Node{
+      className = "TimeLimiter",
       name = "interrupter",
       seconds = 1,
       entity = {},
       start = function(self)
-         Decorator.start(self)
          self.timer = {
             -- in this test the function is only gonna be called twice so we can use coroutine.wrap like so
             getTimeLeft = coroutine.wrap(function()
@@ -274,7 +278,8 @@ test("bug: TimeLimiter doesn't call child's finisher when terminating child", fu
             end)
          }
       end,
-      child = Action{
+      child = Node{
+         className = "Action",
          name = "test action",
          entity = testingHelpers.mockCallable,
          running_function = true,
@@ -294,10 +299,12 @@ end)
 test("bug: Decorator doesn't call own finish on reset during running", function()
    local ok, eq, spy = tools.ok, tools.eq, tools.spy
 
-   local decorator = Decorator{
+   local decorator = Node{
+      className = "Decorator",
       name = "testdeco",
       entity = {},
-      child = Action{
+      child = Node{
+         className = "Action",
          name = "test action",
          entity = testingHelpers.mockCallable,
          running_function = true,
@@ -320,28 +327,32 @@ test("bug: DynamicGuardSelector gap between children", function()
 
    local state1, state2 = false, false
 
-   local g1 = ConditionNode{
+   local g1 = Node{
+      className = "ConditionNode",
       name = "g1",
       entity = {},
       condition = function()
          return state1
       end
    }
-   local a1 = Action{
+   local a1 = Node{
+      className = "Action",
       name = "a1",
       entity = {},
       running_function = true,
    }
    a1:addGuard(g1)
 
-   local g2 = ConditionNode{
+   local g2 = Node{
+      className = "ConditionNode",
       name = "g2",
       entity = {},
       condition = function()
          return state2
       end
    }
-   local a2 = Action{
+   local a2 = Node{
+      className = "Action",
       name = "a2",
       entity = {},
       running_function = true,
@@ -351,13 +362,15 @@ test("bug: DynamicGuardSelector gap between children", function()
    }
    a2:addGuard(g2)
 
-   local a3 = Action{
+   local a3 = Node{
+      className = "Action",
       name = "a3",
       entity = {},
       running_function = true,
    }
 
-   local root = DynamicGuardSelector{
+   local root = Node{
+      className = "DynamicGuardSelector",
       name = "root",
       entity = {},
       blackboard = {},

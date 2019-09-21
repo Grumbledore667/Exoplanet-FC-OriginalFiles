@@ -7,15 +7,15 @@ local obj1 = {
 	["hidden"] = false;
 	["logs"] = {
 		["Done"] = "That was a massacre. Anyways, the cave is now safer to go through and I can continue my journey. I could get something as a reward from the people who'd be happy to hear this.";
-		["Finish"] = "Old Outcast was happy to hear that now no scalp hunters will bother the exiles and rewarded me with some ammo.";
+		["Finish"] = "The Herbalist was happy to hear that now no scalp hunters will bother the exiles and rewarded me with some ammo.";
 		["HaveShrooms"] = "I've got five shrooms. Now I have to find some bughill vents and put them in.";
 		["Knowledge"] = "I should be happy that the old aborigine has such an excellent memory! He gave me a valuable hint on the scalphunter cave's layout. There must be a long stone gallery running alongside one of the cave's walls. This dim and cold place will be ideal for sneaking up to the camp.";
-		["Nature1"] = "Old Outcast has told me that I can use natural environment to defeat the scalp hunters. I must find some poisonous stinky mushrooms and stuff them in the bitebug hive vents in the cave close to the place where the savages have settled. Presumably this will enrage bitegugs and they will attack the scalp hunters in a big swarm.";
+		["Nature1"] = "The Herbalist has told me that I can use natural environment to defeat the scalp hunters. I must find some poisonous stinky mushrooms and stuff them in the bitebug hive vents in the cave close to the place where the savages have settled. Presumably this will enrage bitegugs and they will attack the scalp hunters in a big swarm.";
 		["Nature2"] = "Stinky mushrooms could be found in moist places with lots of organic waste. Old Exile knows one such place in the anomaly zone: I must go down the valley to the lake and turn right just before I hit the water, then follow the rock wall. There should be a cave entrance overgrown with some blue plants.";
 		["Nature3"] = "In that cave I should navigate carefully in order to avoid explosion of the ripe mushrooms. They react to vibration in certain radius but won't explode immediately, so my best chance is to walk slowly or crouch and watch out for the shrooms reaction. I must find some of the small unripe shrooms and break their protective cages with a knife or other melee weapon. Half a dozen of those should be enough.";
 		["PlacedShrooms"] = "I placed the shrooms. I need to find a safe spot and enjoy the view.";
 		["ScalphuntersKilled"] = "I got rid of the scalp hunters on my own and maybe can get some rewards from the people that might be happy to hear that. Anyways, I can finally leave this forsaken limbo.";
-		["Sneaking1"] = "Infiltrating the camp of the scalp hunters might not be so easy in my current condition, but Old Outcast conveniently recalled that there is a second entrance to the big cave. If I want to use it, I must turn right once I leave the old abori's hideout and hug the right stone wall.";
+		["Sneaking1"] = "Infiltrating the camp of the scalp hunters might not be so easy in my current condition, but the Herbalist conveniently recalled that there is a second entrance to the big cave. If I want to use it, I must turn right once I leave the old abori's hideout and hug the right stone wall.";
 		["Sneaking2"] = "I must proceed until I reach some old bug hives in a niche in the rock wall. Between the hives there should be a narrow pass that leads to a series of ledges facing to the desert. At the other side of that opening I should find the second entrance to the scalphunters cave. It Is unlikely that It will be well guarded but I must keep my eyes peeled and be prepared to neutralize any stray scalphunters fast and quietly.";
 	};
 	["nodes"] = {
@@ -101,7 +101,7 @@ end\
 			["posY"] = 240;
 			["script"] = "";
 			["targetsAll"] = "";
-			["targetsAny"] = "old_outcast_trick";
+			["targetsAny"] = "herbalist_trick";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -157,14 +157,14 @@ end\
 			["posX"] = -330;
 			["posY"] = 600;
 			["script"] = "function Condition:onCheck(name, obj)\
-   self:setTopicVisible(\"old_outcast_knowledge\", false)\
+   self:setTopicVisible(\"herbalist_knowledge\", false)\
    self:writeLog(\"Knowledge\")\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "old_outcast_knowledge";
+			["targetsAny"] = "herbalist_knowledge";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -176,7 +176,7 @@ end\
 			["posX"] = -90;
 			["posY"] = 600;
 			["script"] = "function Condition:onCheck(name, obj)\
-   self:setTopicVisible(\"old_outcast_sneaking\", false)\
+   self:setTopicVisible(\"herbalist_sneaking\", false)\
    self:writeLog(\"Sneaking1\")\
    self:writeLog(\"Sneaking2\")\
    return true\
@@ -184,7 +184,7 @@ end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "old_outcast_sneaking";
+			["targetsAny"] = "herbalist_sneaking";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -196,7 +196,7 @@ end\
 			["posX"] = 150;
 			["posY"] = 600;
 			["script"] = "function Condition:onCheck(name, obj)\
-   self:setTopicVisible(\"old_outcast_nature\", false)\
+   self:setTopicVisible(\"herbalist_nature\", false)\
    self:writeLog(\"Nature1\")\
    self:writeLog(\"Nature2\")\
    self:writeLog(\"Nature3\")\
@@ -205,7 +205,7 @@ end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "old_outcast_nature";
+			["targetsAny"] = "herbalist_nature";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -218,14 +218,14 @@ end\
 			["posX"] = 1680;
 			["posY"] = 240;
 			["script"] = "function Condition:onCheck(name, obj)\
-   self:setTopicVisible(\"old_outcast_about_scalpers\", false)\
+   self:setTopicVisible(\"herbalist_about_scalpers\", false)\
    self:writeLog(\"Finish\")\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "old_outcast_finish";
+			["targetsAny"] = "herbalist_finish";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -243,7 +243,7 @@ end\
    self:setParam(\"scalphunters_killed\", count)\
    if count >= 9 or isDebug(\"quest\") then\
       self:writeLog(\"ScalphuntersKilled\")\
-      self:setTopicVisible(\"old_outcast_about_scalpers_alt\", true)\
+      self:setTopicVisible(\"herbalist_about_scalpers_alt\", true)\
       self:setTopicVisible(\"big_hat_reward_alt\", true)\
       return true\
    end\
@@ -287,7 +287,7 @@ function Step:onStart()\
    disableObject(self.wait_act_1)\
    disableObject(self.wait_act_2)\
    self:writeLog(\"Done\")\
-   self:setTopicVisible(\"old_outcast_finish\", true)\
+   self:setTopicVisible(\"herbalist_finish\", true)\
    self:setTopicVisible(\"big_hat_reward\", true)\
 end\
 \
@@ -386,8 +386,8 @@ end\
 end\
 \
 function Step:onStart()\
-   self:setTopicVisible(\"old_outcast_trick\", false)\
-   self:setTopicVisible(\"old_outcast_about_scalpers\", true)\
+   self:setTopicVisible(\"herbalist_trick\", false)\
+   self:setTopicVisible(\"herbalist_about_scalpers\", true)\
    if hasPlayerItem(\"shroom_grenade.itm\", 5) then\
       self:goToStep(\"got_shrooms\")\
    end\
@@ -427,13 +427,13 @@ end";
 	["script"] = "function Quest:onCreate()\
    self:setParam(\"vents_poisoned\", 0)\
    self:setParam(\"despawned\", 0)\
-   self:setTopicVisible(\"old_outcast_trick\", false)\
-   self:setTopicVisible(\"old_outcast_knowledge\", true) --these three are hidden by _trick\
-   self:setTopicVisible(\"old_outcast_sneaking\", true)\
-   self:setTopicVisible(\"old_outcast_nature\", true)\
-   self:setTopicVisible(\"old_outcast_about_scalpers\", false)\
-   self:setTopicVisible(\"old_outcast_about_scalpers_alt\", false)\
-   self:setTopicVisible(\"old_outcast_finish\", false)\
+   self:setTopicVisible(\"herbalist_trick\", false)\
+   self:setTopicVisible(\"herbalist_knowledge\", true) --these three are hidden by _trick\
+   self:setTopicVisible(\"herbalist_sneaking\", true)\
+   self:setTopicVisible(\"herbalist_nature\", true)\
+   self:setTopicVisible(\"herbalist_about_scalpers\", false)\
+   self:setTopicVisible(\"herbalist_about_scalpers_alt\", false)\
+   self:setTopicVisible(\"herbalist_finish\", false)\
    self:setTopicVisible(\"big_hat_reward\", false)\
    self:setTopicVisible(\"big_hat_reward_alt\", false)\
    self:setTopicVisible(\"big_hat_about_scalpers\", true)\
@@ -454,7 +454,7 @@ end";
    self:declareVar(\"wait_act_2\", \"q_angry_bugs_wait_2\")\
    --through dialog\
    --big_hat gives flare/scamp/revolver ammo and junk tier 2 clothes\
-   --old_outcast gives a bit more flare/scamp/revolver ammo\
+   --herbalist gives a bit more flare/scamp/revolver ammo\
 \
    local kill_requires = {}\
    for i=1,10 do\
@@ -465,14 +465,14 @@ end";
 end\
 \
 function Quest:onStart()\
-   self:setTopicVisible(\"old_outcast_trick\", true)\
+   self:setTopicVisible(\"herbalist_trick\", true)\
    if hasPlayerItem(\"stink_shroom.itm\", 2) then\
       self:goToStep(\"got_shrooms\")\
    end\
 end\
 \
 function Quest:onFinish()\
-   self:setTopicVisible(\"old_outcast_trick\", false)\
+   self:setTopicVisible(\"herbalist_trick\", false)\
 end\
 \
 function Quest:OnLoadState()\

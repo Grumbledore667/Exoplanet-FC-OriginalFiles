@@ -66,32 +66,25 @@ function CHint:OnInteractHighlightBegin(char)
 end
 
 function CHint:enable()
-   self.enabled = true
+   CReadable.enable(self)
+
    self.interactor:setTriggerActive(self.enabled)
-   self.interactor:setRaycastActive(self.enabled)
 end
 
 function CHint:disable()
-   self.enabled = false
-   self.interactor:setTriggerActive(self.enabled)
-   self.interactor:setRaycastActive(self.enabled)
-end
+   CReadable.disable(self)
 
-function CHint:isEnabled()
-   return self.enabled
+   self.interactor:setTriggerActive(self.enabled)
 end
 
 function CHint:OnSaveState(state)
-   state.enabled = self:isEnabled()
+   CReadable.OnSaveState(self, state)
+
    state.interactorHighlightRadius = self.interactor:getRaycastRadius()
 end
 
 function CHint:OnLoadState(state)
-   if state.enabled then
-      self:enable()
-   elseif state.enabled == false then
-      self:disable()
-   end
+   CReadable.OnLoadState(self, state)
 
    if state.interactorHighlightRadius then
       self.interactor:setRaycastRadius(state.interactorHighlightRadius)

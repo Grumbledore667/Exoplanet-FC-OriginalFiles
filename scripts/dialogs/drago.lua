@@ -55,6 +55,8 @@ end\
 		["text"] = "We don't let your kind in here. But...";
 		["time"] = 5;
 		["topic"] = "to_fort:guards_bad_attire";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00010"] = {
@@ -66,6 +68,8 @@ end\
 		["text"] = "A well-dressed traveller is always welcome.";
 		["time"] = 4;
 		["topic"] = "to_fort:finish";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00012"] = {
@@ -99,6 +103,8 @@ end\
 		["text"] = "Hey!";
 		["time"] = 1.5;
 		["topic"] = "to_fort:guards_check_attire";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00019"] = {
@@ -111,6 +117,8 @@ end\
 		["text"] = "Hello there...";
 		["time"] = 2;
 		["topic"] = "to_fort:guards_start";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00020"] = {
@@ -153,6 +161,8 @@ end\
 		["text"] = "\\[Give 1000 antigravium]Here.";
 		["time"] = 2.5;
 		["topic"] = "to_fort:guards_bribe";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00024"] = {
@@ -198,6 +208,8 @@ end\
 		["text"] = "You heard it.";
 		["time"] = 2.5;
 		["topic"] = "to_fort:guards_about_bribe";
+		["topic_check_visible"] = false;
+		["topic_fire_event"] = "onStart";
 		["type"] = "message";
 	};
 	["message_00031"] = {
@@ -382,6 +394,7 @@ end\
 		["script"] = "local random = require \"random\"\
 function message:onStart()\
    self:setParam(\"SayRandom\", random.random(6))\
+   log(self:getParam(\"SayRandom\"))\
 end\
 \
 function message:onStop()\
@@ -472,7 +485,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return self:getParam(\"SayRandom\") == 6\
+   return self:getParam(\"SayRandom\") == 5\
 end\
 \
 ";
@@ -493,7 +506,7 @@ function message:onStop()\
 end\
 \
 function message:isVisible()\
-   return self:getParam(\"SayRandom\") == 7\
+   return self:getParam(\"SayRandom\") == 6\
 end\
 \
 ";
@@ -525,6 +538,7 @@ end\
 	["message_00061"] = {
 		["ID"] = 61;
 		["actor"] = 2;
+		["connectID"] = 36;
 		["posX"] = 2670;
 		["posY"] = 1110;
 		["script"] = "";

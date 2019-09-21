@@ -357,6 +357,23 @@ itemsLists.tradeLists =
       ["lager.itm"]                     = 20,
       ["porter.itm"]                    = 20,
    },
+   ["ragpicker_trade_whitelist"] =
+   {
+      "antigravium_shards.itm",
+      "antigravium.itm",
+      "attire_all",
+   },
+   ["ragpicker_trade_inventory"] = {
+      ["antigravium_shards.itm"]        = 500,
+      ["bandana_black.itm"]             = 1,
+      ["nomad_goggles.itm"]             = 1,
+      ["boonie_hat.itm"]                = 1,
+      ["farmer_1_hat.itm"]              = 1,
+      ["farmer_1_jacket.itm"]           = 1,
+      ["farmer_1_pants.itm"]            = 1,
+      ["junk_legs_1.itm"]               = 1,
+      ["junk_top_1.itm"]                = 1,
+   },
    ["zaba_the_sweet_talker_trade_whitelist"] =
    {
       "antigravium_shards.itm",
@@ -543,6 +560,38 @@ itemsLists.tradeLists =
       ["good_flaregun.tmpl"]     = 1,
       ["good_shotgun_3.tmpl"]    = 1,
    },
+   ["shady_abori_trade_whitelist"] =
+   {
+      "antigravium_shards.itm",
+      "antigravium.itm",
+      "lockpick_mechanical.itm",
+      "lockpick_digital.itm",
+      "absinthe.itm",
+      "whiskey.itm",
+   },
+   ["shady_abori_trade_inventory"] = {
+      ["antigravium_shards.itm"]  = 400,
+      ["lockpick_mechanical.itm"] = 30,
+      ["lockpick_digital.itm"] = 20,
+      ["absinthe.itm"] = 4,
+      ["whiskey.itm"]  = 3,
+   },
+   ["sand_flea_trade_whitelist"] =
+   {
+      "antigravium_shards.itm",
+      "antigravium.itm",
+      "lockpick_mechanical.itm",
+      "dirty_water_bottle.itm",
+      "joint.itm",
+   },
+   ["sand_flea_trade_inventory"] = {
+      ["antigravium_shards.itm"]  = 80,
+      ["lockpick_mechanical.itm"] = 20,
+      ["dirty_water_bottle.itm"]  = 3,
+      ["joint.itm"]               = 2,
+      ["abori_knife.wpn"]         = 1,
+      ["machete.wpn"]             = 1,
+   },
    ["kwagga_trade_whitelist"] =
    {
       "antigravium_shards.itm",
@@ -558,6 +607,8 @@ itemsLists.tradeLists =
       "melon.itm",
       "pure_water_bottle.itm",
       "dirty_water_bottle.itm",
+      "lockpick_digital.itm",
+      "lockpick_mechanical.itm",
    },
    ["kwagga_trade_inventory"] = {
       ["antigravium_shards.itm"] = 1000,
@@ -582,6 +633,8 @@ itemsLists.tradeLists =
       ["booze.itm"]              = 5,
       ["beer.itm"]               = 4,
       ["good_machete.tmpl"]      = 1,
+      ["lockpick_digital.itm"]   = 4,
+      ["lockpick_mechanical.itm"]= 7,
    },
    ["msasi_trade_whitelist"] =
    {

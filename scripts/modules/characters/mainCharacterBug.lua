@@ -245,6 +245,9 @@ function CMainCharacterBug:stopControlObject(killOriginal)
    end
 
    self.ownerPlayer:onStopControlObject()
+
+   self.ownerPlayer:addInstallation(self.controlledOriginal)
+   self.controlledOriginal:setInstaller(self.ownerPlayer)
 end
 
 function CMainCharacterBug:hit(damage, charAttacker)

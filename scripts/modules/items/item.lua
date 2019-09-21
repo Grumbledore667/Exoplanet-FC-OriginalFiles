@@ -352,8 +352,16 @@ function CItem:OnActivate()
    self:runAction()
    self:playSound("activate", true)
    if self:isMessage() then
-      gameplayUI.messageUI:showItem(true, self:getItemName())
-      questSystem:fireEvent("read", self.name, self)
+      if self:canReadMessage() then
+         gameplayUI.messageUI:showItem(true, self:getItemName())
+         questSystem:fireEvent("read", self.name, self)
+      else
+         local char = self.owner.owner
+         if not char:getState("resting") then
+            char.animationsManager:playActionExclusively("dl_shrug_short")
+         end
+         gameplayUI:showInfoTextEx("Can't read this", "minor", "")
+      end
    elseif self:isMap() then
       if gameplayUI.mapUI.currentMapItemName == self:getItemName() then
          gameplayUI.gameplayMenuUI:toggleTab("Map")
@@ -554,6 +562,10 @@ function CItem:isMessage()
    return ItemsData.isItemMessage(self.name)
 end
 
+function CItem:canReadMessage()
+   return ItemsData.canReadItemMessage(self:getItemName())
+end
+
 function CItem:isItemContainer()
    return ItemsData.isItemContainer(self.name)
 end
@@ -610,6 +622,10 @@ function CItem:setCooldown(cooldown)
    self.cooldown = cooldown
 end
 
+function CItem:getLockDamage()
+   return ItemsData.getItemLockDamage(self.name, self:getQuality())
+end
+
 function CItem:getMessage()
    return ItemsData.getItemMessage(self.name)
 end
@@ -652,6 +668,10 @@ end
 
 function CItem:isQuestItem()
    return ItemsData.isItemQuestItem(self.name)
+end
+
+function CItem:isKey()
+   return ItemsData.isItemKey(self:getItemName())
 end
 
 return {CItem=CItem}

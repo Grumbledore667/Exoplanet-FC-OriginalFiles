@@ -88,6 +88,8 @@ function CSenseScheduler:addDistanceSense(senseName, entity, paramName)
          obj = self:getCurEnemy()
       elseif entity == "player" then
          obj = getPlayer()
+      elseif entity == "mainCharacter" then
+         obj = getMC()
       end
 
       if not obj then

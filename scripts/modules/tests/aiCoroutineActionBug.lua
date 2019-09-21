@@ -10,8 +10,7 @@ testingHelpers.assureMockRng()
 local tools = {}
 test(testingHelpers.getEventsHandlerSimpleLogger(_G.log), tools)
 
-local CoroutineAction = require "ai.CoroutineAction"
-local BehaviorTree = require "ai.BehaviorTree"
+local Node = require "ai.Node"
 local CEventManager = require "eventManager"
 local coro = require "coroutines.helpers"
 
@@ -36,7 +35,8 @@ test("ai.CoroutineAction event in finish_function bug", function()
    local allowed_func = spy()
    local forbidden_func = spy()
 
-   local coro_action = CoroutineAction{
+   local coro_action = Node {
+      className = "CoroutineAction",
       name = "test coroutine action",
       running_function = function()
          allowed_func()
@@ -48,7 +48,8 @@ test("ai.CoroutineAction event in finish_function bug", function()
       end,
       entity = entity,
    }
-   local root = BehaviorTree{
+   local root = Node {
+      className = "BehaviorTree",
       name = "test root",
       child = coro_action,
       entity = entity,

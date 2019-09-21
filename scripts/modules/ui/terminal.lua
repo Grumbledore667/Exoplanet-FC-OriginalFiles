@@ -259,17 +259,15 @@ function api.onJobAccept(args)
       local quest = getQuest(questName)
       if quest then
          if not quest:isStarted() then
-            --log("starting" .. quest.name)
-            quest:start()
+            questSystem:fireEvent("discuss", questName .. ":terminal_start")
             api.acceptElement()
          elseif quest:isTerminalFinished() then
-            -- questSystem:fireEvent("finish", "")
-            quest:finish()
+            questSystem:fireEvent("discuss", questName .. ":terminal_finish")
             api.clickElement()
          else
             api.denyElement()
          end
-         api.updateJobDetails()
+         runTimerAdv(0, false, runTimerAdv, 0, false, api.updateJobDetails)
       end
    end
 end

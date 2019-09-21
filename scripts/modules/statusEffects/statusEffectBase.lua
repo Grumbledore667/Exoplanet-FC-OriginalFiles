@@ -42,7 +42,7 @@ function CStatusEffectBase:__new(members)
 end
 
 function CStatusEffectBase:init()
-   if self.params.duration then
+   if self.params.duration or self.params.timeLeft then
       --Enables you to have an instance with X duration and Y timeLeft
       self.params.timeLeft = (self.params.timeLeft or self.params.duration) * 100 --Counting in miliseconds removes floating point problems
       --TODO:FIXME: Make it use CTime
@@ -319,6 +319,7 @@ function CStatusEffectBase:OnSaveState(state)
    state.name = self:getName()
    if self.params.timeLeft then
       state.timeLeft = self.params.timeLeft / 100
+      state.duration = self.params.duration
    end
 end
 

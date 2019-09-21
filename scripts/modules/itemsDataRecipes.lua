@@ -7,6 +7,7 @@ api.decompose =
    ["decompose_beacon.itm"]           = { ["beacon_base.itm"] = 1, ["beacon_leaf.itm"] = 1, ["beacon_light.wpn"] = 1 },
    ["decompose_alien_cactus_bat.wpn"] = { ["firewood.itm"] = 1, ["cactus_head.itm"] = 1 },
    ["decompose_wooden_bat.wpn"]       = { ["firewood.itm"] = 1 },
+   ["decompose_antigravium_bait.itm"] = { ["antigravium.itm"] = 1 },
 }
 
 api.compose =

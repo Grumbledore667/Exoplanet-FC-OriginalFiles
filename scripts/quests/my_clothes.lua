@@ -4,6 +4,8 @@ local multiRefObjects = {
 } -- multiRefObjects
 local obj1 = {
 	["description"] = "While I was unconscious, greeting this \"beautiful\" planet with my face, some morons stole my hat, my jacket and even my pants! I have to get them back or at least punish the ones responsible for my current \"birthday suit\".";
+	["group_indices"] = {
+	};
 	["hidden"] = true;
 	["logs"] = {
 		["BoughtPants"] = "I bought back my pants.";
@@ -17,12 +19,13 @@ local obj1 = {
 		["IAttackedRagpicker"] = "I decided to attack Ragpicker on sight. ";
 		["IProvokedRagpicker"] = "I provoked Ragpicker to attack. It's time to teach him a lesson.";
 		["KilledTrader"] = "I've killed Ragpicker. He's got what he deserved: if you don't want to play fair and rip off robbery victims by selling them their own stuff overpriced, get some muscles to back you up first.";
+		["KnockoutTrader"] = "I knocked out Ragpicker... Hope nobody else steps in between me and my stuff.";
 		["LootersFought"] = "I got into a fight with them.";
 		["LootersFound"] = "I found a pair of looters who supposedly stole my stuff - they were beating the living shit out of another victim.";
 		["LootersOutrun"] = "I provoked the bandits and outran them.";
 		["LootersScared"] = "I persuaded them with the help of a flare gun I found earlier.";
 		["NoHat"] = "Though I have to find that guy later to get my hat back. Then I'll be ready.";
-		["RagpickerAttackedMe"] = "Ragpicker attacked me. ";
+		["RagpickerAttackedMe"] = "I tried to take my clothes and Ragpicker attacked me. ";
 		["StolePants"] = "I stole my pants from the Ragpicker's shop. Don't have any regrets: stealing from thieves is not a crime.";
 		["StoleShirt"] = "I stole my shirt from the so called shop in the outcasts village.";
 	};
@@ -40,12 +43,10 @@ local obj1 = {
 end\
 \
 function Step:onStart()\
-   local bandit1 = getObj(self.bandit_1)\
-   local bandit2 = getObj(self.bandit_2)\
-   bandit1:setDefaultAnimation(\"idle\")\
-   bandit1:setAttitudeToMainCharacter(\"ENEMY\")\
-   bandit2:setAttitudeToMainCharacter(\"ENEMY\")\
-   bandit2:setDialogInitiator(false)\
+   self.objects.bandit_1:setDefaultAnimation(\"idle\")\
+   self.objects.bandit_1:setAttitudeToMainCharacter(\"ENEMY\")\
+   self.objects.bandit_2:setAttitudeToMainCharacter(\"ENEMY\")\
+   self.objects.bandit_2:setDialogInitiator(false)\
 \
    self:writeLog(\"LootersFound\")\
    self:writeLog(\"LootersFought\")\
@@ -95,8 +96,8 @@ end\
 			["posY"] = 120;
 			["script"] = "function Condition:onCheck(name, obj)\
    --Aggro both\
-   getObj(self.bandit_1).senseScheduler:addEnemy(getMC())\
-   getObj(self.bandit_2).senseScheduler:addEnemy(getMC())\
+   self.objects.bandit_1.senseScheduler:addEnemy(getMC())\
+   self.objects.bandit_2.senseScheduler:addEnemy(getMC())\
    return true\
 end\
 \
@@ -115,10 +116,9 @@ end\
 			["posY"] = 510;
 			["script"] = "function Condition:onCheck(name, obj)\
    hideObject(self.shirt_act)\
-   local ragpicker = getObj(self.ragpicker)\
-   if ragpicker:getState(\"dead\") then\
+   if self.objects.ragpicker:getState(\"dead\") then\
       self:writeLog(\"GotShirt\")\
-   elseif ragpicker:getState(\"inDialog\") then\
+   elseif self.objects.ragpicker:getState(\"inDialog\") then\
       self:writeLog(\"BoughtShirt\")\
    else\
       self:writeLog(\"StoleShirt\")\
@@ -141,7 +141,7 @@ end\
 			["posY"] = 780;
 			["script"] = "function Condition:onCheck(name, obj)\
    if not self:getParam(\"FoundClothes\")\
-      and not getObj(self.ragpicker):getState(\"dead\") then\
+      and not self.objects.ragpicker:getState(\"dead\") then\
       self:setParam(\"FoundClothes\", true)\
       self:writeLog(\"FoundClothes\")\
    end\
@@ -163,14 +163,23 @@ end\
 			["posX"] = 900;
 			["posY"] = 630;
 			["script"] = "function Condition:onCheck(name, obj)\
-   local ragpicker = getObj(self.ragpicker)\
-   if not ragpicker:getState(\"dead\") and not ragpicker:getState(\"inDialog\") then\
-      runTimer(0, nil, function()\
-         self.q:provokeTrader(\"stealing\")\
-      end, false)\
+   local ragpicker = self.objects.ragpicker\
+   if not ragpicker:getState(\"dead\") and not ragpicker:getState(\"knockout\") and not ragpicker:getState(\"inDialog\") then\
+      self.q:provokeTrader(\"stealing\")\
       gameplayUI.subtitlesUI:addSubtitle(\"I've warned you! Nobody robs me! Not anymore!\", 6, ragpicker, true)\
    end\
-   return true\
+   self:setTopicVisible(\"ragpicker_buy_all\", false)\
+   if name == \"q_my_clothes_shirt_dummy\" then\
+      self:setTopicVisible(\"ragpicker_buy_shirt\", false)\
+   elseif name == \"q_my_clothes_pants_dummy\" then\
+      self:setTopicVisible(\"ragpicker_buy_pants\", false)\
+   end\
+\
+   if self.objects.shirt_act.activated and self.objects.pants_act.activated then\
+      self:setTopicVisible(\"ragpicker_my_clothes\", false)\
+      self:setTopicVisible(\"ragpicker_scumbag\", false)\
+   end\
+   return false\
 end\
 \
 ";
@@ -215,9 +224,9 @@ end\
 			["posX"] = 360;
 			["posY"] = 1020;
 			["script"] = "function Condition:onCheck(name, obj)\
-   giveItemFromPlayerTo(\"antigravium_shards.itm\", getObj(self.ragpicker), self.price*2)\
-   getObj(self.shirt_act):activate()\
-   getObj(self.pants_act):activate()\
+   giveItemFromPlayerTo(\"antigravium_shards.itm\", self.objects.ragpicker, self.price*2)\
+   self.objects.shirt_act:activate()\
+   self.objects.pants_act:activate()\
    self:setTopicVisible(\"ragpicker_scumbag\", false)\
    self:setTopicVisible(\"big_hat_stolen_gear\", false)\
    return true\
@@ -237,10 +246,10 @@ end\
 			["posX"] = 630;
 			["posY"] = 1020;
 			["script"] = "function Condition:onCheck(name, obj)\
-   giveItemFromPlayerTo(\"antigravium_shards.itm\", getObj(self.ragpicker), self.price)\
+   giveItemFromPlayerTo(\"antigravium_shards.itm\", self.objects.ragpicker, self.price)\
    self:setTopicVisible(\"ragpicker_buy_all\", false)\
    self:setTopicVisible(\"ragpicker_buy_shirt\", false)\
-   getObj(self.shirt_act):activate()\
+   self.objects.shirt_act:activate()\
    if hasPlayerItem(\"spacer_pants.itm\") then\
       self:setTopicVisible(\"ragpicker_scumbag\", false)\
       self:setTopicVisible(\"big_hat_stolen_gear\", false)\
@@ -286,10 +295,10 @@ end\
 			["posX"] = 900;
 			["posY"] = 1020;
 			["script"] = "function Condition:onCheck(name, obj)\
-   giveItemFromPlayerTo(\"antigravium_shards.itm\", getObj(self.ragpicker), self.price)\
+   giveItemFromPlayerTo(\"antigravium_shards.itm\", self.objects.ragpicker, self.price)\
    self:setTopicVisible(\"ragpicker_buy_all\", false)\
    self:setTopicVisible(\"ragpicker_buy_pants\", false)\
-   getObj(self.pants_act):activate()\
+   self.objects.pants_act:activate()\
    if hasPlayerItem(\"spacer_jacket.itm\") then\
       self:setTopicVisible(\"ragpicker_scumbag\", false)\
       self:setTopicVisible(\"big_hat_stolen_gear\", false)\
@@ -303,25 +312,6 @@ end\
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
-		["condition_00025"] = {
-			["ID"] = 25;
-			["connectionsID"] = {
-			};
-			["event"] = "dead";
-			["posX"] = 1170;
-			["posY"] = 780;
-			["script"] = "function Condition:onCheck(name, obj)\
-   self:writeLog(\"KilledTrader\")\
-   self:setTopicVisible(\"big_hat_stolen_gear\", false)\
-   return true\
-end\
-\
-";
-			["targetsAll"] = "";
-			["targetsAny"] = "ragpicker";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
 		["condition_00026"] = {
 			["ID"] = 26;
 			["connectionsID"] = {
@@ -331,7 +321,7 @@ end\
 			["posY"] = -330;
 			["script"] = "function Condition:onCheck(name, obj)\
    self:writeLog(\"GotHat\")\
-   getObj(self.q.bandit_2):setupAppearance(\"q_my_clothes_bandit_2\")\
+   self.objects.bandit_2:setupAppearance(\"q_my_clothes_bandit_2\")\
    return true\
 end\
 \
@@ -350,10 +340,9 @@ end\
 			["posY"] = 660;
 			["script"] = "function Condition:onCheck(name, obj)\
    hideObject(self.pants_act)\
-   local ragpicker = getObj(self.ragpicker)\
-   if ragpicker:getState(\"dead\") then\
+   if self.objects.ragpicker:getState(\"dead\") then\
       self:writeLog(\"GotPants\")\
-   elseif ragpicker:getState(\"inDialog\") then\
+   elseif self.objects.ragpicker:getState(\"inDialog\") then\
       self:writeLog(\"BoughtPants\")\
    else\
       self:writeLog(\"StolePants\")\
@@ -375,8 +364,8 @@ end\
 			["posX"] = 630;
 			["posY"] = 780;
 			["script"] = "function Condition:onCheck(name, obj)\
-   local ragpicker = getObj(self.ragpicker)\
-   if not ragpicker:isEnemy(getMC()) then\
+   local ragpicker = self.objects.ragpicker\
+   if not ragpicker:isEnemy(getMC()) and not ragpicker:getState(\"knockout\") then\
       ragpicker:orientTo(getMC())\
       gameplayUI.subtitlesUI:addSubtitle(\"Don't try to steal anything, I'm watching you!\", 7, ragpicker)\
    end\
@@ -397,33 +386,14 @@ end\
 			["posX"] = 600;
 			["posY"] = -180;
 			["script"] = "function Condition:onCheck(name, obj)\
-   local bandit1 = getObj(self.bandit_1)\
-   bandit1:setDefaultAnimation(\"idle\")\
-   bandit1:orientTo(getMC())\
+   self.objects.bandit_1:setDefaultAnimation(\"idle\")\
+   self.objects.bandit_1:orientTo(getMC())\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
 			["targetsAny"] = "looters_talk";
-			["targetsCount"] = 1;
-			["type"] = "condition";
-		};
-		["condition_00033"] = {
-			["ID"] = 33;
-			["connectionsID"] = {
-			};
-			["event"] = "discuss";
-			["posX"] = 660;
-			["posY"] = 360;
-			["script"] = "function Condition:onCheck(name, obj)\
-   self:writeLog(\"NoHat\")\
-   return true\
-end\
-\
-";
-			["targetsAll"] = "";
-			["targetsAny"] = "bandit_2_no_hat";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -435,7 +405,6 @@ end\
 			["posX"] = 420;
 			["posY"] = 360;
 			["script"] = "function Condition:onCheck(name, obj)\
-   log(\"show_flare_gun\")\
    local player = getMC()\
    equipItemForPlayer(\"flaregun.gun\", player:getWeaponSlot(), false)\
    player.animationsManager:playCycle(\"pistol_idle_2\")\
@@ -458,19 +427,17 @@ end\
 			["posX"] = 1080;
 			["posY"] = 0;
 			["script"] = "function Condition:onCheck(name, obj)\
-   local bandit1 = getObj(self.bandit_1)\
-   local bandit2 = getObj(self.bandit_2)\
-   if not bandit1:getState(\"dead\") or not bandit2:getState(\"dead\") then\
+   if not self.objects.bandit_1:getState(\"dead\") or not self.objects.bandit_2:getState(\"dead\") then\
       self:writeLog(\"LootersOutrun\")\
       self:setParam(\"looters_outrun\", true)\
-      self:setTopicVisible(\"old_outcast_scared_looters\", true)\
+      self:setTopicVisible(\"herbalist_scared_looters\", true)\
    end\
    return true\
 end\
 \
 ";
 			["targetsAll"] = "";
-			["targetsAny"] = "old_outcast";
+			["targetsAny"] = "herbalist";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -487,8 +454,8 @@ end\
       return false\
    else\
       self:writeLog(\"DefeatedBandits\")\
-      self:setTopicVisible(\"old_outcast_killed_looters\", true)\
-      self:setTopicVisible(\"old_outcast_scared_looters\", false)\
+      self:setTopicVisible(\"herbalist_killed_looters\", true)\
+      self:setTopicVisible(\"herbalist_scared_looters\", false)\
       return true\
    end\
 end\
@@ -505,7 +472,7 @@ end\
 			};
 			["event"] = "turnAggressive";
 			["posX"] = 900;
-			["posY"] = 780;
+			["posY"] = 810;
 			["script"] = "function Condition:onCheck(name, obj)\
    self.q:provokeTrader(\"attack\")\
    return true\
@@ -514,6 +481,161 @@ end\
 ";
 			["targetsAll"] = "";
 			["targetsAny"] = "ragpicker";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00043"] = {
+			["ID"] = 43;
+			["connectionsID"] = {
+			};
+			["event"] = "discuss";
+			["posX"] = 1170;
+			["posY"] = 630;
+			["script"] = "function Condition:onCheck(name, obj)\
+   self.q:provokeTrader(\"talk\")\
+   return false\
+end\
+\
+";
+			["targetsAll"] = "";
+			["targetsAny"] = "ragpicker_provoke";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00044"] = {
+			["ID"] = 44;
+			["connectionsID"] = {
+			};
+			["event"] = "trigger_in";
+			["posX"] = -540;
+			["posY"] = 450;
+			["script"] = "function Condition:onCheck(name, obj)\
+   if not getMC():isInTrigger(obj) then return false end\
+   local ragpicker = self.objects.ragpicker\
+   if not ragpicker:getState(\"dead\") and not ragpicker:getState(\"knockout\") then\
+      ragpicker:setImmortality(\"protected\")\
+   end\
+   return false\
+end\
+\
+";
+			["supercondition"] = true;
+			["targetsAll"] = "";
+			["targetsAny"] = "var:ragpicker_arena_trigger";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00045"] = {
+			["ID"] = 45;
+			["connectionsID"] = {
+			};
+			["event"] = "trigger_out";
+			["posX"] = -540;
+			["posY"] = 660;
+			["script"] = "function Condition:onCheck(name, obj)\
+   if getMC():isInTrigger(obj) then return false end\
+   if getMC():isInTrigger(self.objects.ragpicker_arena_trigger_2) then return false end\
+   local ragpicker = self.objects.ragpicker\
+   if not ragpicker:getState(\"dead\") and not ragpicker:getState(\"knockout\")\
+      and ragpicker:getAttitudeToMainCharacter() == \"ENEMY\" then\
+      self.q:onRagpickerFightEnd()\
+   end\
+   return false\
+end\
+\
+";
+			["supercondition"] = true;
+			["targetsAll"] = "";
+			["targetsAny"] = "var:ragpicker_arena_trigger";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00046"] = {
+			["ID"] = 46;
+			["connectionsID"] = {
+			};
+			["event"] = "knockout";
+			["posX"] = -270;
+			["posY"] = 480;
+			["script"] = "function Condition:onCheck(name, obj)\
+   if getMC():isInTrigger(obj) then return false end\
+   obj:setImmortality(\"immortal\")\
+   self:writeLogOnce(\"KnockoutTrader\")\
+   return false\
+end\
+\
+";
+			["supercondition"] = true;
+			["targetsAll"] = "";
+			["targetsAny"] = "ragpicker";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00047"] = {
+			["ID"] = 47;
+			["connectionsID"] = {
+			};
+			["event"] = "knockout_end";
+			["posX"] = -270;
+			["posY"] = 630;
+			["script"] = "function Condition:onCheck(name, obj)\
+   if getMC():isInTrigger(obj) then return false end\
+   self.q:onRagpickerFightEnd(true)\
+   return false\
+end\
+\
+";
+			["supercondition"] = true;
+			["targetsAll"] = "";
+			["targetsAny"] = "ragpicker";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00048"] = {
+			["ID"] = 48;
+			["connectionsID"] = {
+			};
+			["event"] = "trigger_out";
+			["posX"] = -810;
+			["posY"] = 660;
+			["script"] = "function Condition:onCheck(name, obj)\
+   if getMC():isInTrigger(obj) then return false end\
+   if getMC():isInTrigger(self.objects.ragpicker_arena_trigger) then return false end\
+   local ragpicker = self.objects.ragpicker\
+   if not ragpicker:getState(\"dead\") and not ragpicker:getState(\"knockout\")\
+      and ragpicker:getAttitudeToMainCharacter() == \"ENEMY\" then\
+      self.q:onRagpickerFightEnd()\
+   end\
+   return false\
+end\
+\
+";
+			["supercondition"] = true;
+			["targetsAll"] = "";
+			["targetsAny"] = "var:ragpicker_arena_trigger_2";
+			["targetsCount"] = 1;
+			["type"] = "condition";
+		};
+		["condition_00049"] = {
+			["ID"] = 49;
+			["connectionsID"] = {
+			};
+			["event"] = "trigger_in";
+			["posX"] = -810;
+			["posY"] = 450;
+			["script"] = "function Condition:onCheck(name, obj)\
+   if not getMC():isInTrigger(obj) then return false end\
+   local ragpicker = self.objects.ragpicker\
+   if not ragpicker:getState(\"dead\") and not ragpicker:getState(\"knockout\") then\
+      ragpicker:setImmortality(\"protected\")\
+   end\
+   return false\
+end\
+\
+";
+			["supercondition"] = true;
+			["targetsAll"] = "";
+			["targetsAny"] = "var:ragpicker_arena_trigger_2";
 			["targetsCount"] = 1;
 			["type"] = "condition";
 		};
@@ -540,7 +662,7 @@ end\
 end\
 \
 function Step:onStart()\
-   getObj(self.old_outcast):setFeelVisible(true)\
+   self.objects.herbalist:setFeelVisible(true)\
    self:setTopicVisible(\"big_hat_looters\", true)\
 \
    --Have to delay hat recieving like this so the quest won't end immediately\
@@ -570,19 +692,15 @@ end\
 \
 function Step:onStart()\
    local player = getMC()\
-   player:setState(\"blockItemUse\", true)\
-   player:setState(\"disableAttack\", true)\
-   player:setState(\"disableMove\", true)\
-   player:setState(\"disableJump\", true)\
-   player:setState(\"disableInteraction\", true)\
+   player:setDisableActionStates(true)\
    gameplayUI:startFadeToBlackSequence(0.5, 1, 1,\
    {\
       onPause = {\
          func = function()\
             unequipSlotForPlayer(player:getWeaponSlot(), true)\
             for i=1,2 do\
-               local bandit = getObj(self[\"bandit_\"..i])\
-               local tp = getObj(self[\"bandit_\"..i]..\"_evade_tp\")\
+               local bandit = self.objects[\"bandit_\"..i]\
+               local tp = self.objects[\"bandit_\"..i..\"_evade_tp\"]\
                teleportTo(bandit, tp)\
                bandit:setSpawnPos(tp:getPose():getPos())\
                bandit:setAttitudeToMainCharacter(\"ENEMY\")\
@@ -596,7 +714,7 @@ function Step:onStart()\
          end\
       }\
    })\
-   self:setTopicVisible(\"old_outcast_scared_looters\", true)\
+   self:setTopicVisible(\"herbalist_scared_looters\", true)\
 \
    self:writeLog(\"LootersFound\")\
    self:writeLog(\"LootersScared\")\
@@ -624,42 +742,16 @@ end\
 	};
 	["script"] = "local random = require \"random\"\
 function Quest:onCreate()\
-   self:declareVar(\"old_outcast\", \"old_outcast\")\
-   self:declareVar(\"bandit_1\", \"q_my_clothes_bandit_1\")\
-   self:declareVar(\"bandit_2\", \"q_my_clothes_bandit_2\")\
-   self:declareVar(\"bandit_3\", \"q_my_clothes_bandit_3\")\
-   self:declareVar(\"ragpicker\", \"ragpicker\")\
-   self:declareVar(\"bandit_1_tp\", \"q_my_clothes_bandit_1_tp\")\
-   self:declareVar(\"bandit_2_tp\", \"q_my_clothes_bandit_2_tp\")\
-   self:declareVar(\"bandit_3_tp\", \"q_my_clothes_bandit_3_tp\")\
-   self:declareVar(\"bandit_1_evade_tp\", \"q_my_clothes_bandit_1_evade_tp\")\
-   self:declareVar(\"bandit_1_evade_tp\", \"q_my_clothes_bandit_2_evade_tp\")\
-   self:declareVar(\"price\", 200)\
-   self:declareVar(\"shirt_act\", \"q_my_clothes_shirt_dummy\")\
-   self:declareVar(\"pants_act\", \"q_my_clothes_pants_dummy\")\
-   self:setTopicVisible(\"activate_bandits\", true)\
-   self:setTopicVisible(\"old_outcast_killed_looters\", false)\
-   self:setTopicVisible(\"old_outcast_scared_looters\", false)\
-   self:setTopicVisible(\"activate_bandits\", true)\
-   self:setTopicVisible(\"big_hat_stolen_gear\", false)\
-   self:setTopicVisible(\"big_hat_looters\", false)\
-   self:setTopicVisible(\"ragpicker_my_clothes\", true)\
-   self:setTopicVisible(\"ragpicker_scumbag\", false)\
-   self:setTopicVisible(\"ragpicker_provoke\", true)\
-   self:setTopicVisible(\"ragpicker_buy_all\", true) --these three are hidden by ragpicker_scumbag\
-   self:setTopicVisible(\"ragpicker_buy_shirt\", true)\
-   self:setTopicVisible(\"ragpicker_buy_pants\", true)\
-   self:setTopicVisible(\"looters_talk\", true)\
 end\
 \
 function Quest:onStart()\
    local coro = require \"coroutines.helpers\"\
    local player = getMC()\
-   local abori = getObj(self.old_outcast)\
+   local abori = self.objects.herbalist\
    abori:setFeelVisible(false) --enabled when he stands up after looters are dealt with\
-   local bandit1 = getObj(self.bandit_1)\
-   local bandit2 = getObj(self.bandit_2)\
-   local bandit3 = getObj(self.bandit_3)\
+   local bandit1 = self.objects.bandit_1\
+   local bandit2 = self.objects.bandit_2\
+   local bandit3 = self.objects.bandit_3\
    if not abori then return end\
 \
    if isDebug(\"quest\") then\
@@ -672,8 +764,7 @@ function Quest:onStart()\
       bandit2:setupAppearance(\"q_my_clothes_bandit_2_hat\")\
       addItemToObj(\"hat_jack.itm\", bandit2)\
 \
-      local q = getQuest(\"my_clothes\")\
-      q.hidden = false\
+      self.hidden = false\
       self:teleportBandits()\
       return\
    end\
@@ -764,9 +855,8 @@ function Quest:onStart()\
       coro.waitAnimationEnd(player, \"idle_stretch\")\
 \
       --Start quest and play some animation to prolong the scene\
-      local q = getQuest(\"my_clothes\")\
-      q.hidden = false\
-      fakeQuestStartInfo(q)\
+      self.hidden = false\
+      fakeQuestStartInfo(self)\
       player.animationsManager:playCycle(\"idle_arms_on_hips\", 1)\
 \
       coro.wait(2.5)\
@@ -779,7 +869,9 @@ function Quest:onStart()\
 \
       --Jack uses a scan\
       local scanner = player:getInventory():getItemByName(\"scanner.itm\")\
-      player:runScanWave(scanner, false)\
+      if scanner then\
+         player:runScanWave(scanner, false)\
+      end\
 \
       coro.waitAnimationEnd(player, \"idle_gadget_use_long\")\
 \
@@ -817,16 +909,17 @@ end\
 \
 function Quest:teleportBandits()\
    for i=1,3 do\
-      local bandit = getObj(self[\"bandit_\"..i])\
-      local tp = getObj(self[\"bandit_\"..i]..\"_tp\")\
+      local bandit = self.objects[\"bandit_\" .. i]\
+      local tp = self.objects[\"bandit_\" .. i .. \"_tp\"]\
       teleportTo(bandit, tp)\
       bandit:setSpawnPos(tp:getPose():getPos())\
    end\
-   getObj(self.bandit_1):setDefaultAnimation(\"1hm_idle_melee\")\
+\
+   self.objects.bandit_1:setDefaultAnimation(\"1hm_idle_melee\")\
    --dialog initiation with orientation is only available from whitelisted default animations\
-   getObj(self.bandit_2):setDefaultAnimation(\"1hm_idle\")\
-   getObj(self.bandit_2):setDialogInitiator(true)\
-   getObj(self.bandit_3):setAttitudeToMainCharacter(\"ENEMY\")\
+   self.objects.bandit_2:setDefaultAnimation(\"1hm_idle\")\
+   self.objects.bandit_2:setDialogInitiator(true)\
+   self.objects.bandit_3:setAttitudeToMainCharacter(\"ENEMY\")\
 end\
 \
 function Quest:provokeTrader(type)\
@@ -837,8 +930,21 @@ function Quest:provokeTrader(type)\
    elseif type == \"talk\" then\
       self:writeLog(\"IProvokedRagpicker\")\
    end\
-   local ragpicker = getObj(self.ragpicker)\
-   ragpicker:setAttitudeToMainCharacter(\"ENEMY\")\
+   self.objects.ragpicker:setAttitudeToMainCharacter(\"ENEMY\")\
+   self:setTopicVisible(\"ragpicker_greeting_angry\", true)\
+end\
+\
+function Quest:onRagpickerFightEnd(byKnockout)\
+   local ragpicker = self.objects.ragpicker\
+   ragpicker:setImmortality(\"immortal\")\
+   ragpicker:setAttitudeToMainCharacter(\"NEUTRAL\")\
+   ragpicker:setStatCount(\"health\", ragpicker:getStatCount(\"healthMax\"))\
+\
+   local wps = {self.objects.ragpicker_to_store_wp, self.objects.ragpicker_store_wp}\
+   ragpicker.navigator:setPatrolRoute(wps)\
+   if not byKnockout then\
+      gameplayUI.subtitlesUI:addSubtitle(self.ragpicker_arena_leave_subtitle, 8, self.objects.ragpicker)\
+   end\
 end\
 \
 function Quest:getTopicVisible_ragpicker_buy_all()\
@@ -854,5 +960,201 @@ function Quest:getTopicVisible_ragpicker_buy_pants()\
 end\
 ";
 	["title"] = "Someone stole my pants";
+	["topics"] = {
+		[1] = {
+			["log_id"] = "";
+			["name"] = "activate_bandits";
+			["single_use"] = true;
+			["visible"] = true;
+		};
+		[2] = {
+			["log_id"] = "";
+			["name"] = "herbalist_killed_looters";
+			["single_use"] = true;
+			["visible"] = false;
+		};
+		[3] = {
+			["log_id"] = "";
+			["name"] = "herbalist_scared_looters";
+			["single_use"] = true;
+			["visible"] = false;
+		};
+		[4] = {
+			["log_id"] = "";
+			["name"] = "big_hat_stolen_gear";
+			["single_use"] = true;
+			["visible"] = false;
+		};
+		[5] = {
+			["log_id"] = "";
+			["name"] = "big_hat_looters";
+			["single_use"] = true;
+			["visible"] = false;
+		};
+		[6] = {
+			["log_id"] = "";
+			["name"] = "ragpicker_my_clothes";
+			["single_use"] = true;
+			["visible"] = true;
+		};
+		[7] = {
+			["log_id"] = "";
+			["name"] = "ragpicker_scumbag";
+			["single_use"] = true;
+			["visible"] = false;
+		};
+		[8] = {
+			["log_id"] = "";
+			["name"] = "ragpicker_provoke";
+			["single_use"] = true;
+			["visible"] = true;
+		};
+		[9] = {
+			["log_id"] = "";
+			["name"] = "ragpicker_buy_all";
+			["single_use"] = true;
+			["visible"] = true;
+		};
+		[10] = {
+			["log_id"] = "";
+			["name"] = "ragpicker_buy_shirt";
+			["single_use"] = true;
+			["visible"] = true;
+		};
+		[11] = {
+			["log_id"] = "";
+			["name"] = "ragpicker_buy_pants";
+			["single_use"] = true;
+			["visible"] = true;
+		};
+		[12] = {
+			["log_id"] = "";
+			["name"] = "looters_talk";
+			["single_use"] = true;
+			["visible"] = true;
+		};
+		[13] = {
+			["log_id"] = "NoHat";
+			["name"] = "bandit_2_no_hat";
+			["single_use"] = true;
+			["visible"] = true;
+		};
+		[14] = {
+			["log_id"] = "";
+			["name"] = "ragpicker_greeting_angry";
+			["single_use"] = false;
+			["visible"] = false;
+		};
+	};
+	["variables"] = {
+		[1] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "herbalist";
+			["value"] = "herbalist";
+		};
+		[2] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "bandit_1";
+			["value"] = "q_my_clothes_bandit_1";
+		};
+		[3] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "bandit_2";
+			["value"] = "q_my_clothes_bandit_2";
+		};
+		[4] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "bandit_3";
+			["value"] = "q_my_clothes_bandit_3";
+		};
+		[5] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "ragpicker";
+			["value"] = "ragpicker";
+		};
+		[6] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "bandit_1_tp";
+			["value"] = "q_my_clothes_bandit_1_tp";
+		};
+		[7] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "bandit_2_tp";
+			["value"] = "q_my_clothes_bandit_2_tp";
+		};
+		[8] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "bandit_3_tp";
+			["value"] = "q_my_clothes_bandit_3_tp";
+		};
+		[9] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "bandit_1_evade_tp";
+			["value"] = "q_my_clothes_bandit_1_evade_tp";
+		};
+		[10] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "bandit_2_evade_tp";
+			["value"] = "q_my_clothes_bandit_2_evade_tp";
+		};
+		[11] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "shirt_act";
+			["value"] = "q_my_clothes_shirt_dummy";
+		};
+		[12] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "pants_act";
+			["value"] = "q_my_clothes_pants_dummy";
+		};
+		[13] = {
+			["icon"] = " ";
+			["kind"] = "int";
+			["name"] = "price";
+			["value"] = 200;
+		};
+		[14] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "ragpicker_arena_trigger";
+			["value"] = "q_my_clothes_ragpicker_arena_trigger";
+		};
+		[15] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "ragpicker_store_wp";
+			["value"] = "ragpicker_store_wp";
+		};
+		[16] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "ragpicker_arena_trigger_2";
+			["value"] = "q_my_clothes_ragpicker_arena_trigger_2";
+		};
+		[17] = {
+			["icon"] = "";
+			["kind"] = "object";
+			["name"] = "ragpicker_to_store_wp";
+			["value"] = "ragpicker_to_store_wp";
+		};
+		[18] = {
+			["icon"] = " ";
+			["kind"] = "string";
+			["name"] = "ragpicker_arena_leave_subtitle";
+			["value"] = "And let that be a lesson to you!";
+		};
+	};
 }
 return obj1

@@ -971,6 +971,17 @@ local ObjectsLabels =
             eng = "interact",
          },
       },
+      ["q_ragpicker_heist_dummy"] =
+      {
+         label =
+         {
+            eng = "Guard Dummy",
+         },
+         interactLabel =
+         {
+            eng = "break",
+         },
+      },
    }
 
 local function getLabel(objectName)

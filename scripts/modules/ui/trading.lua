@@ -22,10 +22,12 @@ local function whitelistItems(items)
    local guns_all = inList(whitelist, "guns_all")
    local weapons_all = inList(whitelist, "weapons_all")
    local ammo_all = inList(whitelist, "ammo_all")
+   local attire_all = inList(whitelist, "attire_all")
    for _,item in pairs(items) do
       if (inList(whitelist, item:getItemName())
          or (guns_all    and item:isRangedWeapon())
          or (weapons_all and item:isMeleeWeapon())
+         or (attire_all and item:isAttire())
          or (ammo_all    and item:isAmmo()))
          and not item:isQuestItem() then
          table.insert(whitelistedItems, item)

@@ -17,6 +17,14 @@ local t = {
          sleepRegenFlat = 10,
       },
    },
+   electricShock = {
+      damageType = "energy",
+      changeStats = {health = -30},
+      duration = 10,
+      refresh = true,
+      sounds = {{name = "Play_scamp_22_shock_discharge", distance = 1500}},
+      particles = {{name = "electro_touch.sps", bones = {"Spine", "Bone002"}}},
+   }
 }
 
 local function getEffect(name)

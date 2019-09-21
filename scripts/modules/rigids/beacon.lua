@@ -191,6 +191,8 @@ function CBeacon:setInstaller(obj)
 end
 
 function CBeacon:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+
    if self.installer then
       state.pos = self:getPose():getPos()
       state.rotQuat = self:getPose():getRotQuat()
@@ -198,6 +200,8 @@ function CBeacon:OnSaveState(state)
 end
 
 function CBeacon:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+
    if self.installer then
       if state.pos then
          self:getPose():setPos(state.pos)

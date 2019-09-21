@@ -5,6 +5,9 @@ local orderedPairs = require "orderedPairs".orderedPairs
 local tablex = require "pl.tablex"
 local ItemsData = require "itemsData"
 
+local persistentData = require "global.persistentData"
+local savedOptions
+
 
 local function ShowHelpMarker(desc)
    imgui.TextDisabled("(?)")
@@ -22,22 +25,24 @@ function runTimerImgui(func)
    table.insert(callbacks, func)
 end
 
-local accuracy, states, taid, quests
 
 ---Global event that is called every render frame, including paused game
 function OnImGui()
+   if not savedOptions then
+      savedOptions = persistentData.getPersistentTable().imguiOptions or {}
+      persistentData.getPersistentTable().imguiOptions = savedOptions
+   end
+   local opt = savedOptions
    do
       imgui.Begin("Debug widgets")
       local function Checkbox(name, checked)
-         --At this version of lua imgui bindings some functions return mostly
-         --useless status value first, and the actual needed state second. Until we
-         --reverse this behavior in the bindings we can use that helper.
+         --First value returned is if checkbox was clicked, second value is actual checkbox state we just use that.
          return select(2, imgui.Checkbox(name, checked))
       end
-      accuracy = Checkbox("Accuracy", accuracy); imgui.SameLine(); ShowHelpMarker("Requires character in CVAR or main character present with equipped gun.")
-      states = Checkbox("States", states); imgui.SameLine(); ShowHelpMarker("Requires character in CVAR or main character present.")
-      taid = Checkbox("Ai ticks", taid); imgui.SameLine(); ShowHelpMarker("Requires character in CVAR with behavior tree or main character present.")
-      quests = Checkbox("Quests", quests); imgui.SameLine(); ShowHelpMarker("Show current quests state.")
+      opt.accuracy = Checkbox("Accuracy", opt.accuracy); imgui.SameLine(); ShowHelpMarker("Requires character in CVAR or main character present with equipped gun.")
+      opt.states = Checkbox("States", opt.states); imgui.SameLine(); ShowHelpMarker("Requires character in CVAR or main character present.")
+      opt.taid = Checkbox("Ai ticks", opt.taid); imgui.SameLine(); ShowHelpMarker("Requires character in CVAR with behavior tree or main character present.")
+      opt.quests = Checkbox("Quests", opt.quests); imgui.SameLine(); ShowHelpMarker("Show current quests state.")
       imgui.End()
    end
 
@@ -45,22 +50,25 @@ function OnImGui()
    local CVAR = console:getCVAR()
    local targetCharacter = hlp.isCharacter(CVAR) and CVAR or getMC()
 
-   if accuracy and targetCharacter then
+   if opt.accuracy and targetCharacter then
       local gun = targetCharacter:getWeaponSlotItem()
       if gun and gun.setAccuracy then
-         imgui.Begin("Gun accuracy", true, imgui.bor{imgui.WindowFlags_NoTitleBar, imgui.WindowFlags_NoResize})
-         imgui.Text(string.format("ItemsData accuracy: %f", ItemsData.getItemAccuracy(gun:getItemName())))
-         imgui.Text(string.format("Quality accuracy mod: %f", gun:getQualityBonus("accuracyFlat")))
-         imgui.Text("Final accuracy override")
-         imgui.SameLine()
-         ShowHelpMarker("Data above is just for convenience, to show you the values as they are in the engine. The slider sets the final value.")
-         local _, value = imgui.SliderFloat("", gun:getAccuracy(), 0, 1, "%.3f", 0.15) -- reset 0.15 to 1 for linear scale
-         gun:setAccuracy(value)
+         local visible
+         visible = imgui.Begin("Gun accuracy", true, imgui.bor{imgui.WindowFlags_NoTitleBar, imgui.WindowFlags_NoResize})
+         if visible then
+            imgui.Text(string.format("ItemsData accuracy: %f", ItemsData.getItemAccuracy(gun:getItemName())))
+            imgui.Text(string.format("Quality accuracy mod: %f", gun:getQualityBonus("accuracyFlat")))
+            imgui.Text("Final accuracy override")
+            imgui.SameLine()
+            ShowHelpMarker("Data above is just for convenience, to show you the values as they are in the engine. The slider sets the final value.")
+            local _, value = imgui.SliderFloat("", gun:getAccuracy(), 0, 1, "%.3f", 0.15) -- reset 0.15 to 1 for linear scale
+            gun:setAccuracy(value)
+         end
          imgui.End()
       end
    end
 
-   if states then
+   if opt.states then
       if targetCharacter then
          imgui.Begin("State watcher")
          for name, value in orderedPairs(tablex.copy(targetCharacter.states)) do
@@ -76,48 +84,127 @@ function OnImGui()
       end
    end
 
-   if quests then
-      imgui.Begin("Quests debug")
-      for name, quest in orderedPairs(_G.quests) do
-         if imgui.CollapsingHeader(name) then
-            local started = quest:isStarted()
-            imgui.Text("is started: " .. tostring(started))
-            if not started then
-               imgui.SameLine(); if imgui.Button("start") then quest:start() end
-            end
-            imgui.Text("is active: " .. tostring(quest:isActive()))
-            imgui.Text("active step name: " .. tostring(quest:getActiveStepName()))
-            imgui.Text("is finished: " .. tostring(quest:isFinished()))
-            imgui.Text("is failed: " .. tostring(quest:isFailed()))
-            if imgui.TreeNode("topics:") then
-               for topic, topicState in orderedPairs(_G.__story_data.quests[name]) do
-                  topic = string.match(topic, "^topic_(.+)")
-                  if topic then
-                     imgui.Text(string.format("%s:", topic))
-                     imgui.SameLine(300)
-                     imgui.PushID(topic)
-                     if imgui.Button(tostring(topicState)) then
-                        quest:setTopicVisible(topic, not topicState)
+   if opt.quests then
+      local visible
+      visible, opt.quests = imgui.Begin("Quests debug", opt.quests)
+      if visible and opt.quests then
+         local questParams = getQuestParams()
+         for name, quest in orderedPairs(_G.quests) do
+            local new = not not quest.finishNodes
+            if imgui.CollapsingHeader(name .. (new and " (new)" or "")) then
+               imgui.PushID(name)
+               local started = quest:isStarted()
+               imgui.Text("is started: " .. tostring(started))
+               if not started then
+                  imgui.SameLine()
+                  if imgui.Button("start") then
+                     if new then
+                        quest:advanceNode(quest.startNode)
+                     else
+                        quest:start()
                      end
-                     local customFunc = quest["getTopicVisible_" .. topic]
-                     if customFunc and type(customFunc) == "function" then
-                        imgui.SameLine()
-                        ShowHelpMarker("Has custom visibility function")
-                     end
-                     imgui.PopID()
                   end
                end
-               imgui.TreePop()
-            end
-            if imgui.TreeNode("variables:") then
-               for variableName, value in orderedPairs(quest._variables) do
-                  if variableName ~= "q" then
-                     imgui.Text(tostring(variableName))
-                     imgui.SameLine(300)
-                     imgui.Text(tostring(value))
+               imgui.Text("is active: " .. tostring(quest:isActive()))
+               if not new then imgui.Text("active step name: " .. tostring(quest:getActiveStepName())) end
+               imgui.Text("is finished: " .. tostring(quest:isFinished()))
+               if not new then imgui.Text("is failed: " .. tostring(quest:isFailed())) end
+               if new then
+                  if imgui.Button("save") then
+                     testQuestState = {}
+                     quest:OnSaveState(testQuestState)
+                     quest:logq(require"inspect"(testQuestState))
+                  end
+                  if imgui.Button("load") then
+                     local nodes = quest.nodes
+                     for _, n in ipairs(nodes) do
+                        n:reset()
+                     end
+                     if testQuestState then
+                        quest:OnLoadState(testQuestState)
+                     end
                   end
                end
-               imgui.TreePop()
+               if imgui.BeginTabBar("tabbar##" .. name) then
+                  if imgui.BeginTabItem("data", true) then
+                     if imgui.TreeNode("topics:") then
+                        for topic, topicState in orderedPairs(questParams[name] or {}) do
+                           topic = string.match(topic, "^topic_(.+)")
+                           if topic then
+                              imgui.Text(string.format("%s:", topic))
+                              imgui.SameLine(300)
+                              imgui.PushID(topic)
+                              if imgui.Button(tostring(topicState)) then
+                                 quest:setTopicVisible(topic, not topicState)
+                              end
+                              local customFunc = quest["getTopicVisible_" .. topic]
+                              if customFunc and type(customFunc) == "function" then
+                                 imgui.SameLine()
+                                 ShowHelpMarker("Has custom visibility function")
+                              end
+                              imgui.PopID() --topic
+                           end
+                        end
+                        imgui.TreePop()
+                     end
+                     if imgui.TreeNode("variables:") then
+                        for variableName, value in orderedPairs(quest._variables) do
+                           if variableName ~= "q" then
+                              imgui.Text(tostring(variableName))
+                              imgui.SameLine(300)
+                              imgui.Text(tostring(value))
+                           end
+                        end
+                        imgui.TreePop()
+                     end
+                     if new and imgui.TreeNode("suspended nodes:") then
+                        local upNext = {quest.startNode}
+                        local visited = {}
+                        while #upNext > 0 do
+                           local current = table.remove(upNext)
+                           if type(current) == "boolean" then
+                              if current then
+                                 imgui.TreePop()
+                              end
+                           elseif not visited[current] then
+                              visited[current] = true
+                              local indent
+                              if current.suspended then
+                                 if current.startNode then
+                                    indent = imgui.TreeNode(current.startNode.name)
+                                 else
+                                    imgui.BulletText(current.name)
+                                    imgui.SameLine()
+                                    if imgui.Button("advance") then
+                                       runTimerAdv(0, false, current.release, current)
+                                    end
+                                    imgui.SameLine()
+                                    ShowHelpMarker("Warning: doesn't work for all types of nodes")
+                                 end
+                                 imgui.SameLine(300)
+                                 imgui.Text(current.className)
+                              end
+                              for i=#current.connections,1,-1 do
+                                 table.insert(upNext, current.connections[i].toNode)
+                              end
+                              if indent then
+                                 --queue up walking of subgraph nodes, then put special value to indicate if we need to pop tree
+                                 table.insert(upNext, indent)
+                                 table.insert(upNext, current.startNode)
+                              end
+                           end
+                        end
+                        imgui.TreePop()
+                     end
+                     imgui.EndTabItem()
+                  end
+                  if new and imgui.BeginTabItem("log", true) then
+                     imgui.TextUnformatted(table.concat(quest.debugLogStrings, '\n'))
+                     imgui.EndTabItem()
+                  end
+                  imgui.EndTabBar()
+               end
+               imgui.PopID() --name
             end
          end
       end
@@ -162,7 +249,7 @@ function OnImGui()
       imgui.End()
    end
 
-   if taid then
+   if opt.taid then
       local history = targetCharacter and targetCharacter.BT and targetCharacter.BT.history
       if history and #history then
          local status = {}
@@ -183,8 +270,9 @@ function OnImGui()
             imgui.TextColored(colorMap[nodeStatus], nodeStatus)
          end
 
-         imgui.Begin("AI debugger")
-         if imgui.TreeNodeEx("Behavior Tree Root", imgui.TreeNodeFlags_DefaultOpen) then
+         local visible
+         visible, opt.taid = imgui.Begin("AI debugger", opt.taid)
+         if visible and opt.taid and imgui.TreeNodeEx("Behavior Tree Root", imgui.TreeNodeFlags_DefaultOpen) then
             local function iterateTree(node)
                if not node then
                   return
@@ -218,8 +306,8 @@ function OnImGui()
             iterateTree(targetCharacter.BT.child)
             imgui.TreePop()
          end
+         imgui.End()
       end
-      imgui.End()
    end
 
    if #callbacks > 0 then

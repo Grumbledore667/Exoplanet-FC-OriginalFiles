@@ -186,21 +186,22 @@ end
 
 --- a safe entity.preActivate wrapper
 function helpers.safePreActivateEntity(entity, activator)
-   if entity.preActivate then entity:preActivate(activator) end
+   if entity and entity.preActivate then entity:preActivate(activator) end
 end
 
 --- a safe entity.activate wrapper
 function helpers.safeActivateEntity(entity, activator)
-   if entity.activate then entity:activate(activator) end
+   if entity and entity.activate then entity:activate(activator) end
 end
 
 --- a safe entity.deactivate wrapper
 function helpers.safeDeactivateEntity(entity, activator)
-   if entity.deactivate then entity:deactivate(activator) end
+   if entity and entity.deactivate then entity:deactivate(activator) end
 end
 
 function helpers.getPickupAnimationFor(char, obj)
-   if char:getState("inAir") then return nil end --During air time it's allowed to pickup one item with no animation
+   --During air time it's allowed to pickup one item with no animation
+   if char:getState("inAir") or isDebug("fastLoot") then return nil end
    local difference = obj:getPose():getPos().y - char:getPose():getPos().y
    if difference > 130 then
       return "idle_takeobj_up"

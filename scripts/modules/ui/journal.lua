@@ -43,7 +43,7 @@ function CJournalUI:init()
    for _,q in pairs(quests) do
       table.insert(self.questsOrder, q)
       wnd:getChild("Label"):setText(q.title)
-      wnd:setName(q.name)
+      wnd:setName(q.name or '')
       if not q:isStarted() then
          wnd:setVisible(false)
       end
@@ -139,7 +139,7 @@ function CJournalUI:onShow()
       self:updateJournalQuestLog(self.selectedQuest)
    else
       for _,q in pairs(quests) do
-         if q:isStarted() then
+         if q:isStarted() and not q.hidden then
             self:updateJournalQuestLog(q)
             break
          end
@@ -177,16 +177,30 @@ function CJournalUI:updateJournalQuestLog(quest)
    self.selectedQuest = quest
    gameplayUI:setTextWndSelected( self.quests:getChild(quest.name .. "/Label"), true)
 
-   local logText = quest.description .. quest.log
-
-   for i,text in pairs(stringx.split(logText,"***")) do
-      if i > 1 then
-         local delimiter = self:createSeparateLogWindow("***", i .. "Delimiter")
-         delimiter:setProperty("HorzFormatting", "CentreAligned")
+   if quest.new then
+      for i, data in ipairs(quest.logBuilder) do
+         local entry = string.format(quest:getLogString(data.entry), unpack(data.args))
+         --Allow logs to use \n linebreaks, consecutive linebreaks create empty log windows
+         for _,str in ipairs(stringx.split(entry,"\n")) do
+            self:createSeparateLogWindow(str)
+         end
+         if i ~= #quest.logBuilder then
+            local delimiter = self:createSeparateLogWindow("***", i .. "Delimiter")
+            delimiter:setProperty("HorzFormatting", "CentreAligned")
+         end
       end
-      --Allow logs to use \n linebreaks, consecutive linebreaks create empty log windows
-      for _,str in pairs(stringx.split(text,"\n")) do
-         self:createSeparateLogWindow(str)
+   else
+      local logText = quest.description .. quest.log
+
+      for i,text in pairs(stringx.split(logText,"***")) do
+         if i > 1 then
+            local delimiter = self:createSeparateLogWindow("***", i .. "Delimiter")
+            delimiter:setProperty("HorzFormatting", "CentreAligned")
+         end
+         --Allow logs to use \n linebreaks, consecutive linebreaks create empty log windows
+         for _,str in pairs(stringx.split(text,"\n")) do
+            self:createSeparateLogWindow(str)
+         end
       end
    end
    --Otherwise sizes won't be accurate. Probably has to do with the fact that we resize logs with relative scale

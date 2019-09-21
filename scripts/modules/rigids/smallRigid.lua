@@ -13,6 +13,18 @@ function CSmallRigid:OnCreate(params)
    self.interactor:setRaycastRadius(100)
 end
 
+function CSmallRigid:enable()
+   CItemGenerator.enable(self)
+
+   self.interactor:setTriggerActive(true)
+end
+
+function CSmallRigid:disable()
+   CItemGenerator.disable(self)
+
+   self.interactor:setTriggerActive(false)
+end
+
 function CSmallRigid:OnInteractTriggerBegin(obj)
    if obj == getMC() then return end
 

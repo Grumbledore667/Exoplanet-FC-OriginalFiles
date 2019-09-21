@@ -23,7 +23,7 @@ function CReadable:OnCreate(params)
 end
 
 function CReadable:OnInteractTriggerEnd(char)
-   if char == getPlayer() then
+   if char == getMC() then
       char:onObjectDeactivate(self, self:getInteractType(char))
    end
 end
@@ -41,31 +41,23 @@ function CReadable:getInteractLabel()
 end
 
 function CReadable:enable()
-   self.enabled = true
-   self.interactor:setRaycastActive(self.enabled)
-   self.interactor:setTriggerActive(self.enabled)
+   CInteractable.enable(self)
+
+   self.interactor:setTriggerActive(true)
 end
 
 function CReadable:disable()
-   self.enabled = false
-   self.interactor:setRaycastActive(self.enabled)
-   self.interactor:setTriggerActive(self.enabled)
-end
+   CInteractable.disable(self)
 
-function CReadable:isEnabled()
-   return self.enabled
+   self.interactor:setTriggerActive(false)
 end
 
 function CReadable:OnSaveState(state)
-   state.enabled = self.enabled
+   CInteractable.OnSaveState(self, state)
 end
 
 function CReadable:OnLoadState(state)
-   if state.enabled then
-      self:enable()
-   else
-      self:disable()
-   end
+   CInteractable.OnLoadState(self, state)
 end
 
 return {CReadable=CReadable}

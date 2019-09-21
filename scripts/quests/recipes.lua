@@ -72,6 +72,7 @@ end\
    self:setParam(\"decompose_beacon.itm\", true)\
    self:setParam(\"decompose_alien_cactus_bat.wpn\", true)\
    self:setParam(\"decompose_wooden_bat.wpn\", true)\
+   self:setParam(\"decompose_antigravium_bait.itm\", true)\
 \
    self:setParam(\"alien_cactus_bat_1\", true)\
    self:setParam(\"alien_cactus_bat_2\", true)\

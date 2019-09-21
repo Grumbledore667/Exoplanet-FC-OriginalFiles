@@ -229,7 +229,7 @@ function CInventoryTradeUI:onSlotItemDrop(args)
    local sourceInventoryName = dd_args.dragDropItem:getUserString("inventoryName")
    local targetInventoryName = dd_args.window:getUserString("inventoryName")
    local itemID = tonumber(dd_args.dragDropItem:getUserString("itemID"))
-   local item = gameplayUI.tradingUI[sourceInventoryName]:getItem(itemID)
+   local item = gameplayUI.tradingUI[sourceInventoryName] and gameplayUI.tradingUI[sourceInventoryName]:getItem(itemID)
    if item and gameplayUI.tradingUI[sourceInventoryName].targetInventoryName == targetInventoryName then
       gameplayUI.tradingUI[sourceInventoryName]:moveItem(item, nil, targetInventoryName)
    end

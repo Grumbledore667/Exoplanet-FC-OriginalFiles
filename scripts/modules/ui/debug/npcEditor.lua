@@ -200,6 +200,11 @@ function CNpcEditorUI:snapCharStyle()
    --Make sure entities don't get there
    for _,v in pairs(attachments) do
       v.entity = nil
+      if v.lights then
+         for _, light in pairs(v.lights) do
+            light.entity = nil
+         end
+      end
    end
    return { body = tablex.deepcopy(style.body), attachments = attachments, textures = tablex.deepcopy(style.textures) }
 end

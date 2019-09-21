@@ -192,11 +192,6 @@ function CArphant:getRunSpeed()
    return 300
 end
 
-function CArphant:resetSpeed()
-   self:setMoveSpeed(0)
-   self:setOrientationSpeed(0)
-end
-
 function CArphant:getLabel()
    return "Arphant"
 end

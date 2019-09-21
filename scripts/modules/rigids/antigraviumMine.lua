@@ -170,11 +170,15 @@ function CAntigraviumMine:getInteractData(char)
 end
 
 function CAntigraviumMine:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+
    state.resource = self.resource
    state.crystalMined = self.crystalMined
 end
 
 function CAntigraviumMine:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+
    self.resource = state.resource
    self.crystalMined = state.crystalMined
    self:updateMeshes()

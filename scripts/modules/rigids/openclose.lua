@@ -61,10 +61,14 @@ function COpenClose:getInteractLabel()
 end
 
 function COpenClose:OnSaveState(state)
+   CInteractable.OnSaveState(self, state)
+
    state.opened = self.opened
 end
 
 function COpenClose:OnLoadState(state)
+   CInteractable.OnLoadState(self, state)
+
    if state.opened then
       self.opened = true
    end

@@ -14,8 +14,6 @@ function CElevator:OnCreate()
    getScene():subscribeOnLocationEnter(self.onLocationEnter, self)
 
    self.sounds = {}
-
-   self.disabled = false
 end
 
 function CElevator:onLocationEnter()
@@ -35,7 +33,7 @@ function CElevator:getInteractLabel()
 end
 
 function CElevator:getInteractType(char)
-   if self.disabled or not self.destinationObj then
+   if not self.destinationObj then
       return "no_interaction"
    else
       return "elevator"
@@ -55,13 +53,11 @@ function CElevator:getInteractData(char)
 end
 
 function CElevator:OnSaveState(state)
-   state.disabled = self.disabled
+   CInteractable.OnSaveState(self, state)
 end
 
 function CElevator:OnLoadState(state)
-   if state.disabled then
-      self.disabled = state.disabled
-   end
+   CInteractable.OnLoadState(self, state)
 end
 
 return {CElevator=CElevator}
